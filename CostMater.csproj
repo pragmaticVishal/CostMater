@@ -16,8 +16,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
-    <PackageReference Include="Syncfusion.Grid.Windows" Version="26.2.5" />
-    <PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="26.2.5" />
+    <PackageReference Include="Syncfusion.DataGridExport.WinForms" Version="26.2.8" />
+    <PackageReference Include="Syncfusion.Grid.Windows" Version="26.2.8" />
+    <PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="26.2.8" />
     <PackageReference Include="Syncfusion.XlsIO.WinForms" Version="26.2.8" />
   </ItemGroup>
   <ItemGroup>

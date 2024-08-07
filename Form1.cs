@@ -10,6 +10,7 @@ using Syncfusion.Data.Extensions;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
+using Syncfusion.WinForms.DataGridConverter;
 using Syncfusion.XlsIO;
 using System;
 using System.Collections.Generic;
@@ -87,6 +88,7 @@ namespace DetailsView
             sfDataGrid1.ShowRowHeaderErrorIcon = true;
             sfDataGrid1.ValidationMode = GridValidationMode.InEdit;
             sfDataGrid1.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
+            //sfDataGrid1.FrozenRowCount = 2;
 
             sfDataGrid1.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
             sfDataGrid1.Columns.Add(new GridTextColumn { MappingName = "ComponentName", HeaderText = "Component Name" });
@@ -687,6 +689,70 @@ namespace DetailsView
             }
         }
 
+        #endregion
+
+        #region ExcelExport
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.E))
+            {
+                var options = new ExcelExportingOptions();
+                options.ExcelVersion = ExcelVersion.Excel2013;
+                options.AllowOutlining = true;
+                options.ExportStackedHeaders = true;
+                options.ExportStyle = true;
+                options.ExportBorders = true;
+                var excelEngine = sfDataGrid1.ExportToExcel(sfDataGrid1.View, options);
+                var workBook = excelEngine.Excel.Workbooks[0];
+
+                SaveFileDialog saveFilterDialog = new SaveFileDialog
+                {
+                    FilterIndex = 2,
+                    Filter = "Excel 97 to 2003 Files(*.xls)|*.xls|Excel 2007 to 2010 Files(*.xlsx)|*.xlsx|Excel 2013 File(*.xlsx)|*.xlsx"
+                };
+
+                if (saveFilterDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    using (Stream stream = saveFilterDialog.OpenFile())
+                    {
+                        if (saveFilterDialog.FilterIndex == 1)
+                            workBook.Version = ExcelVersion.Excel97to2003;
+                        else if (saveFilterDialog.FilterIndex == 2)
+                            workBook.Version = ExcelVersion.Excel2010;
+                        else
+                            workBook.Version = ExcelVersion.Excel2013;
+                        workBook.SaveAs(stream);
+                    }
+                    if (MessageBox.Show(this.sfDataGrid1, "Do you want to view the workbook?", "Workbook has been created",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                    {
+
+                        //Launching the Excel file using the default Application.[MS Excel Or Free ExcelViewer]
+                        Open(saveFilterDialog.FileName);
+                    }
+                }
+                return true; // Indicate that the key press was handled
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void Open(string fileName)
+        {
+#if !NETCORE
+                System.Diagnostics.Process.Start(fileName);
+#else
+            System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "cmd",
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                Arguments = "/c start " + fileName
+            };
+            System.Diagnostics.Process.Start(psi);
+#endif
+        }
         #endregion
     }
 }
