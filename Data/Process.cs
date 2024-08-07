@@ -31,10 +31,13 @@ namespace DetailsView.Data
         private decimal _depthOfCutEachPass;
         private decimal _noOfCuts;
         private decimal _lengthOfCut;
+        private decimal _lengthOfHoleToDrill;
+        private decimal _lengthOfThreadToCut;
         private decimal _machingTime;
         private decimal _machiningCost;
         private decimal _average;
         private Component _component;
+        private decimal _totalDepthOfCut;
 
 
         #endregion
@@ -148,6 +151,17 @@ namespace DetailsView.Data
             }
         }
 
+        [Display(Name = "Total depth of Cut")]
+        public decimal TotalDepthOfCut
+        {
+            get => _totalDepthOfCut;
+            set
+            {
+                _totalDepthOfCut = value;
+                RaisePropertyChanged(nameof(TotalDepthOfCut));
+            }
+        }
+
         [Display(Name = "Feed Rate (f) in mm/rev")]
         public decimal FeedRate
         {
@@ -258,6 +272,28 @@ namespace DetailsView.Data
             }
         }
 
+        [Display(Name = "Length of hole to drill in mm")]
+        public decimal LengthOfHoleToDrill
+        {
+            get => _lengthOfHoleToDrill;
+            set
+            {
+                _lengthOfHoleToDrill = value;
+                RaisePropertyChanged(nameof(_lengthOfHoleToDrill));
+            }
+        }
+
+        [Display(Name = "Length of thread to cut in mm")]
+        public decimal LengthOfThreadToCut
+        {
+            get => _lengthOfThreadToCut;
+            set
+            {
+                _lengthOfThreadToCut = value;
+                RaisePropertyChanged(nameof(_lengthOfThreadToCut));
+            }
+        }
+
         [Display(Name = "Machining Time in minutes")]
         public decimal MachiningTime
         {
@@ -291,7 +327,10 @@ namespace DetailsView.Data
             }
         }
 
-        public string Error => throw new NotImplementedException();
+        public string Error
+        {
+            get { return string.Empty; }
+        }
 
         public string this[string columnName]
         {
@@ -300,122 +339,107 @@ namespace DetailsView.Data
                 string result = string.Empty;
                 switch (columnName)
                 {
-                    case nameof(ProcessTypeID):
-                        if (ProcessTypeID <= 0)
-                        {
-                            result = "Process Type ID is required.";
-                        }
-                        break;
-                    case nameof(ProcessTypeName):
-                        if (string.IsNullOrWhiteSpace(ProcessTypeName))
-                        {
-                            result = "Process Type Name is required.";
-                        }
-                        break;
-                    case nameof(ComponentID):
-                        if (ComponentID <= 0)
-                        {
-                            result = "Component ID is required.";
-                        }
-                        break;
-                    case nameof(ToolTypeID):
-                        if (ToolTypeID <= 0)
-                        {
-                            result = "Tool Type ID is required.";
-                        }
-                        break;
-                    case nameof(ToolTypeName):
-                        if (string.IsNullOrWhiteSpace(ToolTypeName))
-                        {
-                            result = "Tool Type Name is required.";
-                        }
-                        break;
-                    case nameof(ToolSurfaceID):
-                        if (ToolSurfaceID <= 0)
-                        {
-                            result = "Tool Surface ID is required.";
-                        }
-                        break;
-                    case nameof(ToolSurfaceName):
-                        if (string.IsNullOrWhiteSpace(ToolSurfaceName))
-                        {
-                            result = "Tool Surface Name is required.";
-                        }
-                        break;
-                    case nameof(CuttingSpeed):
-                        if (CuttingSpeed <= 0)
-                        {
-                            result = "Cutting Speed must be greater than zero.";
-                        }
-                        break;
-                    case nameof(FeedRate):
-                        if (FeedRate <= 0)
-                        {
-                            result = "Feed Rate must be greater than zero.";
-                        }
-                        break;
-                    case nameof(DrillSize):
-                        if (DrillSize <= 0)
-                        {
-                            result = "Drill Size must be greater than zero.";
-                        }
-                        break;
-                    case nameof(ThreadDiameterToCut):
-                        if (ThreadDiameterToCut <= 0)
-                        {
-                            result = "Thread Diameter to Cut must be greater than zero.";
-                        }
-                        break;
-                    case nameof(ThreadPitch):
-                        if (ThreadPitch <= 0)
-                        {
-                            result = "Thread Pitch must be greater than zero.";
-                        }
-                        break;
-                    case nameof(DiameterBeforeTurning):
-                        if (DiameterBeforeTurning <= 0)
-                        {
-                            result = "Diameter Before Turning must be greater than zero.";
-                        }
-                        break;
-                    case nameof(DiameterAfterTurning):
-                        if (DiameterAfterTurning <= 0)
-                        {
-                            result = "Diameter After Turning must be greater than zero.";
-                        }
-                        break;
-                    case nameof(RPM):
-                        if (RPM <= 0)
-                        {
-                            result = "RPM must be greater than zero.";
-                        }
-                        break;
-                    case nameof(DepthOfCutEachPass):
-                        if (DepthOfCutEachPass <= 0)
-                        {
-                            result = "Depth of Cut for Each Pass must be greater than zero.";
-                        }
-                        break;
-                    case nameof(NoOfCuts):
-                        if (NoOfCuts <= 0)
-                        {
-                            result = "Number of Cuts must be greater than zero.";
-                        }
-                        break;
-                    case nameof(LengthOfCut):
-                        if (LengthOfCut <= 0)
-                        {
-                            result = "Length of the Cut must be greater than zero.";
-                        }
-                        break;
-                    case nameof(MachiningTime):
-                        if (MachiningTime <= 0)
-                        {
-                            result = "Machining Time must be greater than zero.";
-                        }
-                        break;
-                    case nameof(MachiningCost):
-                        break;
+                    //case nameof(ProcessTypeID):
+                    //    if (ProcessTypeID <= 0)
+                    //    {
+                    //        result = "Process Type ID is required.";
+                    //    }
+                    //    break;
+                    //case nameof(ProcessTypeName):
+                    //    if (string.IsNullOrWhiteSpace(ProcessTypeName))
+                    //    {
+                    //        result = "Process Type Name is required.";
+                    //    }
+                    //    break;
+                    //case nameof(ComponentID):
+                    //    if (ComponentID <= 0)
+                    //    {
+                    //        result = "Component ID is required.";
+                    //    }
+                    //    break;
+                    //case nameof(ToolTypeID):
+                    //    if (ToolTypeID <= 0)
+                    //    {
+                    //        result = "Tool Type ID is required.";
+                    //    }
+                    //    break;
+                    //case nameof(ToolTypeName):
+                    //    if (string.IsNullOrWhiteSpace(ToolTypeName))
+                    //    {
+                    //        result = "Tool Type Name is required.";
+                    //    }
+                    //    break;
+                    //case nameof(ToolSurfaceID):
+                    //    if (ToolSurfaceID <= 0)
+                    //    {
+                    //        result = "Tool Surface ID is required.";
+                    //    }
+                    //    break;
+                    //case nameof(ToolSurfaceName):
+                    //    if (string.IsNullOrWhiteSpace(ToolSurfaceName))
+                    //    {
+                    //        result = "Tool Surface Name is required.";
+                    //    }
+                    //    break;
+                    //case nameof(CuttingSpeed):
+                    //    if (CuttingSpeed <= 0)
+                    //    {
+                    //        result = "Cutting Speed must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(FeedRate):
+                    //    if (FeedRate <= 0)
+                    //    {
+                    //        result = "Feed Rate must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(DrillSize):
+                    //    if (DrillSize <= 0)
+                    //    {
+                    //        result = "Drill Size must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(ThreadDiameterToCut):
+                    //    if (ThreadDiameterToCut <= 0)
+                    //    {
+                    //        result = "Thread Diameter to Cut must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(ThreadPitch):
+                    //    if (ThreadPitch <= 0)
+                    //    {
+                    //        result = "Thread Pitch must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(DiameterBeforeTurning):
+                    //    if (DiameterBeforeTurning <= 0)
+                    //    {
+                    //        result = "Diameter Before Turning must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(DiameterAfterTurning):
+                    //    if (DiameterAfterTurning <= 0)
+                    //    {
+                    //        result = "Diameter After Turning must be greater than zero.";
+                    //    }
+                    //    break;
+                   
+                    //case nameof(DepthOfCutEachPass):
+                    //    if (DepthOfCutEachPass <= 0)
+                    //    {
+                    //        result = "Depth of Cut for Each Pass must be greater than zero.";
+                    //    }
+                    //    break;
+                    
+                    //case nameof(LengthOfCut):
+                    //    if (LengthOfCut <= 0)
+                    //    {
+                    //        result = "Length of the Cut must be greater than zero.";
+                    //    }
+                    //    break;
+                    
+                    //case nameof(MachiningCost):
+                    //    break;
                 }
                 return result;
             }

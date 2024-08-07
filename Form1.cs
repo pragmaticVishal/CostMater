@@ -10,6 +10,7 @@ using Syncfusion.Data.Extensions;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
+using Syncfusion.XlsIO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,6 +19,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Component = DetailsView.Data.Component;
@@ -69,9 +71,11 @@ namespace DetailsView
 
             sfDataGrid1.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
             sfDataGrid1.Columns.Add(new GridTextColumn { MappingName = "ComponentName", HeaderText = "Component Name" });
+
             sfDataGrid1.Columns.Add(new GridComboBoxColumn { MappingName = "MaterialID", HeaderText = "Material", ValueMember = "MaterialID", DisplayMember = "MaterialName", IDataSourceSelector = new MaterialDataSourceSelector() });
             sfDataGrid1.Columns.Add(new GridComboBoxColumn { MappingName = "MaterialTypeID", HeaderText = "Material Type", ValueMember = "MaterialTypeID", DisplayMember = "MaterialTypeName", IDataSourceSelector = new MaterialTypeDataSourceSelector() });
             sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "Qty", HeaderText = "Quantity" });
+
             sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "Length", HeaderText = "Length" });
             sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "Width", HeaderText = "Width" });
             sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "Thickness", HeaderText = "Thickness" });
@@ -79,34 +83,63 @@ namespace DetailsView
             sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "OD", HeaderText = "Outer Diameter" });
             sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "ID", HeaderText = "Inner Diameter" });
             sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "Side1", HeaderText = "Side 1" });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "Side2", HeaderText = "Side 2" });            
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "BendRate", HeaderText = "Bend Rate" });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "FabricationRate", HeaderText = "Fabrication Rate" });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialRate", HeaderText = "Raw Material Rate" });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "NoOfStart", HeaderText = "No Of Start" });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "NoOfBend", HeaderText = "No Of Bend" });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "ProcurementCost", HeaderText = "Procurement Cost" });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "SurfaceTreatmentRate", HeaderText = "Surface Treatment Rate" });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "OthersRate", HeaderText = "Others Rate" });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "OthersQty", HeaderText = "Others Qty" });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "MachingCostPerHour", HeaderText = "Machining Cost Per hour" });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "Side2", HeaderText = "Side 2" });
 
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "Perimeter", HeaderText = "Perimeter", AllowEditing = false });
             sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "NetWeight", HeaderText = "Net Weight", AllowEditing = false });
             sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "GrossWeight", HeaderText = "Gross Weight", AllowEditing = false });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "LaserCost", HeaderText = "Laser Cost", AllowEditing = false });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Bend Total Cost", AllowEditing = false });            
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "FabricationTotalCost", HeaderText = "Fabrication Total Cost", AllowEditing = false });
 
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "SurfaceTreatmentCost", HeaderText = "Surface Treatment", AllowEditing = false });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "Others_BO", HeaderText = "Others/B.O", AllowEditing = false });            
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "LabourCostPerPart", HeaderText = "Labour Cost Per Part", AllowEditing = false });
-            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialCost", HeaderText = "Raw Material Cost", AllowEditing = false });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "Perimeter", HeaderText = "Perimeter", AllowEditing = false });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "NoOfStart", HeaderText = "No Of Start" });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "LaserCost", HeaderText = "Laser Cost", AllowEditing = false });
+
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "NoOfBend", HeaderText = "No Of Bend" });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "BendRate", HeaderText = "Rate" });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Amount", AllowEditing = false });
+
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "ProcurementCost", HeaderText = "Amount" });
+
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "FabricationRate", HeaderText = "Rate" });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "FabricationTotalCost", HeaderText = "Amount", AllowEditing = false });
+
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "SurfaceTreatmentRate", HeaderText = "Rate" });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "SurfaceTreatmentCost", HeaderText = "Amount", AllowEditing = false });
+
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "MachiningCostPerHour", HeaderText = "Machining Cost Per hour" });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "TotalMachiningCost", HeaderText = "Total Machining Cost", AllowEditing = false });
+
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "OthersRate", HeaderText = "Rate" });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "OthersQty", HeaderText = "Qty" });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "Others_BO", HeaderText = "Amount", AllowEditing = false });
+
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "LabourCostPerPart", HeaderText = "Total Labour per part", AllowEditing = false });
+
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialRate", HeaderText = "Rate" });
+            sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialCost", HeaderText = "Amount", AllowEditing = false });
+
             sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "TotalCostPerPart", HeaderText = "Total Cost Per Part", AllowEditing = false });
+
             sfDataGrid1.Columns.Add(new GridNumericColumn { MappingName = "TotalCost", HeaderText = "Total Cost", AllowEditing = false });
+
+            StackedHeaderRow stackedHeaderRow = new StackedHeaderRow();
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ComponentID,ComponentName", HeaderText = "Component Details" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "MaterialID,MaterialTypeID,Qty", HeaderText = "Material Details" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "Length,Width,Thickness,Diameter,OD,ID,Side1,Side2", HeaderText = "Material Dimensions" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "NetWeight,GrossWeight", HeaderText = "Weight" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "Perimeter,NoOfStart,LaserCost", HeaderText = "Laser Cutting" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "NoOfBend,BendRate,BendTotalCost", HeaderText = "Bending" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ProcurementCost", HeaderText = "Procurement Cost" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "FabricationRate,FabricationTotalCost", HeaderText = "Fabrication" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "SurfaceTreatmentRate,SurfaceTreatmentCost", HeaderText = "Surface Treat(E.P)" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "MachiningCostPerHour,TotalMachiningCost", HeaderText = "Machining" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "OthersRate,OthersQty,Others_BO", HeaderText = "Others / B.O" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "RawMaterialRate,RawMaterialCost", HeaderText = "Raw Material" });
+            sfDataGrid1.StackedHeaderRows.Add(stackedHeaderRow);
 
             foreach (var column in sfDataGrid1.Columns)
             {
+                //column.HeaderStyle.BackColor = Color.SlateBlue;
+                //column.HeaderStyle.TextColor = Color.White; // Optional: Set text color
+                //column.HeaderStyle.Font.Bold = true; // Optional: Make header text bold
                 if (!column.AllowEditing)
                 {
                     column.CellStyle.BackColor = Color.LightGray;
@@ -115,7 +148,7 @@ namespace DetailsView
             #endregion
 
             #region childGrid
-            SfDataGrid childGrid = new SfDataGrid();           
+            SfDataGrid childGrid = new SfDataGrid();
             childGrid.ValidationMode = GridValidationMode.InEdit;
             childGrid.AddNewRowInitiating += ChildGrid_AddNewRowInitiating;
             childGrid.AddNewRowPosition = Syncfusion.WinForms.DataGrid.Enums.RowPosition.Top;
@@ -126,27 +159,49 @@ namespace DetailsView
             nfi.NumberDecimalDigits = 0;
             nfi.NumberGroupSizes = new int[] { };
 
-            childGrid.Columns.Add(new GridTextColumn { MappingName = "ProcessID", HeaderText = "Process ID", AllowEditing = false });
-            childGrid.Columns.Add(new GridComboBoxColumn { MappingName = "ProcessTypeID", HeaderText = "Process Name", ValueMember = "ProcessTypeID", DisplayMember = "ProcessTypeName", IDataSourceSelector = new ProcessTypeDataSourceSelector() });
+            childGrid.Columns.Add(new GridTextColumn { MappingName = "ProcessID", HeaderText = "ID", AllowEditing = false });
+            childGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
+            childGrid.Columns.Add(new GridComboBoxColumn { MappingName = "ProcessTypeID", HeaderText = "Name", ValueMember = "ProcessTypeID", DisplayMember = "ProcessTypeName", IDataSourceSelector = new ProcessTypeDataSourceSelector() });
             childGrid.Columns.Add(new GridComboBoxColumn { MappingName = "ToolTypeID", HeaderText = "Tool Type", ValueMember = "ToolTypeID", DisplayMember = "ToolTypeName", IDataSourceSelector = new ToolTypeDataSourceSelector() });
             childGrid.Columns.Add(new GridComboBoxColumn { MappingName = "ToolSurfaceID", HeaderText = "Rough / Finish", ValueMember = "ToolSurfaceID", DisplayMember = "ToolSurfaceName", IDataSourceSelector = new ToolSurfaceDataSourceSelector() });
-            childGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
-            childGrid.Columns.Add(new GridNumericColumn { MappingName = "CuttingSpeed", HeaderText = "Cutting Speed" });
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "CuttingSpeed", HeaderText = "Cutting Speed (S)" });
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "DrillSize", HeaderText = "Drill Size (D)" });
+
             childGrid.Columns.Add(new GridNumericColumn { MappingName = "FeedRate", HeaderText = "Feed Rate (f) in mm/rev" });
-            childGrid.Columns.Add(new GridNumericColumn { MappingName = "DrillSize", HeaderText = "Drill Size" });
-            childGrid.Columns.Add(new GridNumericColumn { MappingName = "ThreadDiameterToCut", HeaderText = "Diameter of the thread to cut" });
-            childGrid.Columns.Add(new GridNumericColumn { MappingName = "ThreadPitch", HeaderText = "Pitch" });
-            childGrid.Columns.Add(new GridNumericColumn { MappingName = "DiameterBeforeTurning", HeaderText = "Diameter of stock before turning" });
-            childGrid.Columns.Add(new GridNumericColumn { MappingName = "DiameterAfterTurning", HeaderText = "Diameter of job after turning" });
-            childGrid.Columns.Add(new GridNumericColumn { MappingName = "RPM", HeaderText = "RPM", AllowEditing = false });
-            childGrid.Columns.Add(new GridNumericColumn { MappingName = "DepthOfCutEachPass", HeaderText = "Depth of Cut for Each Pass" });
+
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "DiameterBeforeTurning", HeaderText = "Diameter of stock before turning (D)" });
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "DiameterAfterTurning", HeaderText = "Diameter of job after turning (d)" });
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "DepthOfCutEachPass", HeaderText = "Depth of Cut for Each Pass in mm (dc)" });
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalDepthOfCut", HeaderText = "Total depth of cut (td)" });
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "LengthOfCut", HeaderText = "Length of the cut in mm (L)" });
+
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "ThreadDiameterToCut", HeaderText = "Diameter of the thread to cut (D)" });
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "ThreadPitch", HeaderText = "Pitch (P)" });
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "LengthOfThreadToCut", HeaderText = "Length of thread to cut in mm (L)" });
+
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "LengthOfHoleToDrill", HeaderText = "Length of hole to drill in mm (L)" });
+
             childGrid.Columns.Add(new GridNumericColumn { MappingName = "NoOfCuts", HeaderText = "Number of Cuts", AllowEditing = false });
-            childGrid.Columns.Add(new GridNumericColumn { MappingName = "LengthOfCut", HeaderText = "Length of the cut in mm" });
+
+            childGrid.Columns.Add(new GridNumericColumn { MappingName = "RPM", HeaderText = "RPM (N)", AllowEditing = false });
+
             childGrid.Columns.Add(new GridNumericColumn { MappingName = "MachiningTime", HeaderText = "Machining Time in minutes", AllowEditing = false });
             childGrid.Columns.Add(new GridNumericColumn { MappingName = "MachiningCost", HeaderText = "Machining Cost", AllowEditing = false });
 
+            StackedHeaderRow childGridStackedHeaderRow = new StackedHeaderRow();
+            childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ProcessID,ComponentID,ProcessTypeID", HeaderText = "Operation" });
+            childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ToolTypeID,ToolSurfaceID,CuttingSpeed,DrillSize", HeaderText = "Tool Details" });
+            childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "DiameterBeforeTurning,DiameterAfterTurning,DepthOfCutEachPass,TotalDepthOfCut,LengthOfCut", HeaderText = "Turning Inputs" });
+            childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ThreadDiameterToCut,ThreadPitch,LengthOfThreadToCut", HeaderText = "Threading inputs" });
+            childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "LengthOfHoleToDrill", HeaderText = "Drilling Inputs" });
+
+            childGrid.StackedHeaderRows.Add(childGridStackedHeaderRow);
+
             foreach (var column in childGrid.Columns)
             {
+                //column.HeaderStyle.BackColor = Color.LightSteelBlue;
+                //column.HeaderStyle.TextColor = Color.White; // Optional: Set text color
+                //column.HeaderStyle.Font.Bold = true; // Optional: Make header text bold
                 if (!column.AllowEditing)
                 {
                     column.CellStyle.BackColor = Color.LightGray;
@@ -179,62 +234,110 @@ namespace DetailsView
 
             if (component != null)
             {
+                CalculateNetWeight(component);
+                CalculatePerimeter(component);
+
                 component.BendTotalCost = component.NoOfBend * component.BendRate;
                 component.FabricationTotalCost = component.FabricationRate * component.NetWeight;
-                component.LaserCost = (component.Perimeter * 0.06M * component.Thickness) + (component.NoOfStart * 1 * component.Thickness);
+                if(component.NoOfStart > 0)
+                {
+                    component.LaserCost = (component.Perimeter * 0.06M * component.Thickness) + (component.NoOfStart * 1 * component.Thickness);
+                }
+                else
+                {
+                    component.LaserCost = 0;
+                }
+                
                 component.GrossWeight = component.NetWeight * 1.2M;
                 component.SurfaceTreatmentCost = component.SurfaceTreatmentRate * component.NetWeight;
                 component.Others_BO = component.OthersRate * component.OthersQty;
-                component.LabourCostPerPart = component.BendTotalCost + component.FabricationTotalCost + component.LaserCost + component.SurfaceTreatmentCost + component.Others_BO + component.GrindingCost + component.MachiningCost;
+                if (e.PropertyName == nameof(Component.MachiningCostPerHour))
+                {
+                    component.LstProcess.ForEach(p => p.MachiningCost = p.MachiningTime * 60 * component.MachiningCostPerHour);
+                    component.RecalculateMachiningCost();
+                }
+                component.LabourCostPerPart = component.BendTotalCost + component.FabricationTotalCost + component.LaserCost + component.SurfaceTreatmentCost + component.Others_BO + component.GrindingCost + component.TotalMachiningCost;
                 component.RawMaterialCost = component.NetWeight * component.RawMaterialRate;
                 component.TotalCostPerPart = component.LabourCostPerPart + component.RawMaterialCost;
                 component.TotalCost = component.TotalCostPerPart * component.Qty;
+            }
+        }
 
-                switch (component.MaterialTypeID)
-                {
-                    case 1:
-                        component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
-                        component.Perimeter = 2 * (component.Length + component.Width);
-                        break;
-                    case 2:
-                        component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
-                        component.Perimeter = 2 * (component.Length + component.Width);
-                        break;
-                    case 3:
-                        component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
-                        component.Perimeter = 2 * (component.Length + component.Width);
-                        break;
-                    case 4:
-                        component.NetWeight = (component.Side1 * component.Thickness * component.Length * 0.00000786M) + (component.Side2 * component.Thickness * component.Length * 0.00000786M);
-                        component.Perimeter = component.Side1 + component.Side2;
-                        break;
-                    case 5:
-                        component.NetWeight = 0.7854M * component.Diameter * component.Diameter * component.Length * 0.00000786M;
-                        component.Perimeter = 3.1416M * component.Diameter;
-                        break;
-                    case 6:
-                        component.NetWeight = (0.7854M * component.OD * component.OD * component.Length * 0.00000786M) - (0.7854M * component.ID * component.ID * component.Length * 0.00000786M);
-                        component.Perimeter = 3.1416M * component.OD;
-                        break;
-                    case 7:
-                        component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
-                        component.Perimeter = 2 * (component.Length + component.Width);
-                        break;
-                    case 8:
-                        component.NetWeight = (component.Side1 * component.Side2 * component.Length * 0.00000786M) - ((component.Side1 - 2 * component.Thickness) * (component.Side2 - 2 * component.Thickness) * component.Length * 0.00000786M);
-                        component.Perimeter = 2 * (component.Side1 + component.Side2);
-                        break;
-                    case 9:
-                        component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
-                        component.Perimeter = 2 * (component.Length + component.Width);
-                        break;
-                    case 10:
-                        component.NetWeight = (component.Side1 * component.Side2 * component.Length * 0.00000786M) - ((component.Side1 - 2 * component.Thickness) * (component.Side2 - 2 * component.Thickness) * component.Length * 0.00000786M);
-                        component.Perimeter = 2 * (component.Side1 + component.Side2);
-                        break;
-                    default:                     
-                        break;
-                }
+        private static void CalculateNetWeight(Component component)
+        {
+            switch (component.MaterialTypeID)
+            {
+                case 1:
+                    component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
+                    break;
+                case 2:
+                    component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
+                    break;
+                case 3:
+                    component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
+                    break;
+                case 4:
+                    component.NetWeight = (component.Side1 * component.Thickness * component.Length * 0.00000786M) + (component.Side2 * component.Thickness * component.Length * 0.00000786M);
+                    break;
+                case 5:
+                    component.NetWeight = 0.7854M * component.Diameter * component.Diameter * component.Length * 0.00000786M;
+                    break;
+                case 6:
+                    component.NetWeight = (0.7854M * component.OD * component.OD * component.Length * 0.00000786M) - (0.7854M * component.ID * component.ID * component.Length * 0.00000786M);
+                    break;
+                case 7:
+                    component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
+                    break;
+                case 8:
+                    component.NetWeight = (component.Side1 * component.Side2 * component.Length * 0.00000786M) - ((component.Side1 - 2 * component.Thickness) * (component.Side2 - 2 * component.Thickness) * component.Length * 0.00000786M);
+                    break;
+                case 9:
+                    component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
+                    break;
+                case 10:
+                    component.NetWeight = (component.Side1 * component.Side2 * component.Length * 0.00000786M) - ((component.Side1 - 2 * component.Thickness) * (component.Side2 - 2 * component.Thickness) * component.Length * 0.00000786M);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private static void CalculatePerimeter(Component component)
+        {
+            switch (component.MaterialTypeID)
+            {
+                case 1:
+                    component.Perimeter = 2 * (component.Length + component.Width);
+                    break;
+                case 2:
+                    component.Perimeter = 2 * (component.Length + component.Width);
+                    break;
+                case 3:
+                    component.Perimeter = 2 * (component.Length + component.Width);
+                    break;
+                case 4:
+                    component.Perimeter = component.Side1 + component.Side2;
+                    break;
+                case 5:
+                    component.Perimeter = 3.1416M * component.Diameter;
+                    break;
+                case 6:
+                    component.Perimeter = 3.1416M * component.OD;
+                    break;
+                case 7:
+                    component.Perimeter = 2 * (component.Length + component.Width);
+                    break;
+                case 8:
+                    component.Perimeter = 2 * (component.Side1 + component.Side2);
+                    break;
+                case 9:
+                    component.Perimeter = 2 * (component.Length + component.Width);
+                    break;
+                case 10:
+                    component.Perimeter = 2 * (component.Side1 + component.Side2);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -269,7 +372,7 @@ namespace DetailsView
             {
                 foreach (Process newProcess in e.NewItems)
                 {
-                    UpdateMachiningCost(newProcess);
+                    newProcess.Component.RecalculateMachiningCost();
                 }
             }
 
@@ -297,34 +400,155 @@ namespace DetailsView
             var process = sender as Process;
             if (process != null)
             {
-                //decimal MachingCostPerHour = GetMachiningCostPerHour(process);
-                if (process.ThreadPitch != 0) {
-                    process.NoOfCuts = 25 / (10 / process.ThreadPitch);
-                }
-                process.Average = process.DiameterBeforeTurning + (process.DiameterAfterTurning / 2);
-                if(process.Average != 0)
+                switch (process.ProcessTypeID)
                 {
-                    process.RPM = 1000 * process.CuttingSpeed / (3.14M * process.Average);
-                }
-                if(process.FeedRate != 0 && process.RPM != 0)
-                {
-                    process.MachiningTime = (process.LengthOfCut * process.NoOfCuts) / (process.FeedRate * process.RPM);
-                }
-                process.MachiningCost = process.MachiningTime * 60 * process.Component.MachiningCost;
-                
-                switch(process.ProcessTypeID)
-                {
-                    case 1:
-                        break;
                     case 2:
+                        CalculateRPMForFaceTurning(process);
+                        CalculateMachiningTimeForFaceTurning(process);
                         break;
+                    case 1:               
                     case 3:
+                    case 4:
+                        CalculateRPMForTurning(process);
+                        CalculateNoOfCutForTurning(process);
+                        CalculateMachiningTimeForTurning(process);
                         break;
-                    
+                    case 5:
+                        CalculateRPMForDrilling(process);
+                        CalculateMachingTimeForDrilling(process);
+                        break;
+                    case 6:
+                        CalculateRPMForThreading(process);
+                        CalculateNoOfCutForThreading(process);
+                        CalculateMachingTimeForThreading(process);
+                        break;
                     default:
                         break;
                 }
-                UpdateMachiningCost(process);
+
+                process.MachiningCost = (process.MachiningTime * process.Component.MachiningCostPerHour) / 60;
+                process.Component.RecalculateMachiningCost();
+            }
+        }
+
+        private void CalculateNoOfCutForTurning(Process process)
+        {
+            if (process.DepthOfCutEachPass != 0)
+            {
+                process.NoOfCuts = process.TotalDepthOfCut / process.DepthOfCutEachPass;
+            }
+            else
+            {
+                process.NoOfCuts = 0;
+            }
+        }
+
+        private void CalculateNoOfCutForThreading(Process process)
+        {
+            if (process.ThreadPitch != 0)
+            {
+                process.NoOfCuts = 25 / (10 / process.ThreadPitch);
+            }
+            else
+            {
+                process.NoOfCuts = 0;
+            }
+        }
+
+        private static void CalculateMachiningTimeForTurning(Process process)
+        {
+            if (process.FeedRate != 0 && process.RPM != 0)
+            {
+                process.MachiningTime = (process.LengthOfCut * process.NoOfCuts) / (process.FeedRate * process.RPM);
+            }
+            else
+            {
+                process.MachiningTime = 0;
+            }
+        }
+
+        private static void CalculateMachiningTimeForFaceTurning(Process process)
+        {
+            if (process.FeedRate != 0 && process.RPM != 0)
+            {
+                process.MachiningTime = (process.LengthOfCut) / (process.FeedRate * process.RPM);
+            }
+            else
+            {
+                process.MachiningTime = 0;
+            }
+        }
+
+        private static void CalculateMachingTimeForDrilling(Process process)
+        {
+            if (process.FeedRate != 0 && process.RPM != 0)
+            {
+                process.MachiningTime = process.LengthOfHoleToDrill / (process.FeedRate * process.RPM);
+            }
+            else
+            {
+                process.MachiningTime = 0;
+            }
+        }
+
+        private static void CalculateMachingTimeForThreading(Process process)
+        {
+            if (process.FeedRate != 0 && process.RPM != 0)
+            {
+                process.MachiningTime = (process.LengthOfThreadToCut * process.NoOfCuts) / (process.FeedRate * process.RPM);
+            }
+            else
+            {
+                process.MachiningTime = 0;
+            }
+        }
+
+        private static void CalculateRPMForTurning(Process process)
+        {
+            process.Average = process.DiameterBeforeTurning + (process.DiameterAfterTurning / 2);
+            if (process.Average != 0)
+            {
+                process.RPM = 1000 * process.CuttingSpeed / (3.14M * process.Average);
+            }
+            else
+            {
+                process.RPM = 0;
+            }
+        }
+
+        private static void CalculateRPMForFaceTurning(Process process)
+        {
+            if (process.DiameterBeforeTurning != 0)
+            {
+                process.RPM = 1000 * process.CuttingSpeed / (3.14M * process.DiameterBeforeTurning);
+            }
+            else
+            {
+                process.RPM = 0;
+            }
+        }
+
+        private static void CalculateRPMForDrilling(Process process)
+        {
+            if (process.DrillSize != 0)
+            {
+                process.RPM = 1000 * process.CuttingSpeed / (3.14M * process.DrillSize);
+            }
+            else
+            {
+                process.RPM = 0;
+            }
+        }
+
+        private static void CalculateRPMForThreading(Process process)
+        {
+            if (process.ThreadDiameterToCut != 0)
+            {
+                process.RPM = 1000 * process.CuttingSpeed / (3.14M * process.ThreadDiameterToCut);
+            }
+            else
+            {
+                process.RPM = 0;
             }
         }
 
@@ -335,25 +559,15 @@ namespace DetailsView
             var component = allComponent.FirstOrDefault(c => c.ComponentID == process.ComponentID);
             return component == null ? 0 : component.MachiningCostPerHour;
         }
-
-        private void UpdateMachiningCost(Process process)
-        {
-            // Find the parent component and update its MachiningCost
-            var allComponent = sfDataGrid1.DataSource as ObservableCollection<Component>;
-            var component = allComponent.FirstOrDefault(c => c.ComponentID == process.ComponentID);
-            if (component != null)
-            {
-                component.CalculateMachiningCost();
-            }
-        }
         #endregion
 
         #region New row event in Master and Detail
         private void SfDataGrid1_AddNewRowInitiating(object sender, Syncfusion.WinForms.DataGrid.Events.AddNewRowInitiatingEventArgs e)
         {
             ObservableCollection<Component> lstComponent = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<Component>;
-            var component = new Component { 
-                ComponentID = lstComponent == null ? 1 : lstComponent.Count + 1 ,
+            var component = new Component
+            {
+                ComponentID = lstComponent == null ? 1 : lstComponent.Count + 1,
                 MaterialTypeID = 1,
                 MaterialID = 1,
                 MachiningCostPerHour = 300,
@@ -371,12 +585,12 @@ namespace DetailsView
                 ProcessID = lstProcess == null ? 1 : lstProcess.Count + 1,
                 ComponentID = lstProcess[0].ComponentID,
                 Component = lstProcess[0].Component,
-                ProcessTypeID = 1,
-                ToolTypeID = 1,
-                ToolSurfaceID = 1,
-                CuttingSpeed = 40,
-                FeedRate = 1.3M,
-                DepthOfCutEachPass = 3.5M
+                //ProcessTypeID = 1,
+                //ToolTypeID = 1,
+                //ToolSurfaceID = 1,
+                //CuttingSpeed = 40,
+                //FeedRate = 1.3M,
+                //DepthOfCutEachPass = 3.5M
             };
             process.PropertyChanged += Process_PropertyChanged;
 
@@ -388,8 +602,12 @@ namespace DetailsView
         #region Styling event in Master and Detail
         private void SfDataGrid1_QueryCellStyle(object sender, Syncfusion.WinForms.DataGrid.Events.QueryCellStyleEventArgs e)
         {
+
+
             if (e.RowIndex < 0 || e.ColumnIndex < 0)
                 return;
+
+
 
             if (e.DataRow.RowType == RowType.DefaultRow)
             {
@@ -424,7 +642,8 @@ namespace DetailsView
             if (this.sfDataGrid1.IsAddNewRowIndex(e.DataRow.RowIndex))
             {
                 var data = e.DataRow.RowData as Component;
-                if (data.MaterialTypeID < 1) {
+                if (data.MaterialTypeID < 1)
+                {
                     e.IsValid = false;
                     e.ErrorMessage = "Material Type is required.";
 

@@ -47,7 +47,7 @@ namespace DetailsView.Data
         private decimal _rawMaterialCost;
         private decimal _totalCostPerPart;
         private decimal _totalCost;
-        private decimal _machingCost;
+        private decimal _totalMachiningCost;
         private decimal _machiningCostPerHour;
 
         private ObservableCollection<Process> _lstProcess;
@@ -70,12 +70,12 @@ namespace DetailsView.Data
                     {
                         ComponentID = value,
                         ProcessID = 1,
-                        ProcessTypeID = 1,
-                        ToolTypeID = 1,
-                        ToolSurfaceID = 1,
-                        CuttingSpeed = 40,
-                        FeedRate = 1.3M,
-                        DepthOfCutEachPass = 3.5M,
+                        //ProcessTypeID = 1,
+                        //ToolTypeID = 1,
+                        //ToolSurfaceID = 1,
+                        //CuttingSpeed = 40,
+                        //FeedRate = 1.3M,
+                        //DepthOfCutEachPass = 3.5M,
                         Component = this
                     });
                 };
@@ -258,6 +258,17 @@ namespace DetailsView.Data
             {
                 _perimeter = value;
                 RaisePropertyChanged(nameof(Perimeter));
+            }
+        }
+
+        [Display(Name = "Total Machining Cost")]
+        public decimal TotalMachiningCost
+        {
+            get => _totalMachiningCost;
+            set
+            {
+                _totalMachiningCost = value;
+                RaisePropertyChanged(nameof(_totalMachiningCost));
             }
         }
 
@@ -459,17 +470,6 @@ namespace DetailsView.Data
             }
         }
 
-        [Display(Name = "Machining Cost")]
-        public decimal MachiningCost
-        {
-            get => _machingCost;
-            set
-            {
-                _machingCost = value;
-                RaisePropertyChanged(nameof(MachiningCost));
-            }
-        }
-
         [Display(Name = "Machining Cost Per hour")]
         public decimal MachiningCostPerHour
         {
@@ -505,208 +505,190 @@ namespace DetailsView.Data
                 string result = string.Empty;
                 switch (columnName)
                 {
-                    case nameof(ComponentName):
-                        break;
-                    case nameof(MaterialID):
-                        if (MaterialID <= 0)
-                        {
-                            result = "Material is required.";
-                        }
-                        break;
-                    case nameof(MaterialTypeID):
-                        if (MaterialTypeID <= 0)
-                        {
-                            result = "Material Type is required.";
-                        }
-                        break;
-                    case nameof(Qty):
-                        if (Qty <= 0)
-                        {
-                            result = "Quantity must be greater than zero.";
-                        }
-                        break;
-                    case nameof(Length):
-                        if (Length <= 0)
-                        {
-                            result = "Length must be greater than zero.";
-                        }
-                        break;
-                    case nameof(Width):
-                        if (Width <= 0)
-                        {
-                            result = "Width must be greater than zero.";
-                        }
-                        break;
-                    case nameof(Thickness):
-                        if (Thickness <= 0)
-                        {
-                            result = "Thickness must be greater than zero.";
-                        }
-                        break;
-                    case nameof(Diameter):
-                        if (Diameter <= 0)
-                        {
-                            result = "Diameter must be greater than zero.";
-                        }
-                        break;
-                    case nameof(OD):
-                        if (OD <= 0)
-                        {
-                            result = "Outer Diameter must be greater than zero.";
-                        }
-                        break;
-                    case nameof(ID):
-                        if (ID <= 0)
-                        {
-                            result = "Inner Diameter must be greater than zero.";
-                        }
-                        break;
-                    case nameof(Side1):
-                        if (Side1 <= 0)
-                        {
-                            result = "Side 1 must be greater than zero.";
-                        }
-                        break;
-                    case nameof(Side2):
-                        if (Side2 <= 0)
-                        {
-                            result = "Side 2 must be greater than zero.";
-                        }
-                        break;
-                    case nameof(NetWeight):
-                        if (NetWeight <= 0)
-                        {
-                            result = "Net Weight must be greater than zero.";
-                        }
-                        break;
-                    case nameof(GrossWeight):
-                        if (GrossWeight <= 0)
-                        {
-                            result = "Gross Weight must be greater than zero.";
-                        }
-                        break;
-                    case nameof(Perimeter):
-                        if (Perimeter <= 0)
-                        {
-                            result = "Perimeter must be greater than zero.";
-                        }
-                        break;
-                    case nameof(BendRate):
-                        if (BendRate <= 0)
-                        {
-                            result = "Bending Rate must be greater than zero.";
-                        }
-                        break;
-                    case nameof(FabricationRate):
-                        if (FabricationRate <= 0)
-                        {
-                            result = "Fabrication Rate must be greater than zero.";
-                        }
-                        break;
-                    case nameof(NoOfStart):
-                        if (NoOfStart <= 0)
-                        {
-                            result = "Number of Start must be greater than zero.";
-                        }
-                        break;
-                    case nameof(LaserCost):
-                        if (LaserCost <= 0)
-                        {
-                            result = "Laser Cost must be greater than zero.";
-                        }
-                        break;
-                    case nameof(NoOfBend):
-                        if (NoOfBend <= 0)
-                        {
-                            result = "Number of Bend must be greater than zero.";
-                        }
-                        break;
-                    case nameof(BendTotalCost):
-                        if (BendTotalCost <= 0)
-                        {
-                            result = "Bending Total Cost must be greater than zero.";
-                        }
-                        break;
-                    case nameof(ProcurementCost):
-                        if (ProcurementCost <= 0)
-                        {
-                            result = "Procurement Cost must be greater than zero.";
-                        }
-                        break;
-                    case nameof(FabricationTotalCost):
-                        if (FabricationTotalCost <= 0)
-                        {
-                            result = "Fabrication Total Cost must be greater than zero.";
-                        }
-                        break;
-                    case nameof(SurfaceTreatmentCost):
-                        if (SurfaceTreatmentCost <= 0)
-                        {
-                            result = "Surface Treatment Cost must be greater than zero.";
-                        }
-                        break;
-                    case nameof(SurfaceTreatmentRate):
-                        if (SurfaceTreatmentRate <= 0)
-                        {
-                            result = "Surface Treatment Rate must be greater than zero.";
-                        }
-                        break;
-                    case nameof(Others_BO):
-                        if (Others_BO <= 0)
-                        {
-                            result = "Others/B.O must be greater than zero.";
-                        }
-                        break;
-                    case nameof(OthersRate):
-                        if (OthersRate <= 0)
-                        {
-                            result = "Others Rate must be greater than zero.";
-                        }
-                        break;
-                    case nameof(OthersQty):
-                        if (OthersQty <= 0)
-                        {
-                            result = "Others Quantity must be greater than zero.";
-                        }
-                        break;
-                    case nameof(GrindingCost):
-                        if (GrindingCost <= 0)
-                        {
-                            result = "Grinding Cost must be greater than zero.";
-                        }
-                        break;
-                    case nameof(RawMaterialRate):
-                        if (RawMaterialRate <= 0)
-                        {
-                            result = "Raw Material Rate must be greater than zero.";
-                        }
-                        break;
-                    case nameof(LabourCostPerPart):
-                        if (LabourCostPerPart <= 0)
-                        {
-                            result = "Labour Cost Per Part must be greater than zero.";
-                        }
-                        break;
-                    case nameof(RawMaterialCost):
-                        if (RawMaterialCost <= 0)
-                        {
-                            result = "Raw Material Cost must be greater than zero.";
-                        }
-                        break;
-                    case nameof(TotalCostPerPart):
-                        if (TotalCostPerPart <= 0)
-                        {
-                            result = "Total Cost Per Part must be greater than zero.";
-                        }
-                        break;
-                    case nameof(MachiningCost):
-                        break;
-                    case nameof(MachiningCostPerHour):
-                        if (MachiningCostPerHour <= 0)
-                        {
-                            result = "Machining Cost Per Hour must be greater than zero.";
-                        }
-                        break;
+                    //case nameof(ComponentName):
+                    //    break;
+                    //case nameof(MaterialID):
+                    //    if (MaterialID <= 0)
+                    //    {
+                    //        result = "Material is required.";
+                    //    }
+                    //    break;
+                    //case nameof(MaterialTypeID):
+                    //    if (MaterialTypeID <= 0)
+                    //    {
+                    //        result = "Material Type is required.";
+                    //    }
+                    //    break;
+                    //case nameof(Qty):
+                    //    if (Qty <= 0)
+                    //    {
+                    //        result = "Quantity must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(Length):
+                    //    if (Qty > 0 && Length <= 0)
+                    //    {
+                    //        result = "Length must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(Width):
+                    //    if (Width <= 0)
+                    //    {
+                    //        result = "Width must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(Thickness):
+                    //    if (Thickness <= 0)
+                    //    {
+                    //        result = "Thickness must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(Diameter):
+                    //    if (Diameter <= 0)
+                    //    {
+                    //        result = "Diameter must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(OD):
+                    //    if (OD <= 0)
+                    //    {
+                    //        result = "Outer Diameter must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(ID):
+                    //    if (ID <= 0)
+                    //    {
+                    //        result = "Inner Diameter must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(Side1):
+                    //    if (Side1 <= 0)
+                    //    {
+                    //        result = "Side 1 must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(Side2):
+                    //    if (Side2 <= 0)
+                    //    {
+                    //        result = "Side 2 must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(NetWeight):
+                    //    if (NetWeight <= 0)
+                    //    {
+                    //        result = "Net Weight must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(GrossWeight):
+                    //    if (GrossWeight <= 0)
+                    //    {
+                    //        result = "Gross Weight must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(Perimeter):
+                    //    if (Perimeter <= 0)
+                    //    {
+                    //        result = "Perimeter must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(BendRate):
+                    //    if (BendRate <= 0)
+                    //    {
+                    //        result = "Bending Rate must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(FabricationRate):
+                    //    if (FabricationRate <= 0)
+                    //    {
+                    //        result = "Fabrication Rate must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(NoOfStart):
+                    //    if (NoOfStart <= 0)
+                    //    {
+                    //        result = "Number of Start must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(LaserCost):
+                    //    if (LaserCost <= 0)
+                    //    {
+                    //        result = "Laser Cost must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(NoOfBend):
+                    //    if (NoOfBend <= 0)
+                    //    {
+                    //        result = "Number of Bend must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(BendTotalCost):
+                    //    if (BendTotalCost <= 0)
+                    //    {
+                    //        result = "Bending Total Cost must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(ProcurementCost):
+                    //    if (ProcurementCost <= 0)
+                    //    {
+                    //        result = "Procurement Cost must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(FabricationTotalCost):
+                    //    if (FabricationTotalCost <= 0)
+                    //    {
+                    //        result = "Fabrication Total Cost must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(SurfaceTreatmentCost):
+                    //    if (SurfaceTreatmentCost <= 0)
+                    //    {
+                    //        result = "Surface Treatment Cost must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(SurfaceTreatmentRate):
+                    //    if (SurfaceTreatmentRate <= 0)
+                    //    {
+                    //        result = "Surface Treatment Rate must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(GrindingCost):
+                    //    if (GrindingCost <= 0)
+                    //    {
+                    //        result = "Grinding Cost must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(RawMaterialRate):
+                    //    if (RawMaterialRate <= 0)
+                    //    {
+                    //        result = "Raw Material Rate must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(LabourCostPerPart):
+                    //    if (LabourCostPerPart <= 0)
+                    //    {
+                    //        result = "Labour Cost Per Part must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(RawMaterialCost):
+                    //    if (RawMaterialCost <= 0)
+                    //    {
+                    //        result = "Raw Material Cost must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(TotalCostPerPart):
+                    //    if (TotalCostPerPart <= 0)
+                    //    {
+                    //        result = "Total Cost Per Part must be greater than zero.";
+                    //    }
+                    //    break;
+                    //case nameof(TotalMachiningCost):
+                    //    break;
+                    //case nameof(MachiningCostPerHour):
+                    //    if (MachiningCostPerHour <= 0)
+                    //    {
+                    //        result = "Machining Cost Per Hour must be greater than zero.";
+                    //    }
+                    //    break;
                 }
                 return result;
             }
@@ -717,9 +699,14 @@ namespace DetailsView.Data
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        internal void CalculateMachiningCost()
+        internal void RecalculateMachiningCost()
         {
-            //throw new NotImplementedException();
+            decimal machiningCost = 0;
+            foreach (var process in LstProcess)
+            {
+                machiningCost += process.MachiningCost;
+            }
+            TotalMachiningCost = machiningCost;
         }
     }
 }
