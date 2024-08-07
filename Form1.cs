@@ -62,9 +62,28 @@ namespace DetailsView
             sfDataGrid1.DataSource = lstComponent;
             sfDataGrid1.AllowGrouping = true;
             sfDataGrid1.ShowGroupDropArea = true;
+            sfDataGrid1.AllowDeleting = true;
             sfDataGrid1.AddNewRowInitiating += SfDataGrid1_AddNewRowInitiating;
             sfDataGrid1.QueryCellStyle += SfDataGrid1_QueryCellStyle;
             sfDataGrid1.RowValidating += SfDataGrid1_RowValidating;
+            sfDataGrid1.RecordDeleting += (sender, e) =>
+            {
+                if (lstComponent.Count == 1)
+                {
+                    MessageBox.Show("Atleast one component is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    e.Cancel = true; // Cancel the deletion
+                }
+                else
+                {
+                    var component = e.Items[0] as Component;
+                    if (component != null)
+                    {
+                        component.PropertyChanged -= Component_PropertyChanged;
+                        component.LstProcess.CollectionChanged -= LstProcess_CollectionChanged;
+                        component.LstProcess?.ForEach(p => p.PropertyChanged -= Process_PropertyChanged);
+                    }
+                }
+            };
             sfDataGrid1.ShowRowHeaderErrorIcon = true;
             sfDataGrid1.ValidationMode = GridValidationMode.InEdit;
             sfDataGrid1.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
@@ -153,8 +172,24 @@ namespace DetailsView
             childGrid.AddNewRowInitiating += ChildGrid_AddNewRowInitiating;
             childGrid.AddNewRowPosition = Syncfusion.WinForms.DataGrid.Enums.RowPosition.Top;
             childGrid.AutoGenerateColumns = false;
+            childGrid.AllowDeleting = true;
             childGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(21.0f);
             childGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
+            childGrid.RecordDeleting += (sender, e) =>
+            {
+                var process = e.Items[0] as Process;
+
+                if (process != null && process.Component.LstProcess.Count == 1)
+                {
+                    MessageBox.Show("Atleast one process is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    e.Cancel = true; // Cancel the deletion
+                }
+                else
+                {
+                    process.PropertyChanged -= Process_PropertyChanged;
+                }
+            };
+
             NumberFormatInfo nfi = new NumberFormatInfo();
             nfi.NumberDecimalDigits = 0;
             nfi.NumberGroupSizes = new int[] { };
@@ -239,7 +274,7 @@ namespace DetailsView
 
                 component.BendTotalCost = component.NoOfBend * component.BendRate;
                 component.FabricationTotalCost = component.FabricationRate * component.NetWeight;
-                if(component.NoOfStart > 0)
+                if (component.NoOfStart > 0)
                 {
                     component.LaserCost = (component.Perimeter * 0.06M * component.Thickness) + (component.NoOfStart * 1 * component.Thickness);
                 }
@@ -247,7 +282,7 @@ namespace DetailsView
                 {
                     component.LaserCost = 0;
                 }
-                
+
                 component.GrossWeight = component.NetWeight * 1.2M;
                 component.SurfaceTreatmentCost = component.SurfaceTreatmentRate * component.NetWeight;
                 component.Others_BO = component.OthersRate * component.OthersQty;
@@ -406,7 +441,7 @@ namespace DetailsView
                         CalculateRPMForFaceTurning(process);
                         CalculateMachiningTimeForFaceTurning(process);
                         break;
-                    case 1:               
+                    case 1:
                     case 3:
                     case 4:
                         CalculateRPMForTurning(process);
@@ -567,7 +602,7 @@ namespace DetailsView
             ObservableCollection<Component> lstComponent = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<Component>;
             var component = new Component
             {
-                ComponentID = lstComponent == null ? 1 : lstComponent.Count + 1,
+                ComponentID = lstComponent == null ? 1 : lstComponent.Max(x => x.ComponentID) + 1,
                 MaterialTypeID = 1,
                 MaterialID = 1,
                 MachiningCostPerHour = 300,
@@ -582,7 +617,7 @@ namespace DetailsView
             ObservableCollection<Process> lstProcess = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<Process>;
             var process = new Process
             {
-                ProcessID = lstProcess == null ? 1 : lstProcess.Count + 1,
+                ProcessID = lstProcess == null ? 1 : lstProcess.Max(x => x.ProcessID) + 1,
                 ComponentID = lstProcess[0].ComponentID,
                 Component = lstProcess[0].Component,
                 //ProcessTypeID = 1,
