@@ -59,6 +59,7 @@ namespace DetailsView
             #endregion
 
             #region sfDataGrid1
+            sfDataGrid1.EditMode = EditMode.SingleClick;
             sfDataGrid1.AutoGenerateColumns = false;
             sfDataGrid1.DataSource = lstComponent;
             sfDataGrid1.AllowGrouping = true;
@@ -170,6 +171,7 @@ namespace DetailsView
 
             #region childGrid
             SfDataGrid childGrid = new SfDataGrid();
+            childGrid.EditMode = EditMode.SingleClick;
             childGrid.ValidationMode = GridValidationMode.InEdit;
             childGrid.AddNewRowInitiating += ChildGrid_AddNewRowInitiating;
             childGrid.AddNewRowPosition = Syncfusion.WinForms.DataGrid.Enums.RowPosition.Top;
@@ -290,7 +292,7 @@ namespace DetailsView
                 component.Others_BO = component.OthersRate * component.OthersQty;
                 if (e.PropertyName == nameof(Component.MachiningCostPerHour))
                 {
-                    component.LstProcess.ForEach(p => p.MachiningCost = p.MachiningTime * 60 * component.MachiningCostPerHour);
+                    component.LstProcess.ForEach(p => p.MachiningCost = (p.MachiningTime * component.MachiningCostPerHour / 60));
                     component.RecalculateMachiningCost();
                 }
                 component.LabourCostPerPart = component.BendTotalCost + component.FabricationTotalCost + component.LaserCost + component.SurfaceTreatmentCost + component.Others_BO + component.GrindingCost + component.TotalMachiningCost;
@@ -611,6 +613,7 @@ namespace DetailsView
             };
             component.PropertyChanged += Component_PropertyChanged;
             component.LstProcess.CollectionChanged += LstProcess_CollectionChanged;
+            component.LstProcess?.ForEach(p => p.PropertyChanged += Process_PropertyChanged);
             e.NewObject = component;
         }
 
@@ -671,6 +674,7 @@ namespace DetailsView
             }
 
         }
+
         #endregion
 
         #region Row valiation event in Master and Detail
