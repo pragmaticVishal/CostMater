@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace DetailsView.Data
 {
@@ -34,15 +35,15 @@ namespace DetailsView.Data
         private decimal _lengthOfHoleToDrill;
         private decimal _lengthOfThreadToCut;
         private decimal _machingTime;
+        private decimal _machiningCostPerHour;
         private decimal _machiningCost;
         private decimal _average;
         private Component _component;
         private decimal _totalDepthOfCut;
 
-
         #endregion
 
-        [Display(Name = "Process ID")]
+        [Display(Name = "Component")]
         public Component Component
         {
             get => _component;
@@ -72,6 +73,12 @@ namespace DetailsView.Data
                 _processTypeID = value;
                 RaisePropertyChanged(nameof(ProcessTypeID));
             }
+        }
+
+        [Display(Name = "Drawing / Part No.")]
+        public string DrawingNo
+        {
+            get => Component.DrawingNo;
         }
 
         [Display(Name = "Process Type")]
@@ -315,6 +322,16 @@ namespace DetailsView.Data
             }
         }
 
+        [Display(Name = "Machining Cost Per hour")]
+        public decimal MachiningCostPerHour
+        {
+            get => _machiningCostPerHour;
+            set
+            {
+                _machiningCostPerHour = value;
+                RaisePropertyChanged(nameof(MachiningCostPerHour));
+            }
+        }
 
         [Display(Name = "Machining Cost")]
         public decimal MachiningCost

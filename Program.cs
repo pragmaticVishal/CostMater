@@ -7,6 +7,7 @@
 #endregion
 using DetailsView.Data;
 using Microsoft.Extensions.DependencyInjection;
+using Syncfusion.WinForms.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,12 +25,6 @@ namespace DetailsView
         static void Main()
         {
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NCaF1cWGhIfEx1RHxQdld5ZFRHallYTnNWUj0eQnxTdEFjXn1ZcHBUQ2BeUEV/Xw==");
-            // Set up the DI container
-            //var serviceCollection = new ServiceCollection();
-            //ConfigureServices(serviceCollection);
-
-            // Build the service provider
-            //var serviceProvider = serviceCollection.BuildServiceProvider();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

@@ -1,9 +1,11 @@
-﻿using System;
+﻿using CostMater.Data;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace DetailsView.Data
 {
@@ -11,7 +13,8 @@ namespace DetailsView.Data
     {
         #region Fields
         private int _componentID;
-        private string _componentName;
+        private string _partName;
+        private string _drawingNo;
         private int _materialID;
         private int _materialTypeID;
 
@@ -27,30 +30,27 @@ namespace DetailsView.Data
         private decimal _netWeight;
         private decimal _grossWeight;
         private decimal _perimeter;
-        private decimal _bendRate;
-        private decimal _fabricationRate;
-        private int _noOfStart;
         private decimal _laserCost;
-        private int _noOfBend;
         private decimal _bendTotalCost;
         private decimal _fabricationTotalCost;
 
         private decimal _surfaceTreatmentCost;
-        private decimal _surfaceTreatmentRate;
         private decimal _others_BO;
-        private decimal _othersRate;
-        private decimal _othersQty;
         private decimal _procurementCost;
-        private decimal _grindingCost;
         private decimal _rawMaterialRate;
         private decimal _labourCostPerPart;
         private decimal _rawMaterialCost;
         private decimal _totalCostPerPart;
         private decimal _totalCost;
         private decimal _totalMachiningCost;
-        private decimal _machiningCostPerHour;
+        private decimal _grindingCost;
+        private decimal _drillingCost;
+        private decimal _hardwareCost;
+        private decimal _miscellaneousCost;
 
         private ObservableCollection<Process> _lstProcess;
+        private ObservableCollection<OneTimeOperationDetail> _lstOneTimeOperationDetail;
+        private ObservableCollection<LaserAndBendingDetail> _lstLaserAndBendingDetail;
 
         #endregion
 
@@ -70,28 +70,62 @@ namespace DetailsView.Data
                     {
                         ComponentID = value,
                         ProcessID = 1,
-                        //ProcessTypeID = 1,
-                        //ToolTypeID = 1,
-                        //ToolSurfaceID = 1,
+                        ProcessTypeID = 0,
+                        ToolTypeID = 0,
+                        ToolSurfaceID = 0,
+                        MachiningCostPerHour = 300,
                         //CuttingSpeed = 40,
                         //FeedRate = 1.3M,
                         //DepthOfCutEachPass = 3.5M,
-                        Component = this
+                        Component = this,
                     });
                 };
+                if(_lstOneTimeOperationDetail == null)
+                {
+                    _lstOneTimeOperationDetail = new ObservableCollection<OneTimeOperationDetail>();
+                    _lstOneTimeOperationDetail.Add(new OneTimeOperationDetail()
+                    {
+                        ComponentID = value,
+                        OnetimeOpDetailID = 1,
+                        OneTimeOpItemSelectedID = 0,
+                        Component = this,
+                    });
+                }
+                if(_lstLaserAndBendingDetail == null)
+                {
+                    _lstLaserAndBendingDetail = new ObservableCollection<LaserAndBendingDetail>();
+                    _lstLaserAndBendingDetail.Add(new LaserAndBendingDetail() 
+                    {
+                        ComponentID = value,
+                        LaserAndBendingDetailID = 1,
+                        MaterialShapeSelectedID = 0,
+                        Component = this,
+                    });
+                }
                 _componentID = value;
                 RaisePropertyChanged(nameof(ComponentID));
             }
         }
 
-        [Display(Name = "Component Name")]
-        public string ComponentName
+        [Display(Name = "Part Name")]
+        public string PartName
         {
-            get => _componentName;
+            get => _partName;
             set
             {
-                _componentName = value;
-                RaisePropertyChanged(nameof(ComponentName));
+                _partName = value;
+                RaisePropertyChanged(nameof(PartName));
+            }
+        }
+
+        [Display(Name = "Drawing / Part No.")]
+        public string DrawingNo
+        {
+            get => _drawingNo;
+            set
+            {
+                _drawingNo = value;
+                RaisePropertyChanged(nameof(DrawingNo));
             }
         }
 
@@ -250,17 +284,6 @@ namespace DetailsView.Data
             }
         }
 
-        [Display(Name = "Perimeter")]
-        public decimal Perimeter
-        {
-            get => _perimeter;
-            set
-            {
-                _perimeter = value;
-                RaisePropertyChanged(nameof(Perimeter));
-            }
-        }
-
         [Display(Name = "Total Machining Cost")]
         public decimal TotalMachiningCost
         {
@@ -272,39 +295,6 @@ namespace DetailsView.Data
             }
         }
 
-        [Display(Name = "Bending Rate")]
-        public decimal BendRate
-        {
-            get => _bendRate;
-            set
-            {
-                _bendRate = value;
-                RaisePropertyChanged(nameof(BendRate));
-            }
-        }
-
-        [Display(Name = "Fabrication Rate")]
-        public decimal FabricationRate
-        {
-            get => _fabricationRate;
-            set
-            {
-                _fabricationRate = value;
-                RaisePropertyChanged(nameof(FabricationRate));
-            }
-        }
-
-        [Display(Name = "Number of Start")]
-        public int NoOfStart
-        {
-            get => _noOfStart;
-            set
-            {
-                _noOfStart = value;
-                RaisePropertyChanged(nameof(NoOfStart));
-            }
-        }
-
         [Display(Name = "Laser Cost")]
         public decimal LaserCost
         {
@@ -313,17 +303,6 @@ namespace DetailsView.Data
             {
                 _laserCost = value;
                 RaisePropertyChanged(nameof(LaserCost));
-            }
-        }
-
-        [Display(Name = "Number of Bend")]
-        public int NoOfBend
-        {
-            get => _noOfBend;
-            set
-            {
-                _noOfBend = value;
-                RaisePropertyChanged(nameof(NoOfBend));
             }
         }
 
@@ -371,17 +350,6 @@ namespace DetailsView.Data
             }
         }
 
-        [Display(Name = "Surface Treatment Rate")]
-        public decimal SurfaceTreatmentRate
-        {
-            get => _surfaceTreatmentRate;
-            set
-            {
-                _surfaceTreatmentRate = value;
-                RaisePropertyChanged(nameof(SurfaceTreatmentRate));
-            }
-        }
-
         [Display(Name = "Others/B.O")]
         public decimal Others_BO
         {
@@ -393,28 +361,6 @@ namespace DetailsView.Data
             }
         }
 
-        [Display(Name = "Others Rate")]
-        public decimal OthersRate
-        {
-            get => _othersRate;
-            set
-            {
-                _othersRate = value;
-                RaisePropertyChanged(nameof(OthersRate));
-            }
-        }
-
-        [Display(Name = "Others Quantity")]
-        public decimal OthersQty
-        {
-            get => _othersQty;
-            set
-            {
-                _othersQty = value;
-                RaisePropertyChanged(nameof(OthersQty));
-            }
-        }
-
         [Display(Name = "Grinding Cost")]
         public decimal GrindingCost
         {
@@ -423,6 +369,39 @@ namespace DetailsView.Data
             {
                 _grindingCost = value;
                 RaisePropertyChanged(nameof(GrindingCost));
+            }
+        }
+
+        [Display(Name = "Drilling Cost")]
+        public decimal DrillingCost
+        {
+            get => _drillingCost;
+            set
+            {
+                _drillingCost = value;
+                RaisePropertyChanged(nameof(DrillingCost));
+            }
+        }
+
+        [Display(Name = "Hardware Cost")]
+        public decimal HardwareCost
+        {
+            get => _hardwareCost;
+            set
+            {
+                _hardwareCost = value;
+                RaisePropertyChanged(nameof(HardwareCost));
+            }
+        }
+
+        [Display(Name = "Miscellanous Cost")]
+        public decimal MiscellaneousCost
+        {
+            get => _miscellaneousCost;
+            set
+            {
+                _miscellaneousCost = value;
+                RaisePropertyChanged(nameof(MiscellaneousCost));
             }
         }
 
@@ -470,17 +449,6 @@ namespace DetailsView.Data
             }
         }
 
-        [Display(Name = "Machining Cost Per hour")]
-        public decimal MachiningCostPerHour
-        {
-            get => _machiningCostPerHour;
-            set
-            {
-                _machiningCostPerHour = value;
-                RaisePropertyChanged(nameof(MachiningCostPerHour));
-            }
-        }
-
         public ObservableCollection<Process> LstProcess
         {
             get => _lstProcess;
@@ -488,6 +456,26 @@ namespace DetailsView.Data
             {
                 _lstProcess = value;
                 RaisePropertyChanged(nameof(LstProcess));
+            }
+        }
+
+        public ObservableCollection<OneTimeOperationDetail> LstOneTimeOperationDetail
+        {
+            get => _lstOneTimeOperationDetail;
+            set
+            {
+                _lstOneTimeOperationDetail = value;
+                RaisePropertyChanged(nameof(LstOneTimeOperationDetail));
+            }
+        }
+
+        public ObservableCollection<LaserAndBendingDetail> LstLaserAndBendingDetail
+        {
+            get => _lstLaserAndBendingDetail;
+            set
+            {
+                _lstLaserAndBendingDetail = value;
+                RaisePropertyChanged(nameof(LstLaserAndBendingDetail));
             }
         }
 
@@ -707,6 +695,23 @@ namespace DetailsView.Data
                 machiningCost += process.MachiningCost;
             }
             TotalMachiningCost = machiningCost;
+        }
+
+        internal void RecalculateOneTimeOperationCost()
+        {
+            FabricationTotalCost = LstOneTimeOperationDetail.Where(x=>x.OneTimeOpItemSelectedID == 1).Sum(x=>x.Amount);
+            SurfaceTreatmentCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 2).Sum(x => x.Amount); 
+            GrindingCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 3).Sum(x => x.Amount);
+            ProcurementCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 4).Sum(x => x.Amount);
+            MiscellaneousCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 5).Sum(x => x.Amount);
+            Others_BO = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 6).Sum(x => x.Amount);
+            HardwareCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 7).Sum(x => x.Amount);
+        }
+
+        internal void RecalculateLaserAndBendingCost()
+        {
+            LaserCost = LstLaserAndBendingDetail.Sum(x=>x.LaserCost);
+            BendTotalCost = LstLaserAndBendingDetail.Sum(x=>x.BendTotalCost);
         }
     }
 }

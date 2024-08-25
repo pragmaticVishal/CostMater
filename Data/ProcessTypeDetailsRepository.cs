@@ -12,6 +12,7 @@ namespace DetailsView
         {
             _processTypeDetailsList = new List<ProcessTypeDetails>
             {
+                new ProcessTypeDetails { ProcessTypeID = 0, ProcessTypeName = string.Empty },
                 new ProcessTypeDetails { ProcessTypeID = 1, ProcessTypeName = "Step Turning" },
                 new ProcessTypeDetails { ProcessTypeID = 2, ProcessTypeName = "Face Turning" },
                 new ProcessTypeDetails { ProcessTypeID = 3, ProcessTypeName = "ID Turning" },

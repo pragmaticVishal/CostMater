@@ -12,6 +12,7 @@ namespace DetailsView
         {
             _toolTypeDetailsList = new List<ToolTypeDetails>
             {
+                new ToolTypeDetails { ToolTypeID = 0, ToolTypeName = string.Empty },
                 new ToolTypeDetails { ToolTypeID = 1, ToolTypeName = "HSS" },
                 new ToolTypeDetails { ToolTypeID = 2, ToolTypeName = "Carbide" },
                 new ToolTypeDetails { ToolTypeID = 3, ToolTypeName = "Stellite" }

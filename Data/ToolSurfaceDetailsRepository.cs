@@ -14,6 +14,7 @@ namespace DetailsView.Data
         {
             _toolSurfaceDetailsList = new List<ToolSurfaceDetails>
             {
+                new ToolSurfaceDetails { ToolSurfaceID = 0, ToolSurfaceName = string.Empty },
                 new ToolSurfaceDetails { ToolSurfaceID = 1, ToolSurfaceName = "Rough" },
                 new ToolSurfaceDetails { ToolSurfaceID = 2, ToolSurfaceName = "Finish" }
             };
