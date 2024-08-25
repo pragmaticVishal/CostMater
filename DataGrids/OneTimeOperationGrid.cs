@@ -32,7 +32,6 @@ namespace CostMater.DataGrids
             oneTimeOperationGrid.EditMode = EditMode.SingleClick;
             oneTimeOperationGrid.AddNewRowText = "Click here to add new operation detail";
             oneTimeOperationGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
-            oneTimeOperationGrid.Style.AddNewRowStyle.TextColor = Color.White;
             oneTimeOperationGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             oneTimeOperationGrid.Style.HeaderStyle.Font.Bold = true;
             oneTimeOperationGrid.Style.StackedHeaderStyle.Font.Bold = true;
@@ -53,6 +52,8 @@ namespace CostMater.DataGrids
             };
             oneTimeOperationGrid.RecordDeleting += OneTimeOperationGrid_RecordDeleting;           
             oneTimeOperationGrid.AddNewRowInitiating += OneTimeOperationGrid_AddNewRowInitiating;
+            oneTimeOperationGrid.CurrentCellBeginEdit += OneTimeOperationGrid_CurrentCellBeginEdit;
+            oneTimeOperationGrid.QueryCellStyle += OneTimeOperationGrid_QueryCellStyle;
 
             NumberFormatInfo nfi1 = new NumberFormatInfo();
             nfi1.NumberDecimalDigits = 0;
@@ -74,6 +75,28 @@ namespace CostMater.DataGrids
             }
 
             #endregion
+        }
+
+        private void OneTimeOperationGrid_QueryCellStyle(object sender, Syncfusion.WinForms.DataGrid.Events.QueryCellStyleEventArgs e)
+        {
+            if (e.DataRow.RowType == RowType.DefaultRow)
+            {
+                var oneTimeOperationDetail = e.DataRow.RowData as OneTimeOperationDetail;
+                if (!oneTimeOperationDetail.IsColumnApplicableToOperation(e.Column.MappingName))
+                {
+                    oneTimeOperationDetail.ResetValue(e.Column.MappingName);
+                    e.Style.BackColor = Color.LightGray;
+                }
+            }
+        }
+
+        private void OneTimeOperationGrid_CurrentCellBeginEdit(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellBeginEditEventArgs e)
+        {
+            var oneTimeOperationDetail = e.DataRow.RowData as OneTimeOperationDetail;
+            if (!oneTimeOperationDetail.IsColumnApplicableToOperation(e.DataColumn.GridColumn.MappingName))
+            {
+                e.Cancel = true;
+            }
         }
 
         private void OneTimeOperationGrid_RecordDeleting(object sender, Syncfusion.WinForms.DataGrid.Events.RecordDeletingEventArgs e)

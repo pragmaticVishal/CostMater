@@ -713,5 +713,90 @@ namespace DetailsView.Data
             LaserCost = LstLaserAndBendingDetail.Sum(x=>x.LaserCost);
             BendTotalCost = LstLaserAndBendingDetail.Sum(x=>x.BendTotalCost);
         }
+
+        public bool IsSideApplicableToTheShape(string sideName)
+        {
+            bool isSideApplicableToTheShape = true;
+
+            Dictionary<int, List<string>> dctMaterialTypeAllowedSides = new Dictionary<int, List<string>>();
+            List<string> excludedSidesSheet = new List<string>() { nameof(Component.Diameter), nameof(Component.OD),
+                    nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2) };
+
+            List<string> excludedSidesPlate = new List<string>() { nameof(Component.Diameter), nameof(Component.OD),
+                    nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2) };
+
+            List<string> excludedSidesFlat = new List<string>() { nameof(Component.Diameter), nameof(Component.OD),
+                    nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2) };
+
+            List<string> excludedSidesAngle = new List<string>() { nameof(Component.Width), nameof(Component.Diameter),
+                    nameof(Component.OD), nameof(Component.ID) };
+
+            List<string> excludedSidesRoundBar = new List<string>() { nameof(Component.Width), nameof(Component.Thickness),
+                    nameof(Component.OD), nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2)};
+
+            List<string> excludedSidesRoundTube = new List<string>() { nameof(Component.Width), nameof(Component.Thickness),
+                    nameof(Component.Diameter), nameof(Component.Side1), nameof(Component.Side2) };
+
+            List<string> excludedSidesRectBar = new List<string>() { nameof(Component.Diameter), nameof(Component.OD), nameof(Component.ID) };
+
+            List<string> excludedSidesRectTube = new List<string>() {  nameof(Component.Width), nameof(Component.Diameter),
+                    nameof(Component.OD), nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2) };
+
+            List<string> excludedSidesSqBar = new List<string>() { nameof(Component.Diameter), nameof(Component.OD),
+                    nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2) };
+
+            List<string> excludedSidesSqTube = new List<string>() {  nameof(Component.Width), nameof(Component.Diameter),
+                    nameof(Component.OD), nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2) };
+
+            dctMaterialTypeAllowedSides.Add(1, excludedSidesSheet);
+            dctMaterialTypeAllowedSides.Add(2, excludedSidesPlate);
+            dctMaterialTypeAllowedSides.Add(3, excludedSidesFlat);
+            dctMaterialTypeAllowedSides.Add(4, excludedSidesAngle);
+            dctMaterialTypeAllowedSides.Add(5, excludedSidesRoundBar);
+            dctMaterialTypeAllowedSides.Add(6, excludedSidesRoundTube);
+            dctMaterialTypeAllowedSides.Add(7, excludedSidesRectBar);
+            dctMaterialTypeAllowedSides.Add(8, excludedSidesRectTube);
+            dctMaterialTypeAllowedSides.Add(9, excludedSidesSqBar);
+            dctMaterialTypeAllowedSides.Add(10, excludedSidesSqTube);
+
+            if (dctMaterialTypeAllowedSides.ContainsKey(MaterialTypeID) &&
+                dctMaterialTypeAllowedSides[MaterialTypeID].Contains(sideName))
+            {
+                isSideApplicableToTheShape = false;
+            }
+
+            return isSideApplicableToTheShape;
+        }
+
+        public void ResetValue(string mappingName)
+        {
+            switch (mappingName) 
+            {
+                case nameof(Component.Length):
+                    Length = 0;
+                    break;
+                case nameof(Component.Width):
+                    Width = 0;
+                    break;
+                case nameof(Component.Thickness):
+                    Thickness = 0;
+                    break;
+                case nameof(Component.Diameter):
+                    Diameter = 0;
+                    break;
+                case nameof(Component.OD):
+                    OD = 0;
+                    break;
+                case nameof(Component.ID):
+                    ID = 0;
+                    break;
+                case nameof(Component.Side1):
+                    Side1 = 0;
+                    break;
+                case nameof(Component.Side2):
+                    Side2 = 0;
+                    break;
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@ using DetailsView.Data;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
+using Syncfusion.WinForms.DataGrid.Events;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,7 +32,6 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.EditMode = EditMode.SingleClick;
             laserAndBendingDetailGrid.AddNewRowText = "Click here to add new laser and bending detail";
             laserAndBendingDetailGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
-            laserAndBendingDetailGrid.Style.AddNewRowStyle.TextColor = Color.White;
             laserAndBendingDetailGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             laserAndBendingDetailGrid.Style.HeaderStyle.Font.Bold = true;
             laserAndBendingDetailGrid.Style.StackedHeaderStyle.Font.Bold = true;
@@ -49,9 +49,14 @@ namespace CostMater.DataGrids
 
             laserAndBendingDetailGrid.RecordDeleting += LaserAndBendingDetailGrid_RecordDeleting;
             laserAndBendingDetailGrid.AddNewRowInitiating += LaserAndBendingDetailGrid_AddNewRowInitiating;
-            //laserAndBendingDetailGrid.View.RecordPropertyChanged += View_RecordPropertyChanged;
+            laserAndBendingDetailGrid.CellComboBoxSelectionChanged += LaserAndBendingDetailGrid_CellComboBoxSelectionChanged;
+            laserAndBendingDetailGrid.CurrentCellBeginEdit += LaserAndBendingDetailGrid_CurrentCellBeginEdit;
+            laserAndBendingDetailGrid.QueryCellStyle += LaserAndBendingDetailGrid_QueryCellStyle;
+            //laserAndBendingDetailGrid.RowValidating += LaserAndBendingDetailGrid_RowValidating;
+            //laserAndBendingDetailGrid.CurrentCellValidating += LaserAndBendingDetailGrid_CurrentCellValidating;
 
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "OperationName", HeaderText = "Operation", AllowEditing = false });
+            laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "LaserAndBendingDetailID", HeaderText = "Laser ID", AllowEditing = false });
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "DrawingNo", HeaderText = "Drawing / Part No.", AllowEditing = false });
             laserAndBendingDetailGrid.Columns.Add(new GridComboBoxColumn { MappingName = "MaterialShapeSelectedID", HeaderText = "Material Shape", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new MaterialShapeList() });
@@ -85,11 +90,99 @@ namespace CostMater.DataGrids
             #endregion
         }
 
-        private void View_RecordPropertyChanged(object sender, PropertyChangedEventArgs e)
+        //private void LaserAndBendingDetailGrid_CurrentCellValidating(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellValidatingEventArgs e)
+        //{
+        //    var laserAndBendingDetail = e.RowData as LaserAndBendingDetail;
+        //    if (!e.IsValid)
+        //        return;
+        //    if (e.Column.MappingName == "MaterialShapeSelectedID")
+        //    {
+        //        switch (laserAndBendingDetail.MaterialShapeSelectedID)
+        //        {
+        //            case 1:
+        //                if (laserAndBendingDetail.Length > 2 || laserAndBendingDetail.Length < 1)
+        //                {
+        //                    e.IsValid = false;
+        //                    e.ErrorMessage += "1. Length shall be between 1 and 2 \n";
+        //                }
+        //                if (laserAndBendingDetail.Width > 2 || laserAndBendingDetail.Width < 1)
+        //                {
+        //                    e.IsValid = false;
+        //                    e.ErrorMessage += "2. Width shall be between 1 and 2 \n";
+        //                }
+        //                if (laserAndBendingDetail.Thickness > 2 || laserAndBendingDetail.Thickness < 1)
+        //                {
+        //                    e.IsValid = false;
+        //                    e.ErrorMessage += "3. Length shall be between 1 and 2";
+        //                }
+        //                MessageBox.Show(e.ErrorMessage);
+        //                break;
+        //        }
+        //    }
+        //}
+
+        //private void LaserAndBendingDetailGrid_RowValidating(object sender, Syncfusion.WinForms.DataGrid.Events.RowValidatingEventArgs e)
+        //{
+            //var laserAndBendingDetail = e.DataRow.RowData as LaserAndBendingDetail;
+            //if (!e.IsValid)
+            //    return;
+            //switch (laserAndBendingDetail.MaterialShapeSelectedID)
+            //{
+            //    case 1:
+            //        if(laserAndBendingDetail.Length > 2 || laserAndBendingDetail.Length < 1)
+            //        {
+            //            e.IsValid = false;
+            //            e.ErrorMessage += "1. Length shall be between 1 and 2 \n";
+            //        }
+            //        if (laserAndBendingDetail.Width > 2 || laserAndBendingDetail.Width < 1)
+            //        {
+            //            e.IsValid = false;
+            //            e.ErrorMessage += "2. Width shall be between 1 and 2 \n";
+            //        }
+            //        if (laserAndBendingDetail.Thickness > 2 || laserAndBendingDetail.Thickness < 1)
+            //        {
+            //            e.IsValid = false;
+            //            e.ErrorMessage += "3. Length shall be between 1 and 2";
+            //        }
+            //        MessageBox.Show(e.ErrorMessage);
+            //        break;
+            //}
+        //}
+
+        private void LaserAndBendingDetailGrid_QueryCellStyle(object sender, Syncfusion.WinForms.DataGrid.Events.QueryCellStyleEventArgs e)
         {
-            if(e.PropertyName == "MaterialShapeSelectedID")
+            if(e.DataRow.RowType == RowType.DefaultRow)
             {
-                laserAndBendingDetailGrid.View.PropertyChanged -= View_RecordPropertyChanged;
+                var laserAndBendingDetail = e.DataRow.RowData as LaserAndBendingDetail;
+                if(!laserAndBendingDetail.IsSideApplicableToTheShape(e.Column.MappingName))
+                {
+                    laserAndBendingDetail.ResetValue(e.Column.MappingName);
+                    e.Style.BackColor = Color.LightGray;
+                }
+            }
+        }      
+
+        private void LaserAndBendingDetailGrid_CurrentCellBeginEdit(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellBeginEditEventArgs e)
+        {
+            var laserAndBendingDetail = e.DataRow.RowData as LaserAndBendingDetail;
+            if (!laserAndBendingDetail.IsSideApplicableToTheShape(e.DataColumn.GridColumn.MappingName))
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void LaserAndBendingDetailGrid_CellComboBoxSelectionChanged(object sender, Syncfusion.WinForms.DataGrid.Events.CellComboBoxSelectionChangedEventArgs e)
+        {
+            if (e.GridColumn.MappingName == "MaterialShapeSelectedID")
+            {
+                var materialShapeItem = e.SelectedItem as MaterialShapeItem;
+                var row = e.Record as LaserAndBendingDetail;
+                switch (materialShapeItem.ID)
+                {
+                    case 1:
+                        row.Diameter = 0;
+                        break;
+                }
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using DetailsView.Data;
+﻿using CostMater.Data;
+using DetailsView.Data;
 using Syncfusion.Data.Extensions;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
@@ -48,7 +49,6 @@ namespace CostMater.DataGrids
             _componentGrid.EditMode = EditMode.SingleClick;
             _componentGrid.AddNewRowText = "Click here to add new component detail";
             _componentGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
-            _componentGrid.Style.AddNewRowStyle.TextColor = Color.White;
             _componentGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             _componentGrid.Style.HeaderStyle.Font.Bold = true;
             _componentGrid.Style.StackedHeaderStyle.Font.Bold = true;
@@ -64,6 +64,7 @@ namespace CostMater.DataGrids
             _componentGrid.AllowDeleting = true;
             _componentGrid.AddNewRowInitiating += ComponentGrid_AddNewRowInitiating;
             _componentGrid.QueryCellStyle += ComponentGrid_QueryCellStyle;
+            _componentGrid.CurrentCellBeginEdit += _componentGrid_CurrentCellBeginEdit;
             _componentGrid.RowValidating += ComponentGrid_RowValidating;
             _componentGrid.RecordDeleting += (sender, e) =>
             {
@@ -174,6 +175,15 @@ namespace CostMater.DataGrids
             #endregion
         }
 
+        private void _componentGrid_CurrentCellBeginEdit(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellBeginEditEventArgs e)
+        {
+            var component = e.DataRow.RowData as Component;
+            if (!component.IsSideApplicableToTheShape(e.DataColumn.GridColumn.MappingName))
+            {
+                e.Cancel = true;
+            }
+        }
+
         private void ComponentGrid_AddNewRowInitiating(object sender, Syncfusion.WinForms.DataGrid.Events.AddNewRowInitiatingEventArgs e)
         {
             ObservableCollection<Component> lstComponent = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<Component>;
@@ -261,33 +271,18 @@ namespace CostMater.DataGrids
         #region Styling event in Master and Detail
         private void ComponentGrid_QueryCellStyle(object sender, Syncfusion.WinForms.DataGrid.Events.QueryCellStyleEventArgs e)
         {
-            if (e.RowIndex < 0 || e.ColumnIndex < 0)
+            if (e.Column == null)
                 return;
 
             if (e.DataRow.RowType == RowType.DefaultRow)
             {
-                var dataRow = e.DataRow.RowData as Component;
-                //if (dataRow != null && dataRow.MaterialTypeID != null && e.Column != null)
-                //{
-                //    if (dataRow.MaterialTypeID == 10 || dataRow.MaterialTypeID == 11 || dataRow.MaterialTypeID == 12)
-                //    {
-                //        if (e.Column.MappingName == "Length" || e.Column.MappingName == "Width" || e.Column.MappingName == "Thickness" || e.Column.MappingName == "Diameter")
-                //        {
-                //            e.Style.BackColor = Color.LightGray;
-                //            e.Column.AllowEditing = false;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        if (e.Column.MappingName == "Length" || e.Column.MappingName == "Width" || e.Column.MappingName == "Thickness" || e.Column.MappingName == "Diameter")
-                //        {
-                //            e.Style.BackColor = Color.White;
-                //            e.Column.AllowEditing = true;
-                //        }
-                //    }
-                //}
+                var component = e.DataRow.RowData as Component;
+                if (!component.IsSideApplicableToTheShape(e.Column.MappingName))
+                {
+                    component.ResetValue(e.Column.MappingName);
+                    e.Style.BackColor = Color.LightGray;
+                }
             }
-
         }
 
         #endregion

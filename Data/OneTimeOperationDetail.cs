@@ -119,5 +119,46 @@ namespace CostMater.Data
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        internal void ResetValue(string mappingName)
+        {
+            switch (mappingName)
+            {
+                case nameof(OneTimeOperationDetail.Qty):
+                    Qty = 0;
+                    break;
+                case nameof(OneTimeOperationDetail.Rate):
+                    Rate = 0;
+                    break;
+            }
+        }
+
+        internal bool IsColumnApplicableToOperation(string columnName)
+        {
+            bool isColumnApplicableToOperation = true;
+
+            Dictionary<int, List<string>> dctOperationExcludedColumns = new Dictionary<int, List<string>>();
+            List<string> excludedColumnsQty = new List<string>() { nameof(OneTimeOperationDetail.Qty) };
+            List<string> excludedColumnsQtyRate = new List<string>() { nameof(OneTimeOperationDetail.Qty), nameof(OneTimeOperationDetail.Rate) };
+            List<string> excludedColumnsQtyAmt = new List<string>() { nameof(OneTimeOperationDetail.Qty), nameof(OneTimeOperationDetail.Amount) };
+            List<string> excludedColumnsAmt = new List<string>() { nameof(OneTimeOperationDetail.Amount) };
+
+            dctOperationExcludedColumns.Add(1, excludedColumnsQtyAmt);
+            dctOperationExcludedColumns.Add(2, excludedColumnsQtyAmt);
+            dctOperationExcludedColumns.Add(3, excludedColumnsQtyAmt);
+            dctOperationExcludedColumns.Add(4, excludedColumnsQtyRate);
+            dctOperationExcludedColumns.Add(5, excludedColumnsQtyRate);
+            dctOperationExcludedColumns.Add(6, excludedColumnsAmt);
+            dctOperationExcludedColumns.Add(7, excludedColumnsQtyRate);
+            
+
+            if (dctOperationExcludedColumns.ContainsKey(OneTimeOpItemSelectedID) &&
+                dctOperationExcludedColumns[OneTimeOpItemSelectedID].Contains(columnName))
+            {
+                isColumnApplicableToOperation = false;
+            }
+
+            return isColumnApplicableToOperation;
+        }
     }
 }

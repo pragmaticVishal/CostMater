@@ -34,7 +34,6 @@ namespace CostMater.DataGrids
             machiningGrid.EditMode = EditMode.SingleClick;
             machiningGrid.AddNewRowText = "Click here to add new machining detail";
             machiningGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
-            machiningGrid.Style.AddNewRowStyle.TextColor = Color.White;
             machiningGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             machiningGrid.Style.HeaderStyle.Font.Bold = true;
             machiningGrid.Style.StackedHeaderStyle.Font.Bold = true;
