@@ -13,15 +13,15 @@ namespace DetailsView
             _materialTypeDetailsList = new List<MaterialTypeDetails>
             {
                 new MaterialTypeDetails { MaterialTypeID = 1, MaterialTypeName = "Sheet" },
-                new MaterialTypeDetails { MaterialTypeID = 3, MaterialTypeName = "Plate" },
-                new MaterialTypeDetails { MaterialTypeID = 4, MaterialTypeName = "Flat" },
-                new MaterialTypeDetails { MaterialTypeID = 5, MaterialTypeName = "Angle" },
-                new MaterialTypeDetails { MaterialTypeID = 6, MaterialTypeName = "Round Bar" },
-                new MaterialTypeDetails { MaterialTypeID = 7, MaterialTypeName = "Round Tube" },
-                new MaterialTypeDetails { MaterialTypeID = 8, MaterialTypeName = "Rectangular Bar" },
-                new MaterialTypeDetails { MaterialTypeID = 9, MaterialTypeName = "Rectangular Tube" },
-                new MaterialTypeDetails { MaterialTypeID = 10, MaterialTypeName = "Square Bar" },
-                new MaterialTypeDetails { MaterialTypeID = 11, MaterialTypeName = "Square Tube" },
+                new MaterialTypeDetails { MaterialTypeID = 2, MaterialTypeName = "Plate" },
+                new MaterialTypeDetails { MaterialTypeID = 3, MaterialTypeName = "Flat" },
+                new MaterialTypeDetails { MaterialTypeID = 4, MaterialTypeName = "Angle" },
+                new MaterialTypeDetails { MaterialTypeID = 5, MaterialTypeName = "Round Bar" },
+                new MaterialTypeDetails { MaterialTypeID = 6, MaterialTypeName = "Round Tube" },
+                new MaterialTypeDetails { MaterialTypeID = 7, MaterialTypeName = "Rectangular Bar" },
+                new MaterialTypeDetails { MaterialTypeID = 8, MaterialTypeName = "Rectangular Tube" },
+                new MaterialTypeDetails { MaterialTypeID = 9, MaterialTypeName = "Square Bar" },
+                new MaterialTypeDetails { MaterialTypeID = 10, MaterialTypeName = "Square Tube" },
             };
         }
 
