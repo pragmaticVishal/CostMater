@@ -49,10 +49,9 @@ namespace CostMater.DataGrids
 
             laserAndBendingDetailGrid.RecordDeleting += LaserAndBendingDetailGrid_RecordDeleting;
             laserAndBendingDetailGrid.AddNewRowInitiating += LaserAndBendingDetailGrid_AddNewRowInitiating;
-            laserAndBendingDetailGrid.CellComboBoxSelectionChanged += LaserAndBendingDetailGrid_CellComboBoxSelectionChanged;
             laserAndBendingDetailGrid.CurrentCellBeginEdit += LaserAndBendingDetailGrid_CurrentCellBeginEdit;
             laserAndBendingDetailGrid.QueryCellStyle += LaserAndBendingDetailGrid_QueryCellStyle;
-            //laserAndBendingDetailGrid.RowValidating += LaserAndBendingDetailGrid_RowValidating;
+            laserAndBendingDetailGrid.RowValidating += LaserAndBendingDetailGrid_RowValidating;
             //laserAndBendingDetailGrid.CurrentCellValidating += LaserAndBendingDetailGrid_CurrentCellValidating;
 
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "OperationName", HeaderText = "Operation", AllowEditing = false });
@@ -115,39 +114,23 @@ namespace CostMater.DataGrids
         //                    e.IsValid = false;
         //                    e.ErrorMessage += "3. Length shall be between 1 and 2";
         //                }
-        //                MessageBox.Show(e.ErrorMessage);
         //                break;
         //        }
         //    }
         //}
 
-        //private void LaserAndBendingDetailGrid_RowValidating(object sender, Syncfusion.WinForms.DataGrid.Events.RowValidatingEventArgs e)
-        //{
-            //var laserAndBendingDetail = e.DataRow.RowData as LaserAndBendingDetail;
-            //if (!e.IsValid)
-            //    return;
-            //switch (laserAndBendingDetail.MaterialShapeSelectedID)
-            //{
-            //    case 1:
-            //        if(laserAndBendingDetail.Length > 2 || laserAndBendingDetail.Length < 1)
-            //        {
-            //            e.IsValid = false;
-            //            e.ErrorMessage += "1. Length shall be between 1 and 2 \n";
-            //        }
-            //        if (laserAndBendingDetail.Width > 2 || laserAndBendingDetail.Width < 1)
-            //        {
-            //            e.IsValid = false;
-            //            e.ErrorMessage += "2. Width shall be between 1 and 2 \n";
-            //        }
-            //        if (laserAndBendingDetail.Thickness > 2 || laserAndBendingDetail.Thickness < 1)
-            //        {
-            //            e.IsValid = false;
-            //            e.ErrorMessage += "3. Length shall be between 1 and 2";
-            //        }
-            //        MessageBox.Show(e.ErrorMessage);
-            //        break;
-            //}
-        //}
+        private void LaserAndBendingDetailGrid_RowValidating(object sender, Syncfusion.WinForms.DataGrid.Events.RowValidatingEventArgs e)
+        {
+            var laserAndBendingDetail = e.DataRow.RowData as LaserAndBendingDetail;
+            
+            foreach(var column in laserAndBendingDetailGrid.Columns)
+            {
+                if (!laserAndBendingDetail.IsSideApplicableToTheShape(column.MappingName))
+                {
+                    laserAndBendingDetail.ResetValue(column.MappingName);
+                }
+            }
+        }
 
         private void LaserAndBendingDetailGrid_QueryCellStyle(object sender, Syncfusion.WinForms.DataGrid.Events.QueryCellStyleEventArgs e)
         {
@@ -156,7 +139,6 @@ namespace CostMater.DataGrids
                 var laserAndBendingDetail = e.DataRow.RowData as LaserAndBendingDetail;
                 if(!laserAndBendingDetail.IsSideApplicableToTheShape(e.Column.MappingName))
                 {
-                    laserAndBendingDetail.ResetValue(e.Column.MappingName);
                     e.Style.BackColor = Color.LightGray;
                 }
             }
@@ -171,28 +153,13 @@ namespace CostMater.DataGrids
             }
         }
 
-        private void LaserAndBendingDetailGrid_CellComboBoxSelectionChanged(object sender, Syncfusion.WinForms.DataGrid.Events.CellComboBoxSelectionChangedEventArgs e)
-        {
-            if (e.GridColumn.MappingName == "MaterialShapeSelectedID")
-            {
-                var materialShapeItem = e.SelectedItem as MaterialShapeItem;
-                var row = e.Record as LaserAndBendingDetail;
-                switch (materialShapeItem.ID)
-                {
-                    case 1:
-                        row.Diameter = 0;
-                        break;
-                }
-            }
-        }
-
         private void LaserAndBendingDetailGrid_RecordDeleting(object sender, Syncfusion.WinForms.DataGrid.Events.RecordDeletingEventArgs e)
         {
             var laserAndBendingDetail = e.Items[0] as LaserAndBendingDetail;
 
-            if (laserAndBendingDetail != null && laserAndBendingDetail.Component.LstOneTimeOperationDetail.Count == 1)
+            if (laserAndBendingDetail != null && laserAndBendingDetail.Component.LstLaserAndBendingDetail.Count == 1)
             {
-                MessageBox.Show("Atleast one operation is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBoxAdv.Show("Atleast one operation is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 e.Cancel = true; // Cancel the deletion
             }
             else
@@ -225,9 +192,9 @@ namespace CostMater.DataGrids
 
             if (e.OldItems != null)
             {
-                foreach (OneTimeOperationDetail oneTimeOperationDetail in e.OldItems)
+                foreach (LaserAndBendingDetail laserAndBendingDetail in e.OldItems)
                 {
-                    oneTimeOperationDetail.PropertyChanged -= OneTimeOperationGrid.OneTimeOperation_PropertyChanged;
+                    laserAndBendingDetail.PropertyChanged -= LaserAndBendingDetailGrid.LaserAndBendingDetail_PropertyChanged;
                 }
             }
         }
@@ -299,7 +266,7 @@ namespace CostMater.DataGrids
             laserAndBendingDetail.BendTotalCost = laserAndBendingDetail.NoOfBend * laserAndBendingDetail.BendRate;
             if (laserAndBendingDetail.NoOfStart > 0)
             {
-                laserAndBendingDetail.LaserCost = (laserAndBendingDetail.Perimeter * 0.06M * laserAndBendingDetail.Thickness) + (laserAndBendingDetail.NoOfStart * 1 * laserAndBendingDetail.Thickness);
+                laserAndBendingDetail.LaserCost = laserAndBendingDetail.Qty * ((laserAndBendingDetail.Perimeter * 0.06M * laserAndBendingDetail.Thickness) + (laserAndBendingDetail.NoOfStart * 1 * laserAndBendingDetail.Thickness));
             }
             else
             {

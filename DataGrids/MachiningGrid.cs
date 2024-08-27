@@ -1,4 +1,5 @@
-﻿using DetailsView.Data;
+﻿using CostMater.Data;
+using DetailsView.Data;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
@@ -49,6 +50,9 @@ namespace CostMater.DataGrids
             machiningGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
             machiningGrid.AddNewRowInitiating += MachiningGrid_AddNewRowInitiating;
             machiningGrid.RecordDeleting += MachiningGrid_RecordDeleting;
+            machiningGrid.CurrentCellBeginEdit += MachiningGrid_CurrentCellBeginEdit;
+            machiningGrid.QueryCellStyle += MachiningGrid_QueryCellStyle;
+            machiningGrid.RowValidating += MachiningGrid_RowValidating;
 
             NumberFormatInfo nfi = new NumberFormatInfo();
             nfi.NumberDecimalDigits = 0;
@@ -108,13 +112,47 @@ namespace CostMater.DataGrids
             #endregion
         }
 
+        private void MachiningGrid_RowValidating(object sender, Syncfusion.WinForms.DataGrid.Events.RowValidatingEventArgs e)
+        {
+            var machingOperation = e.DataRow.RowData as Process;
+
+            foreach (var column in machiningGrid.Columns)
+            {
+                if (!machingOperation.IsColumnApplicableToOperation(column.MappingName))
+                {
+                    machingOperation.ResetValue(column.MappingName);
+                }
+            }
+        }
+
+        private void MachiningGrid_QueryCellStyle(object sender, Syncfusion.WinForms.DataGrid.Events.QueryCellStyleEventArgs e)
+        {
+            if (e.DataRow.RowType == RowType.DefaultRow)
+            {
+                var machingOperation = e.DataRow.RowData as Process;
+                if (!machingOperation.IsColumnApplicableToOperation(e.Column.MappingName))
+                {
+                    e.Style.BackColor = Color.LightGray;
+                }
+            }
+        }
+
+        private void MachiningGrid_CurrentCellBeginEdit(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellBeginEditEventArgs e)
+        {
+            var machingOperation = e.DataRow.RowData as Process;
+            if (!machingOperation.IsColumnApplicableToOperation(e.DataColumn.GridColumn.MappingName))
+            {
+                e.Cancel = true;
+            }
+        }
+
         private void MachiningGrid_RecordDeleting(object sender, Syncfusion.WinForms.DataGrid.Events.RecordDeletingEventArgs e)
         {
             var process = e.Items[0] as Process;
 
             if (process != null && process.Component.LstProcess.Count == 1)
             {
-                MessageBox.Show("Atleast one process is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBoxAdv.Show("Atleast one process is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 e.Cancel = true; // Cancel the deletion
             }
             else

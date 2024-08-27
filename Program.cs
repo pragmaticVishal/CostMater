@@ -7,6 +7,7 @@
 #endregion
 using DetailsView.Data;
 using Microsoft.Extensions.DependencyInjection;
+using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.Controls;
 using System;
 using System.Collections.Generic;
@@ -25,16 +26,22 @@ namespace DetailsView
         static void Main()
         {
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NCaF1cWGhIfEx1RHxQdld5ZFRHallYTnNWUj0eQnxTdEFjXn1ZcHBUQ2BeUEV/Xw==");
+            Application.ThreadException += Application_ThreadException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
         }
 
-        //private static void ConfigureServices(IServiceCollection services)
-        //{
-        //    // Register IComponentRepository as a singleton
-        //    services.AddSingleton<IComponentRepository, ComponentRepository>();
-        //}
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            MessageBoxAdv.Show((e.ExceptionObject as Exception).Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+        {
+            MessageBoxAdv.Show(e.Exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 	
 	/// <summary>

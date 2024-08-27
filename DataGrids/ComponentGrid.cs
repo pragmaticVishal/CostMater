@@ -70,7 +70,7 @@ namespace CostMater.DataGrids
             {
                 if (_lstComponent.Count == 1)
                 {
-                    MessageBox.Show("Atleast one component is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBoxAdv.Show("Atleast one component is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     e.Cancel = true; // Cancel the deletion
                 }
                 else
@@ -172,7 +172,40 @@ namespace CostMater.DataGrids
                     column.CellStyle.BackColor = Color.LightGray;
                 }
             }
+
+            ShowSummaryRow();
+            _componentGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
+        }
+
+        public void Reset(ObservableCollection<Component> lstComponent)
+        {
+            _lstComponent = lstComponent;
+            _componentGrid.DataSource = _lstComponent;
+            RegisterCollectionChangedHandlers();
+            RegisterPropertyChangedHandlers();
+        }
+
+        private void ShowSummaryRow()
+        {
+            _componentGrid.TableSummaryRows.Add(new GridTableSummaryRow()
+            {
+                Name = "tableSumamryTrue",
+                ShowSummaryInRow = true,
+                Title = "Total cost for all components : {AllComponentCost}",
+                SummaryColumns = new System.Collections.ObjectModel.ObservableCollection<Syncfusion.Data.ISummaryColumn>()
+                {
+                    new GridSummaryColumn()
+                    {
+                        Name = "AllComponentCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="TotalCost",
+                    }
+                }
+            });
+
+            
         }
 
         private void _componentGrid_CurrentCellBeginEdit(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellBeginEditEventArgs e)
@@ -222,7 +255,7 @@ namespace CostMater.DataGrids
                 CalculateNetWeight(component);
                 component.GrossWeight = component.NetWeight * 1.2M;
                 component.LabourCostPerPart = component.BendTotalCost + component.FabricationTotalCost + component.LaserCost + component.SurfaceTreatmentCost + component.Others_BO + component.GrindingCost + component.TotalMachiningCost;
-                component.RawMaterialCost = component.NetWeight * component.RawMaterialRate;
+                component.RawMaterialCost = component.GrossWeight * component.RawMaterialRate;
                 component.TotalCostPerPart = component.LabourCostPerPart + component.RawMaterialCost + component.HardwareCost + component.MiscellaneousCost;
                 component.TotalCost = component.TotalCostPerPart * component.Qty;
             }
@@ -279,7 +312,6 @@ namespace CostMater.DataGrids
                 var component = e.DataRow.RowData as Component;
                 if (!component.IsSideApplicableToTheShape(e.Column.MappingName))
                 {
-                    component.ResetValue(e.Column.MappingName);
                     e.Style.BackColor = Color.LightGray;
                 }
             }
@@ -290,22 +322,20 @@ namespace CostMater.DataGrids
         #region Row valiation event in Master and Detail
         private void ComponentGrid_RowValidating(object sender, Syncfusion.WinForms.DataGrid.Events.RowValidatingEventArgs e)
         {
-            if (_componentGrid.IsAddNewRowIndex(e.DataRow.RowIndex))
-            {
-                var data = e.DataRow.RowData as Component;
-                if (data.MaterialTypeID < 1)
-                {
-                    e.IsValid = false;
-                    e.ErrorMessage = "Material Type is required.";
+            var component = e.DataRow.RowData as Component;
 
-                    MessageBox.Show("Material Type is required.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            foreach (var column in _componentGrid.Columns)
+            {
+                if (!component.IsSideApplicableToTheShape(column.MappingName))
+                {
+                    component.ResetValue(column.MappingName);
                 }
             }
         }
 
         #endregion
 
-        private void LstComponent_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        public static void LstComponent_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
             {
@@ -327,6 +357,44 @@ namespace CostMater.DataGrids
                     // Handle component removed
                     Console.WriteLine($"Component removed: {oldComponent.ComponentID}");
                 }
+            }
+        }
+
+        internal void RegisterCollectionChangedHandlers()
+        {
+            _lstComponent.CollectionChanged -= ComponentGrid.LstComponent_CollectionChanged;
+            foreach (Component component in _lstComponent)
+            {
+                component.LstProcess.CollectionChanged -= MachiningGrid.LstProcess_CollectionChanged;
+                component.LstOneTimeOperationDetail.CollectionChanged -= OneTimeOperationGrid.LstOneTimeOperation_CollectionChanged;
+                component.LstLaserAndBendingDetail.CollectionChanged -= LaserAndBendingDetailGrid.LstLaserAndBendingDetail_CollectionChanged;
+            }
+
+            _lstComponent.CollectionChanged += ComponentGrid.LstComponent_CollectionChanged;
+            foreach (Component component in _lstComponent)
+            {
+                component.LstProcess.CollectionChanged += MachiningGrid.LstProcess_CollectionChanged;
+                component.LstOneTimeOperationDetail.CollectionChanged += OneTimeOperationGrid.LstOneTimeOperation_CollectionChanged;
+                component.LstLaserAndBendingDetail.CollectionChanged += LaserAndBendingDetailGrid.LstLaserAndBendingDetail_CollectionChanged;
+            }
+        }
+
+        internal void RegisterPropertyChangedHandlers()
+        {
+            foreach (Component component in _lstComponent)
+            {
+                component.PropertyChanged -= Component_PropertyChanged;
+                component.LstProcess?.ForEach(p => p.PropertyChanged -= MachiningGrid.Process_PropertyChanged);
+                component.LstOneTimeOperationDetail?.ForEach(p => p.PropertyChanged -= OneTimeOperationGrid.OneTimeOperation_PropertyChanged);
+                component.LstLaserAndBendingDetail?.ForEach(p => p.PropertyChanged -= LaserAndBendingDetailGrid.LaserAndBendingDetail_PropertyChanged);
+            }
+
+            foreach (Component component in _lstComponent)
+            {
+                component.PropertyChanged += Component_PropertyChanged;
+                component.LstProcess?.ForEach(p => p.PropertyChanged += MachiningGrid.Process_PropertyChanged);
+                component.LstOneTimeOperationDetail?.ForEach(p => p.PropertyChanged += OneTimeOperationGrid.OneTimeOperation_PropertyChanged);
+                component.LstLaserAndBendingDetail?.ForEach(p => p.PropertyChanged += LaserAndBendingDetailGrid.LaserAndBendingDetail_PropertyChanged);
             }
         }
     }

@@ -17,28 +17,32 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
 using Component = DetailsView.Data.Component;
+using Syncfusion.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace DetailsView
 {
     public partial class Form1 : Form
     {
         private string _currentProjectPath = null;
+        public event EventHandler CtrlEPressed;
+        public event EventHandler CtrlOPressed;
+        public event EventHandler CtrlSPressed;
+        private ComponentGrid componentGrid1;
         public Form1()
         {
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
             this.WindowState = FormWindowState.Maximized;
-            SetupDataGrids();
+            CtrlEPressed += Form1_CtrlEPressed;
+            CtrlOPressed += Form1_CtrlOPressed;
+            CtrlSPressed += Form1_CtrlSPressed;
+            SetupDataGrids(new ComponentRepository().GetAll());
         }
 
-        private void SetupDataGrids()
+        private void SetupDataGrids(ObservableCollection<Component> lstComponent)
         {
-            #region Create Datasource
-            ComponentRepository componentRepo = new ComponentRepository();
-            ObservableCollection<Component> lstComponent = componentRepo.GetAll();
-            #endregion
-
-            ComponentGrid componentGrid1 = new ComponentGrid(this.componentGrid, lstComponent);
+            componentGrid1 = new ComponentGrid(this.componentGrid, lstComponent);
             componentGrid1.Setup();
 
             SfDataGrid machiningGrid = new SfDataGrid();
@@ -79,53 +83,84 @@ namespace DetailsView
         {
             if (keyData == (Keys.Control | Keys.E))
             {
-                var options = new ExcelExportingOptions();
-                options.ExcelVersion = ExcelVersion.Excel2013;
-                options.AllowOutlining = true;
-                options.ExportStackedHeaders = true;
-                options.ExportStyle = true;
-                options.ExportBorders = true;
-                var excelEngine = componentGrid.ExportToExcel(componentGrid.View, options);
-                var workBook = excelEngine.Excel.Workbooks[0];
-
-                SaveFileDialog saveFilterDialog = new SaveFileDialog
-                {
-                    FilterIndex = 2,
-                    Filter = "Excel 97 to 2003 Files(*.xls)|*.xls|Excel 2007 to 2010 Files(*.xlsx)|*.xlsx|Excel 2013 File(*.xlsx)|*.xlsx"
-                };
-
-                if (saveFilterDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    using (Stream stream = saveFilterDialog.OpenFile())
-                    {
-                        if (saveFilterDialog.FilterIndex == 1)
-                            workBook.Version = ExcelVersion.Excel97to2003;
-                        else if (saveFilterDialog.FilterIndex == 2)
-                            workBook.Version = ExcelVersion.Excel2010;
-                        else
-                            workBook.Version = ExcelVersion.Excel2013;
-                        workBook.SaveAs(stream);
-                    }
-                    if (MessageBox.Show(this.componentGrid, "Do you want to view the workbook?", "Workbook has been created",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-                    {
-
-                        //Launching the Excel file using the default Application.[MS Excel Or Free ExcelViewer]
-                        Open(saveFilterDialog.FileName);
-                    }
-                }
+                OnCtrlEPressed(EventArgs.Empty);
                 return true; // Indicate that the key press was handled
             }
 
             if (keyData == (Keys.Control | Keys.S))
             {
-                string json = JsonConvert.SerializeObject(this.componentGrid.DataSource as ObservableCollection<Component>,
-                    new JsonSerializerSettings
-                    {
-                        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                        Formatting = Formatting.Indented
-                    });
+                OnCtrlSPressed(EventArgs.Empty);
+                return true;
+            }
 
+            if (keyData == (Keys.Control | Keys.O))
+            {
+                OnCtrlOPressed(EventArgs.Empty);
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void OnCtrlEPressed(EventArgs e)
+        {
+            CtrlEPressed?.Invoke(this, e);
+        }
+
+        private void OnCtrlOPressed(EventArgs e)
+        {
+            CtrlOPressed?.Invoke(this, e);
+        }
+
+        private void OnCtrlSPressed(EventArgs e)
+        {
+            CtrlSPressed?.Invoke(this, e);
+        }
+
+        private void ImportProjectData()
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    Filter = "Costmater files (*.costmater)|*.costmater|All files (*.*)|*.*",
+                    FileName = "ProjectData.costmater"
+                };
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        string jsonContent = File.ReadAllText(openFileDialog.FileName);
+                        ObservableCollection<Component> lstComponent = JsonConvert.DeserializeObject<ObservableCollection<Component>>(jsonContent);
+                        componentGrid1.Reset(lstComponent);
+                        _currentProjectPath = openFileDialog.FileName;
+
+                        MessageBoxAdv.Show("Data imported successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBoxAdv.Show($"Error reading file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBoxAdv.Show(ex.Message);
+            }
+        }
+
+        private void SaveProjectData()
+        {
+            string json = JsonConvert.SerializeObject(this.componentGrid.DataSource as ObservableCollection<Component>,
+                new JsonSerializerSettings
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                });
+
+            try
+            {
                 if (string.IsNullOrEmpty(_currentProjectPath))
                 {
                     SaveFileDialog saveFileDialog = new SaveFileDialog
@@ -139,42 +174,82 @@ namespace DetailsView
                     {
                         _currentProjectPath = saveFileDialog.FileName;
                         File.WriteAllText(saveFileDialog.FileName, json);
-                        MessageBox.Show("Costmater file has been saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBoxAdv.Show("Costmater file has been saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
                 else
                 {
                     File.WriteAllText(_currentProjectPath, json);
-                    MessageBox.Show("Costmater file has been saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBoxAdv.Show("Costmater file has been saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
-
-            if(keyData == (Keys.Control | Keys.O))
+            catch (Exception ex)
             {
-                OpenFileDialog openFileDialog = new OpenFileDialog
+                MessageBoxAdv.Show(ex.Message);
+            }
+        }
+
+        private void ExportExcel()
+        {
+            var options = new ExcelExportingOptions();
+            options.ExcelVersion = ExcelVersion.Excel2013;
+            options.AllowOutlining = true;
+            options.ExportStackedHeaders = true;
+            options.ExportStyle = true;
+            options.ExportBorders = true;
+            var excelEngine = componentGrid.ExportToExcel(componentGrid.View, options);
+            var workBook = excelEngine.Excel.Workbooks[0];
+
+            try
+            {
+                SaveFileDialog saveFilterDialog = new SaveFileDialog
                 {
-                    Filter = "Costmater files (*.costmater)|*.costmater|All files (*.*)|*.*",
-                    FileName = "ProjectData.costmater"
+                    FilterIndex = 2,
+                    Filter = "Excel 97 to 2003 Files(*.xls)|*.xls|Excel 2007 to 2010 Files(*.xlsx)|*.xlsx|Excel 2013 File(*.xlsx)|*.xlsx"
                 };
 
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                if (saveFilterDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    try
-                    {
-                        string jsonContent = File.ReadAllText(openFileDialog.FileName);
-                        this.componentGrid.DataSource = JsonConvert.DeserializeObject<ObservableCollection<Component>>(jsonContent);
-                        _currentProjectPath = openFileDialog.FileName;
 
-                        MessageBox.Show("Data imported successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    catch (Exception ex)
+                    using (Stream stream = saveFilterDialog.OpenFile())
                     {
-                        MessageBox.Show($"Error reading file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        if (saveFilterDialog.FilterIndex == 1)
+                            workBook.Version = ExcelVersion.Excel97to2003;
+                        else if (saveFilterDialog.FilterIndex == 2)
+                            workBook.Version = ExcelVersion.Excel2010;
+                        else
+                            workBook.Version = ExcelVersion.Excel2013;
+                        workBook.SaveAs(stream);
                     }
+                    if (MessageBoxAdv.Show(this.componentGrid, "Do you want to view the workbook?", "Workbook has been created",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                    {
+
+                        //Launching the Excel file using the default Application.[MS Excel Or Free ExcelViewer]
+                        Open(saveFilterDialog.FileName);
+                    }
+
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBoxAdv.Show(ex.Message);
+            }
+        }
 
-            return base.ProcessCmdKey(ref msg, keyData);
+        private void Form1_CtrlSPressed(object sender, EventArgs e)
+        {
+            SaveProjectData();
+        }
+
+        private void Form1_CtrlOPressed(object sender, EventArgs e)
+        {
+            ImportProjectData();
+        }
+
+        private void Form1_CtrlEPressed(object sender, EventArgs e)
+        {
+            ExportExcel();
         }
 
         private void Open(string fileName)

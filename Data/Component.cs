@@ -737,16 +737,17 @@ namespace DetailsView.Data
             List<string> excludedSidesRoundTube = new List<string>() { nameof(Component.Width), nameof(Component.Thickness),
                     nameof(Component.Diameter), nameof(Component.Side1), nameof(Component.Side2) };
 
-            List<string> excludedSidesRectBar = new List<string>() { nameof(Component.Diameter), nameof(Component.OD), nameof(Component.ID) };
+            List<string> excludedSidesRectBar = new List<string>() { nameof(Component.Diameter), nameof(Component.OD), nameof(Component.ID),
+                    nameof(Component.Side1), nameof(Component.Side2)};
 
             List<string> excludedSidesRectTube = new List<string>() {  nameof(Component.Width), nameof(Component.Diameter),
-                    nameof(Component.OD), nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2) };
+                    nameof(Component.OD), nameof(Component.ID) };
 
             List<string> excludedSidesSqBar = new List<string>() { nameof(Component.Diameter), nameof(Component.OD),
                     nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2) };
 
             List<string> excludedSidesSqTube = new List<string>() {  nameof(Component.Width), nameof(Component.Diameter),
-                    nameof(Component.OD), nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2) };
+                    nameof(Component.OD), nameof(Component.ID) };
 
             dctMaterialTypeAllowedSides.Add(1, excludedSidesSheet);
             dctMaterialTypeAllowedSides.Add(2, excludedSidesPlate);

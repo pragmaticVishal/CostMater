@@ -54,6 +54,7 @@ namespace CostMater.DataGrids
             oneTimeOperationGrid.AddNewRowInitiating += OneTimeOperationGrid_AddNewRowInitiating;
             oneTimeOperationGrid.CurrentCellBeginEdit += OneTimeOperationGrid_CurrentCellBeginEdit;
             oneTimeOperationGrid.QueryCellStyle += OneTimeOperationGrid_QueryCellStyle;
+            oneTimeOperationGrid.RowValidating += OneTimeOperationGrid_RowValidating;
 
             NumberFormatInfo nfi1 = new NumberFormatInfo();
             nfi1.NumberDecimalDigits = 0;
@@ -77,6 +78,19 @@ namespace CostMater.DataGrids
             #endregion
         }
 
+        private void OneTimeOperationGrid_RowValidating(object sender, Syncfusion.WinForms.DataGrid.Events.RowValidatingEventArgs e)
+        {
+            var oneTimeOperationDetail = e.DataRow.RowData as OneTimeOperationDetail;
+
+            foreach (var column in oneTimeOperationGrid.Columns)
+            {
+                if (!oneTimeOperationDetail.IsColumnApplicableToOperation(column.MappingName))
+                {
+                    oneTimeOperationDetail.ResetValue(column.MappingName);
+                }
+            }
+        }
+
         private void OneTimeOperationGrid_QueryCellStyle(object sender, Syncfusion.WinForms.DataGrid.Events.QueryCellStyleEventArgs e)
         {
             if (e.DataRow.RowType == RowType.DefaultRow)
@@ -84,7 +98,6 @@ namespace CostMater.DataGrids
                 var oneTimeOperationDetail = e.DataRow.RowData as OneTimeOperationDetail;
                 if (!oneTimeOperationDetail.IsColumnApplicableToOperation(e.Column.MappingName))
                 {
-                    oneTimeOperationDetail.ResetValue(e.Column.MappingName);
                     e.Style.BackColor = Color.LightGray;
                 }
             }
@@ -105,7 +118,7 @@ namespace CostMater.DataGrids
 
             if (oneTimeOperation != null && oneTimeOperation.Component.LstOneTimeOperationDetail.Count == 1)
             {
-                MessageBox.Show("Atleast one operation is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBoxAdv.Show("Atleast one operation is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 e.Cancel = true; // Cancel the deletion
             }
             else
@@ -155,9 +168,7 @@ namespace CostMater.DataGrids
 
                 oneTimeOperation.Component.RecalculateOneTimeOperationCost();
             }
-        }
-
-        
+        }        
 
         private void OneTimeOperationGrid_AddNewRowInitiating(object sender, Syncfusion.WinForms.DataGrid.Events.AddNewRowInitiatingEventArgs e)
         {

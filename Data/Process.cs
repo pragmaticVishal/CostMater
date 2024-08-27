@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using CostMater.Data;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DetailsView.Data
 {
@@ -465,6 +467,84 @@ namespace DetailsView.Data
         private void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public bool IsColumnApplicableToOperation(string columnName)
+        {
+            bool isColumnApplicableToOperation = true;
+
+            Dictionary<int, List<string>> dctOperationExcludedColumns = new Dictionary<int, List<string>>();
+
+            List<string> excludedColumnsFaceTurning = new List<string>() { nameof(Process.DrillSize), nameof(Process.ThreadDiameterToCut),
+            nameof(Process.ThreadPitch), nameof(Process.LengthOfThreadToCut), nameof(Process.LengthOfHoleToDrill),
+            nameof(Process.DiameterAfterTurning), nameof(Process.DepthOfCutEachPass), nameof(Process.TotalDepthOfCut), nameof(Process.NoOfCuts)};
+
+            List<string> excludedColumnsTurning = new List<string>() { nameof(Process.DrillSize), nameof(Process.ThreadDiameterToCut),
+            nameof(Process.ThreadPitch), nameof(Process.LengthOfThreadToCut), nameof(Process.LengthOfHoleToDrill)};
+
+            List<string> excludedColumnsDrilling = new List<string>() { nameof(Process.DiameterBeforeTurning), nameof(Process.DiameterAfterTurning),
+            nameof(Process.DepthOfCutEachPass), nameof(Process.TotalDepthOfCut), nameof(Process.LengthOfCut), nameof(Process.ThreadDiameterToCut),
+            nameof(Process.ThreadPitch), nameof(Process.LengthOfThreadToCut), nameof(Process.NoOfCuts)};
+
+            List<string> excludedColumnsThreading = new List<string>() { nameof(Process.DrillSize), nameof(Process.DiameterBeforeTurning), 
+            nameof(Process.DiameterAfterTurning), nameof(Process.DepthOfCutEachPass), nameof(Process.TotalDepthOfCut), nameof(Process.LengthOfCut),
+            nameof(Process.LengthOfHoleToDrill)};
+
+            dctOperationExcludedColumns.Add(1, excludedColumnsTurning);
+            dctOperationExcludedColumns.Add(2, excludedColumnsFaceTurning);
+            dctOperationExcludedColumns.Add(3, excludedColumnsTurning);
+            dctOperationExcludedColumns.Add(4, excludedColumnsTurning);
+            dctOperationExcludedColumns.Add(5, excludedColumnsDrilling);
+            dctOperationExcludedColumns.Add(6, excludedColumnsThreading);
+
+
+            if (dctOperationExcludedColumns.ContainsKey(ProcessTypeID) &&
+                dctOperationExcludedColumns[ProcessTypeID].Contains(columnName))
+            {
+                isColumnApplicableToOperation = false;
+            }
+
+            return isColumnApplicableToOperation;
+        }
+
+        public void ResetValue(string mappingName)
+        {
+            switch (mappingName)
+            {
+                case nameof(Process.DrillSize):
+                    DrillSize = 0;
+                    break;
+                case nameof(Process.ThreadDiameterToCut):
+                    ThreadDiameterToCut = 0;
+                    break;
+                case nameof(Process.ThreadPitch):
+                    ThreadPitch = 0;
+                    break;
+                case nameof(Process.LengthOfThreadToCut):
+                    LengthOfThreadToCut = 0;
+                    break;
+                case nameof(Process.LengthOfHoleToDrill):
+                    LengthOfHoleToDrill = 0;
+                    break;
+                case nameof(Process.DiameterBeforeTurning):
+                    DiameterBeforeTurning = 0;
+                    break;
+                case nameof(Process.DiameterAfterTurning):
+                    DiameterAfterTurning = 0;
+                    break;
+                case nameof(Process.DepthOfCutEachPass):
+                    DepthOfCutEachPass = 0;
+                    break;
+                case nameof(Process.TotalDepthOfCut):
+                    TotalDepthOfCut = 0;
+                    break;
+                case nameof(Process.LengthOfCut):
+                    LengthOfCut = 0;
+                    break;
+                case nameof(Process.NoOfCuts):
+                    NoOfCuts = 0;
+                    break;
+            }
         }
     }
 

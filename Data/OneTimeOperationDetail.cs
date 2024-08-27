@@ -145,7 +145,7 @@ namespace CostMater.Data
 
             dctOperationExcludedColumns.Add(1, excludedColumnsQtyAmt);
             dctOperationExcludedColumns.Add(2, excludedColumnsQtyAmt);
-            dctOperationExcludedColumns.Add(3, excludedColumnsQtyAmt);
+            dctOperationExcludedColumns.Add(3, excludedColumnsQty);
             dctOperationExcludedColumns.Add(4, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(5, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(6, excludedColumnsAmt);
