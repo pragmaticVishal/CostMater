@@ -145,12 +145,11 @@ namespace CostMater.Data
 
             dctOperationExcludedColumns.Add(1, excludedColumnsQtyAmt);
             dctOperationExcludedColumns.Add(2, excludedColumnsQtyAmt);
-            dctOperationExcludedColumns.Add(3, excludedColumnsQty);
+            dctOperationExcludedColumns.Add(3, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(4, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(5, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(6, excludedColumnsAmt);
-            dctOperationExcludedColumns.Add(7, excludedColumnsQtyRate);
-            
+            dctOperationExcludedColumns.Add(7, excludedColumnsQtyRate);            
 
             if (dctOperationExcludedColumns.ContainsKey(OneTimeOpItemSelectedID) &&
                 dctOperationExcludedColumns[OneTimeOpItemSelectedID].Contains(columnName))

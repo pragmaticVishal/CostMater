@@ -34,6 +34,7 @@ namespace CostMater.DataGrids
 
             machiningGrid.EditMode = EditMode.SingleClick;
             machiningGrid.AddNewRowText = "Click here to add new machining detail";
+            machiningGrid.AddNewRowPosition = RowPosition.FixedBottom;
             machiningGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
             machiningGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             machiningGrid.Style.HeaderStyle.Font.Bold = true;
@@ -44,7 +45,6 @@ namespace CostMater.DataGrids
             machiningGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(22.0f);
             machiningGrid.AutoGenerateColumns = false;
             machiningGrid.ValidationMode = GridValidationMode.InEdit;
-            machiningGrid.AddNewRowPosition = Syncfusion.WinForms.DataGrid.Enums.RowPosition.Top;
             machiningGrid.AllowDeleting = true;
             machiningGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(21.0f);
             machiningGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
@@ -61,7 +61,7 @@ namespace CostMater.DataGrids
             machiningGrid.Columns.Add(new GridTextColumn { MappingName = "ProcessID", HeaderText = "ID", AllowEditing = false });
             machiningGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
             machiningGrid.Columns.Add(new GridTextColumn { MappingName = "DrawingNo", HeaderText = "Drawing / Part No.", AllowEditing = false });
-            machiningGrid.Columns.Add(new GridComboBoxColumn { MappingName = "ProcessTypeID", HeaderText = "Name", ValueMember = "ProcessTypeID", DisplayMember = "ProcessTypeName", IDataSourceSelector = new ProcessTypeDataSourceSelector() });
+            machiningGrid.Columns.Add(new GridComboBoxColumn { MappingName = "ProcessTypeID", HeaderText = "Name", ValueMember = "ProcessTypeID", DisplayMember = "ProcessTypeName", IDataSourceSelector = new ProcessTypeDataSourceSelector(), Width = 120 });
             machiningGrid.Columns.Add(new GridComboBoxColumn { MappingName = "ToolTypeID", HeaderText = "Tool Type", ValueMember = "ToolTypeID", DisplayMember = "ToolTypeName", IDataSourceSelector = new ToolTypeDataSourceSelector() });
             machiningGrid.Columns.Add(new GridComboBoxColumn { MappingName = "ToolSurfaceID", HeaderText = "Rough / Finish", ValueMember = "ToolSurfaceID", DisplayMember = "ToolSurfaceName", IDataSourceSelector = new ToolSurfaceDataSourceSelector() });
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "CuttingSpeed", HeaderText = "Cutting Speed (S)" });
@@ -109,7 +109,29 @@ namespace CostMater.DataGrids
                 }
             }
 
+            ShowSummaryRow();
+            machiningGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
+        }
+
+        private void ShowSummaryRow()
+        {
+            machiningGrid.TableSummaryRows.Add(new GridTableSummaryRow()
+            {
+                Name = "tableSumamryTrue",
+                ShowSummaryInRow = true,
+                Title = "Total cost for machining work : {AllMachiningCost}",
+                SummaryColumns = new System.Collections.ObjectModel.ObservableCollection<Syncfusion.Data.ISummaryColumn>()
+                {
+                    new GridSummaryColumn()
+                    {
+                        Name = "AllMachiningCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="MachiningCost",
+                    }
+                }
+            });
         }
 
         private void MachiningGrid_RowValidating(object sender, Syncfusion.WinForms.DataGrid.Events.RowValidatingEventArgs e)

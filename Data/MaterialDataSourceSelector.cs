@@ -19,6 +19,7 @@ namespace DetailsView.Data
             // Replace this with your actual data retrieval logic
             return new ObservableCollection<Material>
             {
+                new Material { MaterialID = 0, MaterialName = "" },
                 new Material { MaterialID = 1, MaterialName = "SS-304" },
                 new Material { MaterialID = 2, MaterialName = "SS-305" },
                 new Material { MaterialID = 3, MaterialName = "SS-306" },

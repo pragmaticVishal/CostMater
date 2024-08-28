@@ -44,7 +44,6 @@ namespace DetailsView.Data
         private decimal _totalCost;
         private decimal _totalMachiningCost;
         private decimal _grindingCost;
-        private decimal _drillingCost;
         private decimal _hardwareCost;
         private decimal _miscellaneousCost;
 
@@ -372,17 +371,6 @@ namespace DetailsView.Data
             }
         }
 
-        [Display(Name = "Drilling Cost")]
-        public decimal DrillingCost
-        {
-            get => _drillingCost;
-            set
-            {
-                _drillingCost = value;
-                RaisePropertyChanged(nameof(DrillingCost));
-            }
-        }
-
         [Display(Name = "Hardware Cost")]
         public decimal HardwareCost
         {
@@ -695,6 +683,8 @@ namespace DetailsView.Data
                 machiningCost += process.MachiningCost;
             }
             TotalMachiningCost = machiningCost;
+
+            CalculateCost();
         }
 
         internal void RecalculateOneTimeOperationCost()
@@ -706,12 +696,64 @@ namespace DetailsView.Data
             MiscellaneousCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 5).Sum(x => x.Amount);
             Others_BO = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 6).Sum(x => x.Amount);
             HardwareCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 7).Sum(x => x.Amount);
+
+            CalculateCost();
         }
 
         internal void RecalculateLaserAndBendingCost()
         {
             LaserCost = LstLaserAndBendingDetail.Sum(x=>x.LaserCost);
             BendTotalCost = LstLaserAndBendingDetail.Sum(x=>x.BendTotalCost);
+            CalculateCost();
+        }
+
+        private void CalculateNetWeight()
+        {
+            switch (MaterialTypeID)
+            {
+                case 1:
+                    NetWeight = Length * Width * Thickness * 0.00000786M;
+                    break;
+                case 2:
+                    NetWeight = Length * Width * Thickness * 0.00000786M;
+                    break;
+                case 3:
+                    NetWeight = Length * Width * Thickness * 0.00000786M;
+                    break;
+                case 4:
+                    NetWeight = (Side1 * Thickness * Length * 0.00000786M) + (Side2 * Thickness * Length * 0.00000786M);
+                    break;
+                case 5:
+                    NetWeight = 0.7854M * Diameter * Diameter * Length * 0.00000786M;
+                    break;
+                case 6:
+                    NetWeight = (0.7854M * OD * OD * Length * 0.00000786M) - (0.7854M * ID * ID * Length * 0.00000786M);
+                    break;
+                case 7:
+                    NetWeight = Length * Width * Thickness * 0.00000786M;
+                    break;
+                case 8:
+                    NetWeight = (Side1 * Side2 * Length * 0.00000786M) - ((Side1 - 2 * Thickness) * (Side2 - 2 * Thickness) * Length * 0.00000786M);
+                    break;
+                case 9:
+                    NetWeight = Length * Width * Thickness * 0.00000786M;
+                    break;
+                case 10:
+                    NetWeight = (Side1 * Side2 * Length * 0.00000786M) - ((Side1 - 2 * Thickness) * (Side2 - 2 * Thickness) * Length * 0.00000786M);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        internal void CalculateCost()
+        {
+            CalculateNetWeight();
+            GrossWeight = NetWeight * 1.2M;
+            RawMaterialCost = GrossWeight * RawMaterialRate;
+            LabourCostPerPart = BendTotalCost + FabricationTotalCost + LaserCost + SurfaceTreatmentCost + Others_BO + GrindingCost + TotalMachiningCost + HardwareCost + MiscellaneousCost + GrindingCost;
+            TotalCostPerPart = LabourCostPerPart + RawMaterialCost;
+            TotalCost = TotalCostPerPart * Qty;
         }
 
         public bool IsSideApplicableToTheShape(string sideName)

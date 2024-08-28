@@ -22,7 +22,7 @@ namespace DetailsView.Data
         {
             if(_components.Count == 0)
             {
-                _components.Add(new Component() { ComponentID = 1, MaterialTypeID = 1, MaterialID = 1});
+                _components.Add(new Component() { ComponentID = 1, MaterialTypeID = 0, MaterialID = 0});
             }
             return _components;
         }

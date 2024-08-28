@@ -12,6 +12,7 @@ namespace DetailsView
         {
             _materialTypeDetailsList = new List<MaterialTypeDetails>
             {
+                new MaterialTypeDetails { MaterialTypeID = 0, MaterialTypeName = "" },
                 new MaterialTypeDetails { MaterialTypeID = 1, MaterialTypeName = "Sheet" },
                 new MaterialTypeDetails { MaterialTypeID = 2, MaterialTypeName = "Plate" },
                 new MaterialTypeDetails { MaterialTypeID = 3, MaterialTypeName = "Flat" },

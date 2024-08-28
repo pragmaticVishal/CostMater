@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,6 +51,16 @@ namespace CostMater.Data
             }
         }
 
+        public int OperationNameSelectedID
+        {
+            get => _operationNameSelectedID;
+            set
+            {
+                _operationNameSelectedID = value;
+                RaisePropertyChanged(nameof(OperationNameSelectedID));
+            }
+        }
+
         public int LaserAndBendingDetailID
         {
             get => _laserAndBendingDetailID;
@@ -78,10 +89,6 @@ namespace CostMater.Data
             }
         }
 
-        public string OperationName
-        {
-            get => "Laser Cutting and Bending";
-        }
         public string DrawingNo
         {
             get => Component.DrawingNo;
@@ -247,6 +254,16 @@ namespace CostMater.Data
             }
         }
 
+        public decimal TotalCost
+        {
+            get => _totalCost;
+            set
+            {
+                _totalCost = value;
+                RaisePropertyChanged(nameof(TotalCost));
+            }
+        }
+
         public Component Component
         {
             get => _component;
@@ -263,6 +280,7 @@ namespace CostMater.Data
         private int _laserAndBendingDetailID;
         private int _componentID;
         private int _materialShapeSelectedID;
+        private int _operationNameSelectedID;
         private decimal _length;
         private decimal _width;
         private decimal _thickness;
@@ -279,6 +297,7 @@ namespace CostMater.Data
         private int _noOfBend;
         private decimal _bendRate;
         private decimal _bendTotalCost;
+        private decimal _totalCost;
         private Component _component;
 
         private void RaisePropertyChanged(string propertyName)
@@ -331,7 +350,7 @@ namespace CostMater.Data
 
             List<string> excludedSidesIrregularShape = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
-                    nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
+                    nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
 
             List<string> excludedSidesOthers = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),

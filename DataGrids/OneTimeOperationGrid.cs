@@ -31,6 +31,7 @@ namespace CostMater.DataGrids
 
             oneTimeOperationGrid.EditMode = EditMode.SingleClick;
             oneTimeOperationGrid.AddNewRowText = "Click here to add new operation detail";
+            oneTimeOperationGrid.AddNewRowPosition = RowPosition.FixedBottom;
             oneTimeOperationGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
             oneTimeOperationGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             oneTimeOperationGrid.Style.HeaderStyle.Font.Bold = true;
@@ -41,7 +42,6 @@ namespace CostMater.DataGrids
             oneTimeOperationGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(22.0f);
             oneTimeOperationGrid.AutoGenerateColumns = false;
             oneTimeOperationGrid.ValidationMode = GridValidationMode.InEdit;
-            oneTimeOperationGrid.AddNewRowPosition = Syncfusion.WinForms.DataGrid.Enums.RowPosition.Top;
             oneTimeOperationGrid.AllowDeleting = true;
             oneTimeOperationGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(21.0f);
             oneTimeOperationGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
@@ -60,7 +60,7 @@ namespace CostMater.DataGrids
             nfi1.NumberDecimalDigits = 0;
             nfi1.NumberGroupSizes = new int[] { };
 
-            oneTimeOperationGrid.Columns.Add(new GridComboBoxColumn { MappingName = "OneTimeOpItemSelectedID", HeaderText = "Operations", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new OneTimeOperationsList() });
+            oneTimeOperationGrid.Columns.Add(new GridComboBoxColumn { MappingName = "OneTimeOpItemSelectedID", HeaderText = "Operations", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new OneTimeOperationsList(), Width=180 });
             oneTimeOperationGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
             oneTimeOperationGrid.Columns.Add(new GridTextColumn { MappingName = "DrawingNo", HeaderText = "Drawing / Part No.", AllowEditing = false });
             oneTimeOperationGrid.Columns.Add(new GridNumericColumn { MappingName = "Qty", HeaderText = "Qty" });
@@ -75,7 +75,29 @@ namespace CostMater.DataGrids
                 }
             }
 
+            ShowSummaryRow();
+            oneTimeOperationGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
+        }
+
+        private void ShowSummaryRow()
+        {
+            oneTimeOperationGrid.TableSummaryRows.Add(new GridTableSummaryRow()
+            {
+                Name = "tableSumamryTrue",
+                ShowSummaryInRow = true,
+                Title = "Total cost for manual operations : {AllComponentCost}",
+                SummaryColumns = new System.Collections.ObjectModel.ObservableCollection<Syncfusion.Data.ISummaryColumn>()
+                {
+                    new GridSummaryColumn()
+                    {
+                        Name = "AllComponentCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="Amount",
+                    }
+                }
+            });
         }
 
         private void OneTimeOperationGrid_RowValidating(object sender, Syncfusion.WinForms.DataGrid.Events.RowValidatingEventArgs e)

@@ -48,6 +48,7 @@ namespace CostMater.DataGrids
             #region componentGrid
             _componentGrid.EditMode = EditMode.SingleClick;
             _componentGrid.AddNewRowText = "Click here to add new component detail";
+            _componentGrid.AddNewRowPosition = RowPosition.FixedBottom;
             _componentGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
             _componentGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             _componentGrid.Style.HeaderStyle.Font.Bold = true;
@@ -116,25 +117,23 @@ namespace CostMater.DataGrids
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "LaserCost", HeaderText = "Laser Cost", AllowEditing = false });
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Bending Cost", AllowEditing = false });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "ProcurementCost", HeaderText = "Cost", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "ProcurementCost", HeaderText = "Cost", AllowEditing = false, Width = 100 });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "FabricationTotalCost", HeaderText = "Cost", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "FabricationTotalCost", HeaderText = "Cost", AllowEditing = false, Width = 100 });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "SurfaceTreatmentCost", HeaderText = "Cost", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "SurfaceTreatmentCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalMachiningCost", HeaderText = "Cost", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalMachiningCost", HeaderText = "Cost", AllowEditing = false, Width = 100 });
 
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "GrindingCost", HeaderText = "Cost", AllowEditing = false });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "DrillingCost", HeaderText = "Cost", AllowEditing = false });
-
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "Others_BO", HeaderText = "Cost", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "Others_BO", HeaderText = "Cost", AllowEditing = false, Width = 100 });
 
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "HardwareCost", HeaderText = "Cost", AllowEditing = false });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "MiscellaneousCost", HeaderText = "Cost", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "MiscellaneousCost", HeaderText = "Cost", AllowEditing = false, Width = 100 });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "LabourCostPerPart", HeaderText = "Cost", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "LabourCostPerPart", HeaderText = "Cost", AllowEditing = false, Width = 150 });
 
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialRate", HeaderText = "Rate" });
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialCost", HeaderText = "Amount", AllowEditing = false });
@@ -149,16 +148,15 @@ namespace CostMater.DataGrids
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "Length,Width,Thickness,Diameter,OD,ID,Side1,Side2", HeaderText = "Material Dimensions" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "NetWeight,GrossWeight", HeaderText = "Weight" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "LaserCost,BendTotalCost", HeaderText = "Laser Cutting and Bending" });
-            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ProcurementCost", HeaderText = "Procurement" });
-            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "FabricationTotalCost", HeaderText = "Fabrication/\nPol" });
-            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "SurfaceTreatmentCost", HeaderText = "Surface \nTreat(E.P)" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ProcurementCost", HeaderText = "Procurement"});
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "FabricationTotalCost", HeaderText = "Fabrication/Pol" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "SurfaceTreatmentCost", HeaderText = "Surface Treat(E.P)" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "TotalMachiningCost", HeaderText = "Machining" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "GrindingCost", HeaderText = "Grinding" });
-            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "DrillingCost", HeaderText = "Drilling" });
-            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "Others_BO", HeaderText = "Others/\nB.O" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "Others_BO", HeaderText = "Others/B.O" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "HardwareCost", HeaderText = "Hardware" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "MiscellaneousCost", HeaderText = "Miscellaneous" });
-            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "LabourCostPerPart", HeaderText = "Total Labour \n Per Part" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "LabourCostPerPart", HeaderText = "Total Labour Per Part" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "RawMaterialRate,RawMaterialCost", HeaderText = "Raw Material" });
             _componentGrid.StackedHeaderRows.Add(stackedHeaderRow);
 
@@ -176,14 +174,6 @@ namespace CostMater.DataGrids
             ShowSummaryRow();
             _componentGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
-        }
-
-        public void Reset(ObservableCollection<Component> lstComponent)
-        {
-            _lstComponent = lstComponent;
-            _componentGrid.DataSource = _lstComponent;
-            RegisterCollectionChangedHandlers();
-            RegisterPropertyChangedHandlers();
         }
 
         private void ShowSummaryRow()
@@ -223,8 +213,8 @@ namespace CostMater.DataGrids
             var component = new Component
             {
                 ComponentID = lstComponent == null ? 1 : lstComponent.Max(x => x.ComponentID) + 1,
-                MaterialTypeID = 1,
-                MaterialID = 1,
+                MaterialTypeID = 0,
+                MaterialID = 0,
             };
             component.PropertyChanged += Component_PropertyChanged;
             component.LstProcess.CollectionChanged += MachiningGrid.LstProcess_CollectionChanged;
@@ -252,51 +242,7 @@ namespace CostMater.DataGrids
 
             if (component != null)
             {
-                CalculateNetWeight(component);
-                component.GrossWeight = component.NetWeight * 1.2M;
-                component.LabourCostPerPart = component.BendTotalCost + component.FabricationTotalCost + component.LaserCost + component.SurfaceTreatmentCost + component.Others_BO + component.GrindingCost + component.TotalMachiningCost;
-                component.RawMaterialCost = component.GrossWeight * component.RawMaterialRate;
-                component.TotalCostPerPart = component.LabourCostPerPart + component.RawMaterialCost + component.HardwareCost + component.MiscellaneousCost;
-                component.TotalCost = component.TotalCostPerPart * component.Qty;
-            }
-        }
-
-        private static void CalculateNetWeight(Component component)
-        {
-            switch (component.MaterialTypeID)
-            {
-                case 1:
-                    component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
-                    break;
-                case 2:
-                    component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
-                    break;
-                case 3:
-                    component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
-                    break;
-                case 4:
-                    component.NetWeight = (component.Side1 * component.Thickness * component.Length * 0.00000786M) + (component.Side2 * component.Thickness * component.Length * 0.00000786M);
-                    break;
-                case 5:
-                    component.NetWeight = 0.7854M * component.Diameter * component.Diameter * component.Length * 0.00000786M;
-                    break;
-                case 6:
-                    component.NetWeight = (0.7854M * component.OD * component.OD * component.Length * 0.00000786M) - (0.7854M * component.ID * component.ID * component.Length * 0.00000786M);
-                    break;
-                case 7:
-                    component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
-                    break;
-                case 8:
-                    component.NetWeight = (component.Side1 * component.Side2 * component.Length * 0.00000786M) - ((component.Side1 - 2 * component.Thickness) * (component.Side2 - 2 * component.Thickness) * component.Length * 0.00000786M);
-                    break;
-                case 9:
-                    component.NetWeight = component.Length * component.Width * component.Thickness * 0.00000786M;
-                    break;
-                case 10:
-                    component.NetWeight = (component.Side1 * component.Side2 * component.Length * 0.00000786M) - ((component.Side1 - 2 * component.Thickness) * (component.Side2 - 2 * component.Thickness) * component.Length * 0.00000786M);
-                    break;
-                default:
-                    break;
+                component.CalculateCost();
             }
         }
 
@@ -358,6 +304,14 @@ namespace CostMater.DataGrids
                     Console.WriteLine($"Component removed: {oldComponent.ComponentID}");
                 }
             }
+        }
+
+        public void Reset(ObservableCollection<Component> lstComponent)
+        {
+            _lstComponent = lstComponent;
+            _componentGrid.DataSource = _lstComponent;
+            RegisterCollectionChangedHandlers();
+            RegisterPropertyChangedHandlers();
         }
 
         internal void RegisterCollectionChangedHandlers()
