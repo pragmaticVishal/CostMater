@@ -1,4 +1,5 @@
 ﻿using CostMater.Data;
+using CostMater.Framework;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
@@ -29,6 +30,7 @@ namespace CostMater.DataGrids
         {
             #region OneTimeOperationGrid
 
+            oneTimeOperationGrid.SelectionController = new RowSelectionControllerExt(oneTimeOperationGrid);
             oneTimeOperationGrid.EditMode = EditMode.SingleClick;
             oneTimeOperationGrid.AddNewRowText = "Click here to add new operation detail";
             oneTimeOperationGrid.AddNewRowPosition = RowPosition.FixedBottom;
@@ -159,10 +161,9 @@ namespace CostMater.DataGrids
 
             if (e.OldItems != null)
             {
-                foreach (OneTimeOperationDetail oneTimeOperationDetail in e.OldItems)
-                {
-                    oneTimeOperationDetail.PropertyChanged -= OneTimeOperationGrid.OneTimeOperation_PropertyChanged;
-                }
+                var oneTimeOperation = e.OldItems[0] as OneTimeOperationDetail;
+                oneTimeOperation.Component.RecalculateOneTimeOperationCost();
+                oneTimeOperation.PropertyChanged -= OneTimeOperationGrid.OneTimeOperation_PropertyChanged;
             }
         }
         public static void OneTimeOperation_PropertyChanged(object sender, PropertyChangedEventArgs e) 

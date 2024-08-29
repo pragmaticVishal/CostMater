@@ -1,4 +1,5 @@
 ﻿using CostMater.Data;
+using CostMater.Framework;
 using DetailsView.Data;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
@@ -29,6 +30,7 @@ namespace CostMater.DataGrids
         public void Setup()
         {
             #region laserAndBendingDetailGrid
+            laserAndBendingDetailGrid.SelectionController = new RowSelectionControllerExt(laserAndBendingDetailGrid);
             laserAndBendingDetailGrid.EditMode = EditMode.SingleClick;
             laserAndBendingDetailGrid.AddNewRowText = "Click here to add new laser and bending detail";
             laserAndBendingDetailGrid.AddNewRowPosition = RowPosition.FixedBottom;
@@ -45,7 +47,6 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.AllowDeleting = true;
             laserAndBendingDetailGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(21.0f);
             laserAndBendingDetailGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
-
 
             laserAndBendingDetailGrid.RecordDeleting += LaserAndBendingDetailGrid_RecordDeleting;
             laserAndBendingDetailGrid.AddNewRowInitiating += LaserAndBendingDetailGrid_AddNewRowInitiating;
@@ -97,15 +98,22 @@ namespace CostMater.DataGrids
             {
                 Name = "tableSumamryTrue",
                 ShowSummaryInRow = true,
-                Title = "Total cost for laser and bending work : {AllLaserBendingCost}",
+                Title = "Total cost for laser work is {AllLaserCost} and for bending work is {AllBendingCost}",
                 SummaryColumns = new System.Collections.ObjectModel.ObservableCollection<Syncfusion.Data.ISummaryColumn>()
                 {
                     new GridSummaryColumn()
                     {
-                        Name = "AllLaserBendingCost",
+                        Name = "AllLaserCost",
                         SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
                         Format="{Sum:c}",
-                        MappingName="TotalCost",
+                        MappingName="LaserCost",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "AllBendingCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="BendTotalCost",
                     }
                 }
             });
@@ -214,10 +222,9 @@ namespace CostMater.DataGrids
 
             if (e.OldItems != null)
             {
-                foreach (LaserAndBendingDetail laserAndBendingDetail in e.OldItems)
-                {
-                    laserAndBendingDetail.PropertyChanged -= LaserAndBendingDetailGrid.LaserAndBendingDetail_PropertyChanged;
-                }
+                var laserAndBendingDetail = e.OldItems[0] as LaserAndBendingDetail;
+                laserAndBendingDetail.Component.RecalculateLaserAndBendingCost();
+                laserAndBendingDetail.PropertyChanged -= LaserAndBendingDetailGrid.LaserAndBendingDetail_PropertyChanged;
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using CostMater.Data;
+using CostMater.Framework;
 using DetailsView.Data;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
@@ -31,7 +32,7 @@ namespace CostMater.DataGrids
         public void Setup()
         {
             #region machiningGrid
-
+            machiningGrid.SelectionController = new RowSelectionControllerExt(machiningGrid);
             machiningGrid.EditMode = EditMode.SingleClick;
             machiningGrid.AddNewRowText = "Click here to add new machining detail";
             machiningGrid.AddNewRowPosition = RowPosition.FixedBottom;
@@ -193,12 +194,9 @@ namespace CostMater.DataGrids
 
             if (e.OldItems != null)
             {
-                foreach (Process oldProcess in e.OldItems)
-                {
-                    // Handle process removed
-                    oldProcess.PropertyChanged -= MachiningGrid.Process_PropertyChanged;
-                    Console.WriteLine($"Process removed: {oldProcess.ProcessID}");
-                }
+                var oldProcess = e.OldItems[0] as Process;
+                oldProcess.Component.RecalculateMachiningCost();
+                oldProcess.PropertyChanged -= MachiningGrid.Process_PropertyChanged;
             }
         }
 

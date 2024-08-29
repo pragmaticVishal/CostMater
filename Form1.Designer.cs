@@ -76,7 +76,6 @@ namespace DetailsView
             toolStripMenuItem1.Name = "toolStripMenuItem1";
             toolStripMenuItem1.Size = new System.Drawing.Size(37, 20);
             toolStripMenuItem1.Text = "File";
-            toolStripMenuItem1.Click += toolStripMenuItem1_Click;
             // 
             // openToolStripMenuItem1
             // 

@@ -1,4 +1,5 @@
 ﻿using CostMater.Data;
+using CostMater.Framework;
 using DetailsView.Data;
 using Syncfusion.Data.Extensions;
 using Syncfusion.Windows.Forms;
@@ -46,6 +47,7 @@ namespace CostMater.DataGrids
             }
 
             #region componentGrid
+            _componentGrid.SelectionController = new RowSelectionControllerExt(_componentGrid);
             _componentGrid.EditMode = EditMode.SingleClick;
             _componentGrid.AddNewRowText = "Click here to add new component detail";
             _componentGrid.AddNewRowPosition = RowPosition.FixedBottom;

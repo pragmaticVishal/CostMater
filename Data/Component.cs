@@ -751,7 +751,7 @@ namespace DetailsView.Data
             CalculateNetWeight();
             GrossWeight = NetWeight * 1.2M;
             RawMaterialCost = GrossWeight * RawMaterialRate;
-            LabourCostPerPart = BendTotalCost + FabricationTotalCost + LaserCost + SurfaceTreatmentCost + Others_BO + GrindingCost + TotalMachiningCost + HardwareCost + MiscellaneousCost + GrindingCost;
+            LabourCostPerPart = LaserCost + BendTotalCost + ProcurementCost + FabricationTotalCost + SurfaceTreatmentCost + TotalMachiningCost + GrindingCost + Others_BO + HardwareCost + MiscellaneousCost;
             TotalCostPerPart = LabourCostPerPart + RawMaterialCost;
             TotalCost = TotalCostPerPart * Qty;
         }
