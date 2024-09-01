@@ -1,16 +1,20 @@
 ﻿using CostMater.Data;
 using CostMater.Framework;
+using Microsoft.VisualBasic.Devices;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
+using Syncfusion.WinForms.GridCommon.ScrollAxis;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -29,12 +33,12 @@ namespace CostMater.DataGrids
         public void Setup()
         {
             #region OneTimeOperationGrid
-
             oneTimeOperationGrid.SelectionController = new RowSelectionControllerExt(oneTimeOperationGrid);
             oneTimeOperationGrid.EditMode = EditMode.SingleClick;
             oneTimeOperationGrid.AddNewRowText = "Click here to add new operation detail";
             oneTimeOperationGrid.AddNewRowPosition = RowPosition.FixedBottom;
             oneTimeOperationGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
+            oneTimeOperationGrid.Style.AddNewRowStyle.TextColor = Color.White;
             oneTimeOperationGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             oneTimeOperationGrid.Style.HeaderStyle.Font.Bold = true;
             oneTimeOperationGrid.Style.StackedHeaderStyle.Font.Bold = true;
@@ -52,11 +56,11 @@ namespace CostMater.DataGrids
                 //var color = ColorTranslator.FromHtml("#FF70FCA0");
                 //e.Style.BackColor = color;
             };
-            oneTimeOperationGrid.RecordDeleting += OneTimeOperationGrid_RecordDeleting;           
-            oneTimeOperationGrid.AddNewRowInitiating += OneTimeOperationGrid_AddNewRowInitiating;
+            oneTimeOperationGrid.RecordDeleting += OneTimeOperationGrid_RecordDeleting;
             oneTimeOperationGrid.CurrentCellBeginEdit += OneTimeOperationGrid_CurrentCellBeginEdit;
             oneTimeOperationGrid.QueryCellStyle += OneTimeOperationGrid_QueryCellStyle;
             oneTimeOperationGrid.RowValidating += OneTimeOperationGrid_RowValidating;
+            oneTimeOperationGrid.CurrentCellActivating += OneTimeOperationGrid_CurrentCellActivating;
 
             NumberFormatInfo nfi1 = new NumberFormatInfo();
             nfi1.NumberDecimalDigits = 0;
@@ -80,6 +84,42 @@ namespace CostMater.DataGrids
             ShowSummaryRow();
             oneTimeOperationGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
+        }
+
+        private void OneTimeOperationGrid_CurrentCellActivating(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellActivatingEventArgs e)
+        {
+            if (e.DataRow.RowType == RowType.AddNewRow)
+            {
+                if (KeyStateHelper.IsKeyDown(Keys.Down))
+                {
+                    System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    return;
+                }
+                if (KeyStateHelper.IsKeyDown(Keys.Up))
+                {
+                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    return;
+                }
+                ObservableCollection<OneTimeOperationDetail> lstOneTimeOperationDetail = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<OneTimeOperationDetail>;
+                var oneTimeOperationDetail = new OneTimeOperationDetail
+                {
+                    OnetimeOpDetailID = lstOneTimeOperationDetail == null ? 1 : lstOneTimeOperationDetail.Max(x => x.OnetimeOpDetailID) + 1,
+                    ComponentID = lstOneTimeOperationDetail[0].ComponentID,
+                    Component = lstOneTimeOperationDetail[0].Component,
+                };
+                oneTimeOperationDetail.PropertyChanged += OneTimeOperation_PropertyChanged;
+                lstOneTimeOperationDetail.Add(oneTimeOperationDetail);
+            }
+
+            //if(e.DataColumn?.GridColumn?.AllowEditing == false)
+            //{
+            //    if (KeyStateHelper.IsKeyDown(Keys.Tab))
+            //    {
+            //        //e.Cancel = true;
+            //        System.Windows.Forms.SendKeys.Send("{TAB}");
+            //        return;
+            //    }
+            //};
         }
 
         private void ShowSummaryRow()
@@ -147,6 +187,12 @@ namespace CostMater.DataGrids
             }
             else
             {
+                ObservableCollection<OneTimeOperationDetail> lstOneTimeOperationDetail = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<OneTimeOperationDetail>;
+                int deleteIndex = lstOneTimeOperationDetail.IndexOf(oneTimeOperation);
+                if(deleteIndex > -1)
+                {
+                    lstOneTimeOperationDetail.RemoveAt(deleteIndex);
+                }                
                 oneTimeOperation.PropertyChanged -= OneTimeOperation_PropertyChanged;
             }
         }
@@ -174,37 +220,12 @@ namespace CostMater.DataGrids
                 return;
 
             var oneTimeOperation = sender as OneTimeOperationDetail;
+            
             if (oneTimeOperation != null)
             {
-                switch (oneTimeOperation.OneTimeOpItemSelectedID)
-                {
-                    case 1:
-                    case 2:
-                        oneTimeOperation.Amount = oneTimeOperation.Rate * oneTimeOperation.Component.NetWeight;
-                        break;
-                    case 6:
-                        oneTimeOperation.Amount = oneTimeOperation.Rate * oneTimeOperation.Qty;
-                        break;
-                    default:
-                        break;
-                }
-
+                oneTimeOperation.CalculateCost();
                 oneTimeOperation.Component.RecalculateOneTimeOperationCost();
             }
         }        
-
-        private void OneTimeOperationGrid_AddNewRowInitiating(object sender, Syncfusion.WinForms.DataGrid.Events.AddNewRowInitiatingEventArgs e)
-        {
-            ObservableCollection<OneTimeOperationDetail> lstOneTimeOperationDetail = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<OneTimeOperationDetail>;
-            var oneTimeOperationDetail = new OneTimeOperationDetail
-            {
-                OnetimeOpDetailID = lstOneTimeOperationDetail == null ? 1 : lstOneTimeOperationDetail.Max(x => x.OnetimeOpDetailID) + 1,
-                ComponentID = lstOneTimeOperationDetail[0].ComponentID,
-                Component = lstOneTimeOperationDetail[0].Component,
-            };
-            oneTimeOperationDetail.PropertyChanged += OneTimeOperation_PropertyChanged;
-
-            e.NewObject = oneTimeOperationDetail;
-        }
     }
 }

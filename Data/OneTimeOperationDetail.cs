@@ -133,6 +133,33 @@ namespace CostMater.Data
             }
         }
 
+        public void ResetAllFields()
+        {
+            _qty = 0;
+            _rate = 0;
+            _amount = 0;
+        }
+
+        public void CalculateCost()
+        {
+            if(OneTimeOpItemSelectedID == 0)
+            {
+                ResetAllFields();
+            }
+            switch (OneTimeOpItemSelectedID)
+            {
+                case 1:
+                case 2:
+                    Amount = Rate * Component.NetWeight;
+                    break;
+                case 6:
+                    Amount = Rate * Qty;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         internal bool IsColumnApplicableToOperation(string columnName)
         {
             bool isColumnApplicableToOperation = true;

@@ -305,6 +305,101 @@ namespace CostMater.Data
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public void ResetAllFields()
+        {
+            _length = 0;
+            _width = 0;
+            _thickness = 0;
+            _diameter = 0;
+            _od = 0;
+            _id = 0;
+            _side1 = 0;
+            _side2 = 0;
+            _side3 = 0;
+            _perimeter = 0;
+            _noOfStart = 0;
+            _qty = 0;
+            _laserCost = 0;
+            _noOfBend = 0;
+            _bendRate = 0;
+            _bendTotalCost = 0;
+            _totalCost = 0;
+        }
+        public void CalculatePerimeter()
+        {
+            if (_operationNameSelectedID == 0 || _materialShapeSelectedID == 0)
+            {
+                ResetAllFields();
+            }
+
+            switch (MaterialShapeSelectedID)
+            {
+                case 1:
+                    Perimeter = 2 * (Length + Width);
+                    break;
+                case 2:
+                    Perimeter = 2 * (Length + Width);
+                    break;
+                case 3:
+                    Perimeter = 2 * (Length + Width);
+                    break;
+                case 4:
+                    Perimeter = Side1 + Side2;
+                    break;
+                case 5:
+                    Perimeter = 3.1416M * Diameter;
+                    break;
+                case 6:
+                    Perimeter = 3.1416M * OD;
+                    break;
+                case 7:
+                    Perimeter = 2 * (Length + Width);
+                    break;
+                case 8:
+                    Perimeter = 2 * (Side1 + Side2);
+                    break;
+                case 9:
+                    Perimeter = 2 * (Length + Width);
+                    break;
+                case 10:
+                    Perimeter = 2 * (Side1 + Side2);
+                    break;
+                case 11:
+                    Perimeter = Side1 + Side2 + Side3;
+                    break;
+                case 12:
+                    Perimeter = (2 * Length) + (3.1416M * Diameter);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void CalculateCost()
+        {
+            if(_operationNameSelectedID == 0)
+            {
+                LaserCost = 0;
+                BendTotalCost = 0;
+                TotalCost = 0;
+            }
+            else
+            {
+                CalculatePerimeter();
+                BendTotalCost = NoOfBend * BendRate;
+                if (NoOfStart > 0)
+                {
+                    LaserCost = Qty * ((Perimeter * 0.06M * Thickness) + (NoOfStart * 1 * Thickness));
+                }
+                else
+                {
+                    LaserCost = 0;
+                }
+
+                TotalCost = LaserCost + BendTotalCost;
+            }            
+        }
+
         public bool IsSideApplicableToTheShape(string sideName)
         {
             bool isSideApplicableToTheShape = true;

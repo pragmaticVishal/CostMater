@@ -37,6 +37,7 @@ namespace CostMater.DataGrids
             machiningGrid.AddNewRowText = "Click here to add new machining detail";
             machiningGrid.AddNewRowPosition = RowPosition.FixedBottom;
             machiningGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
+            machiningGrid.Style.AddNewRowStyle.TextColor = Color.White;
             machiningGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             machiningGrid.Style.HeaderStyle.Font.Bold = true;
             machiningGrid.Style.StackedHeaderStyle.Font.Bold = true;
@@ -49,11 +50,11 @@ namespace CostMater.DataGrids
             machiningGrid.AllowDeleting = true;
             machiningGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(21.0f);
             machiningGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
-            machiningGrid.AddNewRowInitiating += MachiningGrid_AddNewRowInitiating;
             machiningGrid.RecordDeleting += MachiningGrid_RecordDeleting;
             machiningGrid.CurrentCellBeginEdit += MachiningGrid_CurrentCellBeginEdit;
             machiningGrid.QueryCellStyle += MachiningGrid_QueryCellStyle;
             machiningGrid.RowValidating += MachiningGrid_RowValidating;
+            machiningGrid.CurrentCellActivating += MachiningGrid_CurrentCellActivating;
 
             NumberFormatInfo nfi = new NumberFormatInfo();
             nfi.NumberDecimalDigits = 0;
@@ -113,6 +114,44 @@ namespace CostMater.DataGrids
             ShowSummaryRow();
             machiningGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
+        }
+
+        private void MachiningGrid_CurrentCellActivating(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellActivatingEventArgs e)
+        {
+            if (e.DataRow.RowType == RowType.AddNewRow)
+            {
+                if (KeyStateHelper.IsKeyDown(Keys.Down))
+                {
+                    System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    return;
+                }
+                if (KeyStateHelper.IsKeyDown(Keys.Up))
+                {
+                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    return;
+                }
+                ObservableCollection<Process> lstProcess = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<Process>;
+                var process = new Process
+                {
+                    ProcessID = lstProcess == null ? 1 : lstProcess.Max(x => x.ProcessID) + 1,
+                    ComponentID = lstProcess[0].ComponentID,
+                    Component = lstProcess[0].Component,
+                    MachiningCostPerHour = 300,
+                };
+                process.PropertyChanged += Process_PropertyChanged;
+
+                lstProcess.Add(process);
+            }
+
+            //var machingOperation = e.DataRow.RowData as Process;
+            //if (!machingOperation.IsColumnApplicableToOperation(e.DataColumn.GridColumn.MappingName))
+            //{
+            //    if (KeyStateHelper.IsKeyDown(Keys.Tab))
+            //    {
+            //        System.Windows.Forms.SendKeys.Send("{TAB}");
+            //        return;
+            //    }
+            //}
         }
 
         private void ShowSummaryRow()
@@ -180,6 +219,12 @@ namespace CostMater.DataGrids
             }
             else
             {
+                ObservableCollection<Process> lstProcess = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<Process>;
+                int deleteIndex = lstProcess.IndexOf(process);
+                if (deleteIndex > -1)
+                {
+                    lstProcess.RemoveAt(deleteIndex);
+                }
                 process.PropertyChanged -= Process_PropertyChanged;
             }
         }
@@ -213,177 +258,9 @@ namespace CostMater.DataGrids
             var process = sender as Process;
             if (process != null)
             {
-                switch (process.ProcessTypeID)
-                {
-                    case 2:
-                        CalculateRPMForFaceTurning(process);
-                        CalculateMachiningTimeForFaceTurning(process);
-                        break;
-                    case 1:
-                    case 3:
-                    case 4:
-                        CalculateRPMForTurning(process);
-                        CalculateNoOfCutForTurning(process);
-                        CalculateMachiningTimeForTurning(process);
-                        break;
-                    case 5:
-                        CalculateRPMForDrilling(process);
-                        CalculateMachingTimeForDrilling(process);
-                        break;
-                    case 6:
-                        CalculateRPMForThreading(process);
-                        CalculateNoOfCutForThreading(process);
-                        CalculateMachingTimeForThreading(process);
-                        break;
-                    default:
-                        break;
-                }
-
-                process.MachiningCost = (process.MachiningTime * process.MachiningCostPerHour) / 60;
+                process.CalculateCost();
                 process.Component.RecalculateMachiningCost();
             }
-        }
-
-        private static void CalculateNoOfCutForTurning(Process process)
-        {
-            if (process.DepthOfCutEachPass != 0)
-            {
-                process.NoOfCuts = process.TotalDepthOfCut / process.DepthOfCutEachPass;
-            }
-            else
-            {
-                process.NoOfCuts = 0;
-            }
-        }
-
-        private static void CalculateNoOfCutForThreading(Process process)
-        {
-            if (process.ThreadPitch != 0)
-            {
-                process.NoOfCuts = 25 / (10 / process.ThreadPitch);
-            }
-            else
-            {
-                process.NoOfCuts = 0;
-            }
-        }
-
-        private static void CalculateMachiningTimeForTurning(Process process)
-        {
-            if (process.FeedRate != 0 && process.RPM != 0)
-            {
-                process.MachiningTime = (process.LengthOfCut * process.NoOfCuts) / (process.FeedRate * process.RPM);
-            }
-            else
-            {
-                process.MachiningTime = 0;
-            }
-        }
-
-        private static void CalculateMachiningTimeForFaceTurning(Process process)
-        {
-            if (process.FeedRate != 0 && process.RPM != 0)
-            {
-                process.MachiningTime = (process.LengthOfCut) / (process.FeedRate * process.RPM);
-            }
-            else
-            {
-                process.MachiningTime = 0;
-            }
-        }
-
-        private static void CalculateMachingTimeForDrilling(Process process)
-        {
-            if (process.FeedRate != 0 && process.RPM != 0)
-            {
-                process.MachiningTime = process.LengthOfHoleToDrill / (process.FeedRate * process.RPM);
-            }
-            else
-            {
-                process.MachiningTime = 0;
-            }
-        }
-
-        private static void CalculateMachingTimeForThreading(Process process)
-        {
-            if (process.FeedRate != 0 && process.RPM != 0)
-            {
-                process.MachiningTime = (process.LengthOfThreadToCut * process.NoOfCuts) / (process.FeedRate * process.RPM);
-            }
-            else
-            {
-                process.MachiningTime = 0;
-            }
-        }
-
-        private static void CalculateRPMForTurning(Process process)
-        {
-            process.Average = process.DiameterBeforeTurning + (process.DiameterAfterTurning / 2);
-            if (process.Average != 0)
-            {
-                process.RPM = 1000 * process.CuttingSpeed / (3.14M * process.Average);
-            }
-            else
-            {
-                process.RPM = 0;
-            }
-        }
-
-        private static void CalculateRPMForFaceTurning(Process process)
-        {
-            if (process.DiameterBeforeTurning != 0)
-            {
-                process.RPM = 1000 * process.CuttingSpeed / (3.14M * process.DiameterBeforeTurning);
-            }
-            else
-            {
-                process.RPM = 0;
-            }
-        }
-
-        private static void CalculateRPMForDrilling(Process process)
-        {
-            if (process.DrillSize != 0)
-            {
-                process.RPM = 1000 * process.CuttingSpeed / (3.14M * process.DrillSize);
-            }
-            else
-            {
-                process.RPM = 0;
-            }
-        }
-
-        private static void CalculateRPMForThreading(Process process)
-        {
-            if (process.ThreadDiameterToCut != 0)
-            {
-                process.RPM = 1000 * process.CuttingSpeed / (3.14M * process.ThreadDiameterToCut);
-            }
-            else
-            {
-                process.RPM = 0;
-            }
-        }
-
-        private void MachiningGrid_AddNewRowInitiating(object sender, Syncfusion.WinForms.DataGrid.Events.AddNewRowInitiatingEventArgs e)
-        {
-            ObservableCollection<Process> lstProcess = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<Process>;
-            var process = new Process
-            {
-                ProcessID = lstProcess == null ? 1 : lstProcess.Max(x => x.ProcessID) + 1,
-                ComponentID = lstProcess[0].ComponentID,
-                Component = lstProcess[0].Component,
-                MachiningCostPerHour = 300,
-                //ProcessTypeID = 1,
-                //ToolTypeID = 1,
-                //ToolSurfaceID = 1,
-                //CuttingSpeed = 40,
-                //FeedRate = 1.3M,
-                //DepthOfCutEachPass = 3.5M
-            };
-            process.PropertyChanged += Process_PropertyChanged;
-
-            e.NewObject = process;
         }
     }
 }

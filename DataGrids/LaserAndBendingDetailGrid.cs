@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -35,6 +36,7 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.AddNewRowText = "Click here to add new laser and bending detail";
             laserAndBendingDetailGrid.AddNewRowPosition = RowPosition.FixedBottom;
             laserAndBendingDetailGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
+            laserAndBendingDetailGrid.Style.AddNewRowStyle.TextColor = Color.White;
             laserAndBendingDetailGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             laserAndBendingDetailGrid.Style.HeaderStyle.Font.Bold = true;
             laserAndBendingDetailGrid.Style.StackedHeaderStyle.Font.Bold = true;
@@ -49,11 +51,10 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
 
             laserAndBendingDetailGrid.RecordDeleting += LaserAndBendingDetailGrid_RecordDeleting;
-            laserAndBendingDetailGrid.AddNewRowInitiating += LaserAndBendingDetailGrid_AddNewRowInitiating;
             laserAndBendingDetailGrid.CurrentCellBeginEdit += LaserAndBendingDetailGrid_CurrentCellBeginEdit;
             laserAndBendingDetailGrid.QueryCellStyle += LaserAndBendingDetailGrid_QueryCellStyle;
             laserAndBendingDetailGrid.RowValidating += LaserAndBendingDetailGrid_RowValidating;
-            //laserAndBendingDetailGrid.CurrentCellValidating += LaserAndBendingDetailGrid_CurrentCellValidating;
+            laserAndBendingDetailGrid.CurrentCellActivating += LaserAndBendingDetailGrid_CurrentCellActivating;
 
             laserAndBendingDetailGrid.Columns.Add(new GridComboBoxColumn { MappingName = "OperationNameSelectedID", HeaderText = "Operations", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new LaserAndBendingList(), Width = 180 });
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "LaserAndBendingDetailID", HeaderText = "Laser ID", AllowEditing = false });
@@ -90,6 +91,42 @@ namespace CostMater.DataGrids
             ShowSummaryRow();
             laserAndBendingDetailGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
+        }
+
+        private void LaserAndBendingDetailGrid_CurrentCellActivating(object sender, CurrentCellActivatingEventArgs e)
+        {
+            if (e.DataRow.RowType == RowType.AddNewRow)
+            {
+                if (KeyStateHelper.IsKeyDown(Keys.Down))
+                {
+                    System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    return;
+                }
+                if (KeyStateHelper.IsKeyDown(Keys.Up))
+                {
+                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    return;
+                }
+                ObservableCollection<LaserAndBendingDetail> lstLaserAndBendingDetail = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<LaserAndBendingDetail>;
+                LaserAndBendingDetail laserAndBendingDetail = new LaserAndBendingDetail
+                {
+                    LaserAndBendingDetailID = lstLaserAndBendingDetail == null ? 1 : lstLaserAndBendingDetail.Max(x => x.LaserAndBendingDetailID) + 1,
+                    ComponentID = lstLaserAndBendingDetail[0].ComponentID,
+                    Component = lstLaserAndBendingDetail[0].Component,
+                };
+                laserAndBendingDetail.PropertyChanged += LaserAndBendingDetail_PropertyChanged;
+                lstLaserAndBendingDetail.Add(laserAndBendingDetail);
+            }
+
+            //LaserAndBendingDetail laserAndBendingDetail1 = e.DataRow.RowData as LaserAndBendingDetail;
+            //if (e.DataRow.RowType == RowType.DefaultRow && !laserAndBendingDetail1.IsSideApplicableToTheShape(e.DataColumn.GridColumn.MappingName))
+            //{
+            //    if (KeyStateHelper.IsKeyDown(Keys.Tab))
+            //    {
+            //        System.Windows.Forms.SendKeys.Send("{TAB}");
+            //        return;
+            //    }
+            //}
         }
 
         private void ShowSummaryRow()
@@ -194,22 +231,14 @@ namespace CostMater.DataGrids
             }
             else
             {
+                ObservableCollection<LaserAndBendingDetail> lstLaserAndBendingDetail = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<LaserAndBendingDetail>;
+                int deleteIndex = lstLaserAndBendingDetail.IndexOf(laserAndBendingDetail);
+                if (deleteIndex > -1)
+                {
+                    lstLaserAndBendingDetail.RemoveAt(deleteIndex);
+                }
                 laserAndBendingDetail.PropertyChanged -= LaserAndBendingDetail_PropertyChanged;
             }
-        }
-
-        private void LaserAndBendingDetailGrid_AddNewRowInitiating(object sender, Syncfusion.WinForms.DataGrid.Events.AddNewRowInitiatingEventArgs e)
-        {
-            ObservableCollection<LaserAndBendingDetail> lstLaserAndBendingDetail = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<LaserAndBendingDetail>;
-            var laserAndBendingDetail = new LaserAndBendingDetail
-            {
-                LaserAndBendingDetailID = lstLaserAndBendingDetail == null ? 1 : lstLaserAndBendingDetail.Max(x => x.LaserAndBendingDetailID) + 1,
-                ComponentID = lstLaserAndBendingDetail[0].ComponentID,
-                Component = lstLaserAndBendingDetail[0].Component,
-            };
-            laserAndBendingDetail.PropertyChanged += LaserAndBendingDetail_PropertyChanged;
-
-            e.NewObject = laserAndBendingDetail;
         }
 
         public static void LstLaserAndBendingDetail_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) 
@@ -239,70 +268,9 @@ namespace CostMater.DataGrids
             var laserAndBendingDetail = sender as LaserAndBendingDetail;
             if (laserAndBendingDetail != null)
             {
-                CalculatePerimeter(laserAndBendingDetail);
-                CalculateCost(laserAndBendingDetail);
+                laserAndBendingDetail.CalculateCost();
                 laserAndBendingDetail.Component.RecalculateLaserAndBendingCost();
             }
-        }
-
-        private static void CalculatePerimeter(LaserAndBendingDetail laserAndBendingDetail)
-        {
-            switch (laserAndBendingDetail.MaterialShapeSelectedID)
-            {
-                case 1:
-                    laserAndBendingDetail.Perimeter = 2 * (laserAndBendingDetail.Length + laserAndBendingDetail.Width);
-                    break;
-                case 2:
-                    laserAndBendingDetail.Perimeter = 2 * (laserAndBendingDetail.Length + laserAndBendingDetail.Width);
-                    break;
-                case 3:
-                    laserAndBendingDetail.Perimeter = 2 * (laserAndBendingDetail.Length + laserAndBendingDetail.Width);
-                    break;
-                case 4:
-                    laserAndBendingDetail.Perimeter = laserAndBendingDetail.Side1 + laserAndBendingDetail.Side2;
-                    break;
-                case 5:
-                    laserAndBendingDetail.Perimeter = 3.1416M * laserAndBendingDetail.Diameter;
-                    break;
-                case 6:
-                    laserAndBendingDetail.Perimeter = 3.1416M * laserAndBendingDetail.OD;
-                    break;
-                case 7:
-                    laserAndBendingDetail.Perimeter = 2 * (laserAndBendingDetail.Length + laserAndBendingDetail.Width);
-                    break;
-                case 8:
-                    laserAndBendingDetail.Perimeter = 2 * (laserAndBendingDetail.Side1 + laserAndBendingDetail.Side2);
-                    break;
-                case 9:
-                    laserAndBendingDetail.Perimeter = 2 * (laserAndBendingDetail.Length + laserAndBendingDetail.Width);
-                    break;
-                case 10:
-                    laserAndBendingDetail.Perimeter = 2 * (laserAndBendingDetail.Side1 + laserAndBendingDetail.Side2);
-                    break;
-                case 11:
-                    laserAndBendingDetail.Perimeter = laserAndBendingDetail.Side1 + laserAndBendingDetail.Side2 + laserAndBendingDetail.Side3;
-                    break;
-                case 12:
-                    laserAndBendingDetail.Perimeter = (2 * laserAndBendingDetail.Length) + (3.1416M * laserAndBendingDetail.Diameter);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private static void CalculateCost(LaserAndBendingDetail laserAndBendingDetail)
-        {
-            laserAndBendingDetail.BendTotalCost = laserAndBendingDetail.NoOfBend * laserAndBendingDetail.BendRate;
-            if (laserAndBendingDetail.NoOfStart > 0)
-            {
-                laserAndBendingDetail.LaserCost = laserAndBendingDetail.Qty * ((laserAndBendingDetail.Perimeter * 0.06M * laserAndBendingDetail.Thickness) + (laserAndBendingDetail.NoOfStart * 1 * laserAndBendingDetail.Thickness));
-            }
-            else
-            {
-                laserAndBendingDetail.LaserCost = 0;
-            }
-
-            laserAndBendingDetail.TotalCost = laserAndBendingDetail.LaserCost + laserAndBendingDetail.BendTotalCost;
         }
     }
 }

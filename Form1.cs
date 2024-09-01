@@ -45,15 +45,15 @@ namespace DetailsView
             componentGrid1 = new ComponentGrid(this.componentGrid, lstComponent);
             componentGrid1.Setup();
 
-            SfDataGrid machiningGrid = new SfDataGrid();
+            SfDataGrid machiningGrid = new SfDataGrid() { Parent = componentGrid};
             MachiningGrid machiningGrid1 = new MachiningGrid(machiningGrid);
             machiningGrid1.Setup();
 
-            SfDataGrid oneTimeOperationGrid = new SfDataGrid();
+            SfDataGrid oneTimeOperationGrid = new SfDataGrid() { Parent = componentGrid};
             OneTimeOperationGrid oneTimeOperationGrid1 = new OneTimeOperationGrid(oneTimeOperationGrid);
             oneTimeOperationGrid1.Setup();
 
-            SfDataGrid laserAndBendingDetailGrid = new SfDataGrid();
+            SfDataGrid laserAndBendingDetailGrid = new SfDataGrid() { Parent = componentGrid};
             LaserAndBendingDetailGrid laserAndBendingDetailGrid1 = new LaserAndBendingDetailGrid(laserAndBendingDetailGrid);
             laserAndBendingDetailGrid1.Setup();
 
@@ -269,5 +269,10 @@ namespace DetailsView
 #endif
         }
         #endregion
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }

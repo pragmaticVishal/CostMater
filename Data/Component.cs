@@ -1,4 +1,5 @@
 ﻿using CostMater.Data;
+using Syncfusion.Data.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,45 +63,6 @@ namespace DetailsView.Data
             get => _componentID;
             set
             {
-                if (_lstProcess == null)
-                {
-                    _lstProcess = new ObservableCollection<Process>();
-                    _lstProcess.Add(new Process
-                    {
-                        ComponentID = value,
-                        ProcessID = 1,
-                        ProcessTypeID = 0,
-                        ToolTypeID = 0,
-                        ToolSurfaceID = 0,
-                        MachiningCostPerHour = 300,
-                        //CuttingSpeed = 40,
-                        //FeedRate = 1.3M,
-                        //DepthOfCutEachPass = 3.5M,
-                        Component = this,
-                    });
-                };
-                if(_lstOneTimeOperationDetail == null)
-                {
-                    _lstOneTimeOperationDetail = new ObservableCollection<OneTimeOperationDetail>();
-                    _lstOneTimeOperationDetail.Add(new OneTimeOperationDetail()
-                    {
-                        ComponentID = value,
-                        OnetimeOpDetailID = 1,
-                        OneTimeOpItemSelectedID = 0,
-                        Component = this,
-                    });
-                }
-                if(_lstLaserAndBendingDetail == null)
-                {
-                    _lstLaserAndBendingDetail = new ObservableCollection<LaserAndBendingDetail>();
-                    _lstLaserAndBendingDetail.Add(new LaserAndBendingDetail() 
-                    {
-                        ComponentID = value,
-                        LaserAndBendingDetailID = 1,
-                        MaterialShapeSelectedID = 0,
-                        Component = this,
-                    });
-                }
                 _componentID = value;
                 RaisePropertyChanged(nameof(ComponentID));
             }
@@ -140,7 +102,6 @@ namespace DetailsView.Data
         }
 
         [Display(Name = "Material Type")]
-        [Required(ErrorMessage = "Material Type is required.")]
         public int MaterialTypeID
         {
             get => _materialTypeID;
@@ -684,7 +645,7 @@ namespace DetailsView.Data
             }
             TotalMachiningCost = machiningCost;
 
-            CalculateCost();
+            //CalculateCost();
         }
 
         internal void RecalculateOneTimeOperationCost()
@@ -697,14 +658,14 @@ namespace DetailsView.Data
             Others_BO = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 6).Sum(x => x.Amount);
             HardwareCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 7).Sum(x => x.Amount);
 
-            CalculateCost();
+            //CalculateCost();
         }
 
         internal void RecalculateLaserAndBendingCost()
         {
             LaserCost = LstLaserAndBendingDetail.Sum(x=>x.LaserCost);
             BendTotalCost = LstLaserAndBendingDetail.Sum(x=>x.BendTotalCost);
-            CalculateCost();
+            //CalculateCost();
         }
 
         private void CalculateNetWeight()
@@ -746,14 +707,37 @@ namespace DetailsView.Data
             }
         }
 
-        internal void CalculateCost()
+        public void ResetAllFields()
         {
+            _qty = 0;
+            _length = 0;
+            _width = 0;
+            _thickness = 0;
+            _diameter = 0;
+            _od = 0;
+            _id = 0;
+            _side1 = 0;
+            _side2 = 0;
+            _netWeight = 0;
+            _grossWeight = 0;
+            _perimeter = 0;
+            _rawMaterialRate = 0;
+        }
+
+        public void CalculateCost()
+        {
+            if(MaterialTypeID == 0)
+            {   
+                ResetAllFields();
+            }
             CalculateNetWeight();
             GrossWeight = NetWeight * 1.2M;
             RawMaterialCost = GrossWeight * RawMaterialRate;
             LabourCostPerPart = LaserCost + BendTotalCost + ProcurementCost + FabricationTotalCost + SurfaceTreatmentCost + TotalMachiningCost + GrindingCost + Others_BO + HardwareCost + MiscellaneousCost;
             TotalCostPerPart = LabourCostPerPart + RawMaterialCost;
             TotalCost = TotalCostPerPart * Qty;
+            LstOneTimeOperationDetail.ForEach(x => x.CalculateCost());
+            LstLaserAndBendingDetail.ForEach(x => x.CalculateCost());
         }
 
         public bool IsSideApplicableToTheShape(string sideName)
@@ -840,6 +824,20 @@ namespace DetailsView.Data
                     Side2 = 0;
                     break;
             }
+        }
+
+        internal bool AllowMaterialIdReset(int materialTypeId)
+        {
+            bool allow = true;
+            if(materialTypeId == 0)
+            {
+                if (LaserCost > 0 || BendTotalCost > 0 || TotalMachiningCost > 0)
+                {
+                    allow = false;
+                }
+            }            
+
+            return allow;
         }
     }
 }

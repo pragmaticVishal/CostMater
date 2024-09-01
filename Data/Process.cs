@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Text.Json.Serialization;
 using CostMater.Data;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics;
 
 namespace DetailsView.Data
 {
@@ -544,6 +545,187 @@ namespace DetailsView.Data
                 case nameof(Process.NoOfCuts):
                     NoOfCuts = 0;
                     break;
+            }
+        }
+
+        public void ResetAllFields() 
+        {
+            _toolTypeID = 0;
+            _toolTypeName = "";
+            _toolSurfaceID = 0;
+            _toolSurfaceName = "";
+            _cuttingSpeed = 0;
+            _feedRate = 0;
+            _drillSize = 0;
+            _threadDiameterToCut = 0;
+            _threadPitch = 0;
+            _diameterBeforeTurning = 0;
+            _diameterAfterTurning = 0;
+            _rpm = 0;
+            _depthOfCutEachPass = 0;
+            _noOfCuts = 0;
+            _lengthOfCut = 0;
+            _lengthOfHoleToDrill = 0;
+            _lengthOfThreadToCut = 0;
+            _machingTime = 0;
+            _machiningCostPerHour = 0;
+            _machiningCost = 0;
+            _average = 0;
+            _totalDepthOfCut = 0;
+        }
+        public void CalculateCost()
+        {
+            if(ProcessTypeID == 0)
+            {
+                ResetAllFields();
+            }
+            switch (ProcessTypeID)
+            {
+                case 2:
+                    CalculateRPMForFaceTurning();
+                    CalculateMachiningTimeForFaceTurning();
+                    break;
+                case 1:
+                case 3:
+                case 4:
+                    CalculateRPMForTurning();
+                    CalculateNoOfCutForTurning();
+                    CalculateMachiningTimeForTurning();
+                    break;
+                case 5:
+                    CalculateRPMForDrilling();
+                    CalculateMachingTimeForDrilling();
+                    break;
+                case 6:
+                    CalculateRPMForThreading();
+                    CalculateNoOfCutForThreading();
+                    CalculateMachingTimeForThreading();
+                    break;
+                default:
+                    break;
+            }
+
+            MachiningCost = (MachiningTime * MachiningCostPerHour) / 60;
+        }
+
+        private void CalculateNoOfCutForTurning()
+        {
+            if (DepthOfCutEachPass != 0)
+            {
+                NoOfCuts = TotalDepthOfCut / DepthOfCutEachPass;
+            }
+            else
+            {
+                NoOfCuts = 0;
+            }
+        }
+
+        private void CalculateNoOfCutForThreading()
+        {
+            if (ThreadPitch != 0)
+            {
+                NoOfCuts = 25 / (10 / ThreadPitch);
+            }
+            else
+            {
+                NoOfCuts = 0;
+            }
+        }
+
+        private void CalculateMachiningTimeForTurning()
+        {
+            if (FeedRate != 0 && RPM != 0)
+            {
+                MachiningTime = (LengthOfCut * NoOfCuts) / (FeedRate * RPM);
+            }
+            else
+            {
+                MachiningTime = 0;
+            }
+        }
+
+        private void CalculateMachiningTimeForFaceTurning()
+        {
+            if (FeedRate != 0 && RPM != 0)
+            {
+                MachiningTime = (LengthOfCut) / (FeedRate * RPM);
+            }
+            else
+            {
+                MachiningTime = 0;
+            }
+        }
+
+        private void CalculateMachingTimeForDrilling()
+        {
+            if (FeedRate != 0 && RPM != 0)
+            {
+                MachiningTime = LengthOfHoleToDrill / (FeedRate * RPM);
+            }
+            else
+            {
+                MachiningTime = 0;
+            }
+        }
+
+        private void CalculateMachingTimeForThreading()
+        {
+            if (FeedRate != 0 && RPM != 0)
+            {
+                MachiningTime = (LengthOfThreadToCut * NoOfCuts) / (FeedRate * RPM);
+            }
+            else
+            {
+                MachiningTime = 0;
+            }
+        }
+
+        private void CalculateRPMForTurning()
+        {
+            Average = DiameterBeforeTurning + (DiameterAfterTurning / 2);
+            if (Average != 0)
+            {
+                RPM = 1000 * CuttingSpeed / (3.14M * Average);
+            }
+            else
+            {
+                RPM = 0;
+            }
+        }
+
+        private void CalculateRPMForFaceTurning()
+        {
+            if (DiameterBeforeTurning != 0)
+            {
+                RPM = 1000 * CuttingSpeed / (3.14M * DiameterBeforeTurning);
+            }
+            else
+            {
+                RPM = 0;
+            }
+        }
+
+        private void CalculateRPMForDrilling()
+        {
+            if (DrillSize != 0)
+            {
+                RPM = 1000 * CuttingSpeed / (3.14M * DrillSize);
+            }
+            else
+            {
+                RPM = 0;
+            }
+        }
+
+        private void CalculateRPMForThreading()
+        {
+            if (ThreadDiameterToCut != 0)
+            {
+                RPM = 1000 * CuttingSpeed / (3.14M * ThreadDiameterToCut);
+            }
+            else
+            {
+                RPM = 0;
             }
         }
     }

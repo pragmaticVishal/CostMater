@@ -52,6 +52,7 @@ namespace CostMater.DataGrids
             _componentGrid.AddNewRowText = "Click here to add new component detail";
             _componentGrid.AddNewRowPosition = RowPosition.FixedBottom;
             _componentGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
+            _componentGrid.Style.AddNewRowStyle.TextColor = Color.White;
             _componentGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             _componentGrid.Style.HeaderStyle.Font.Bold = true;
             _componentGrid.Style.StackedHeaderStyle.Font.Bold = true;
@@ -62,35 +63,15 @@ namespace CostMater.DataGrids
             _componentGrid.AutoGenerateColumns = false;
 
             _componentGrid.DataSource = _lstComponent;
-            _componentGrid.AllowGrouping = false;
-            _componentGrid.ShowGroupDropArea = false;
+            _componentGrid.AllowGrouping = true;
+            _componentGrid.ShowGroupDropArea = true;
             _componentGrid.AllowDeleting = true;
-            _componentGrid.AddNewRowInitiating += ComponentGrid_AddNewRowInitiating;
             _componentGrid.QueryCellStyle += ComponentGrid_QueryCellStyle;
             _componentGrid.CurrentCellBeginEdit += _componentGrid_CurrentCellBeginEdit;
             _componentGrid.RowValidating += ComponentGrid_RowValidating;
-            _componentGrid.RecordDeleting += (sender, e) =>
-            {
-                if (_lstComponent.Count == 1)
-                {
-                    MessageBoxAdv.Show("Atleast one component is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    e.Cancel = true; // Cancel the deletion
-                }
-                else
-                {
-                    var component = e.Items[0] as Component;
-                    if (component != null)
-                    {
-                        component.PropertyChanged -= Component_PropertyChanged;
-                        component.LstProcess.CollectionChanged -= MachiningGrid.LstProcess_CollectionChanged;
-                        component.LstProcess?.ForEach(p => p.PropertyChanged -= MachiningGrid.Process_PropertyChanged);
-                        component.LstOneTimeOperationDetail.CollectionChanged -= OneTimeOperationGrid.LstOneTimeOperation_CollectionChanged;
-                        component.LstOneTimeOperationDetail?.ForEach(p => p.PropertyChanged -= OneTimeOperationGrid.OneTimeOperation_PropertyChanged);
-                        component.LstLaserAndBendingDetail.CollectionChanged -= LaserAndBendingDetailGrid.LstLaserAndBendingDetail_CollectionChanged;
-                        component.LstLaserAndBendingDetail?.ForEach(p => p.PropertyChanged -= LaserAndBendingDetailGrid.LaserAndBendingDetail_PropertyChanged);
-                    }
-                }
-            };
+            _componentGrid.RecordDeleting += ComponentGrid_RecordDeleting;
+            _componentGrid.CurrentCellValidating += _componentGrid_CurrentCellValidating;
+            _componentGrid.CurrentCellActivating += _componentGrid_CurrentCellActivating;
             _componentGrid.ShowRowHeaderErrorIcon = true;
             _componentGrid.ValidationMode = GridValidationMode.InEdit;
             _componentGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
@@ -116,22 +97,22 @@ namespace CostMater.DataGrids
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "NetWeight", HeaderText = "Net Weight", AllowEditing = false });
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "GrossWeight", HeaderText = "Gross Weight", AllowEditing = false });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "LaserCost", HeaderText = "Laser Cost", AllowEditing = false });
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Bending Cost", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "LaserCost", HeaderText = "Laser Cost", AllowEditing = false, Width = 120 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Bending Cost", AllowEditing = false, Width = 120 });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "ProcurementCost", HeaderText = "Cost", AllowEditing = false, Width = 100 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "ProcurementCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "FabricationTotalCost", HeaderText = "Cost", AllowEditing = false, Width = 100 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "FabricationTotalCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
 
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "SurfaceTreatmentCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalMachiningCost", HeaderText = "Cost", AllowEditing = false, Width = 100 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalMachiningCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "GrindingCost", HeaderText = "Cost", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "GrindingCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "Others_BO", HeaderText = "Cost", AllowEditing = false, Width = 100 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "Others_BO", HeaderText = "Cost", AllowEditing = false, Width = 120 });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "HardwareCost", HeaderText = "Cost", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "HardwareCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
 
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "MiscellaneousCost", HeaderText = "Cost", AllowEditing = false, Width = 100 });
 
@@ -140,9 +121,9 @@ namespace CostMater.DataGrids
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialRate", HeaderText = "Rate" });
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialCost", HeaderText = "Amount", AllowEditing = false });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalCostPerPart", HeaderText = "Total Cost Per Part", AllowEditing = false, AllowHeaderTextWrapping = true });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalCostPerPart", HeaderText = "Total Cost Per Part", AllowEditing = false, AllowHeaderTextWrapping = true, Width = 150 });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalCost", HeaderText = "Total Cost", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalCost", HeaderText = "Total Cost", AllowEditing = false, Width = 150 });
 
             StackedHeaderRow stackedHeaderRow = new StackedHeaderRow();
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ComponentID,PartName,DrawingNo", HeaderText = "Component Details" });
@@ -164,9 +145,6 @@ namespace CostMater.DataGrids
 
             foreach (var column in _componentGrid.Columns)
             {
-                //column.HeaderStyle.BackColor = Color.SlateBlue;
-                //column.HeaderStyle.TextColor = Color.White; // Optional: Set text color
-                //column.HeaderStyle.Font.Bold = true; // Optional: Make header text bold
                 if (!column.AllowEditing)
                 {
                     column.CellStyle.BackColor = Color.LightGray;
@@ -178,22 +156,188 @@ namespace CostMater.DataGrids
             #endregion
         }
 
+        private void _componentGrid_CurrentCellValidating(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellValidatingEventArgs e)
+        {
+            var component = e.RowData as Component;
+
+            if (e.Column.MappingName == "MaterialShapeSelectedID" && !component.AllowMaterialIdReset(Convert.ToInt32(e.NewValue)))
+            {
+                MessageBoxAdv.Show("Error");
+                e.IsValid = false;
+            }
+        }
+
+        private void _componentGrid_CurrentCellActivating(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellActivatingEventArgs e)
+        {
+            if (e.DataRow.RowType == RowType.AddNewRow)
+            {
+                if (KeyStateHelper.IsKeyDown(Keys.Down))
+                {
+                    System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    return;
+                }
+                if (KeyStateHelper.IsKeyDown(Keys.Up))
+                {
+                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    return;
+                }
+                ObservableCollection<Component> lstComponent = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<Component>;
+                int componentId = lstComponent == null ? 1 : lstComponent.Max(x => x.ComponentID) + 1;
+                Component component = ComponentRepository.CreateComponent(componentId);
+                component.PropertyChanged += Component_PropertyChanged;
+                component.LstProcess.CollectionChanged += MachiningGrid.LstProcess_CollectionChanged;
+                component.LstProcess?.ForEach(p => p.PropertyChanged += MachiningGrid.Process_PropertyChanged);
+                component.LstLaserAndBendingDetail.CollectionChanged += LaserAndBendingDetailGrid.LstLaserAndBendingDetail_CollectionChanged;
+                component.LstLaserAndBendingDetail?.ForEach(p => p.PropertyChanged += LaserAndBendingDetailGrid.LaserAndBendingDetail_PropertyChanged);
+                component.LstOneTimeOperationDetail.CollectionChanged += OneTimeOperationGrid.LstOneTimeOperation_CollectionChanged;
+                component.LstOneTimeOperationDetail?.ForEach(p => p.PropertyChanged += OneTimeOperationGrid.OneTimeOperation_PropertyChanged);
+                lstComponent.Add(component);
+            }
+
+            //if (e.DataRow.RowType == RowType.DefaultRow && e.DataColumn?.GridColumn != null && e.DataColumn.GridColumn.AllowEditing == false)
+            //{
+            //    if (KeyStateHelper.IsKeyDown(Keys.Tab))
+            //    {
+            //        //e.Cancel = true;
+            //        System.Windows.Forms.SendKeys.Send("{TAB}");
+            //        return;
+            //    }
+            //};
+        }
+
+        private void ComponentGrid_RecordDeleting(object sender, Syncfusion.WinForms.DataGrid.Events.RecordDeletingEventArgs e)
+        {
+            if (_lstComponent.Count == 1)
+            {
+                MessageBoxAdv.Show("Atleast one component is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                e.Cancel = true; // Cancel the deletion
+            }
+            else
+            {
+                var component = e.Items[0] as Component;
+                if (component != null)
+                {
+                    component.PropertyChanged -= Component_PropertyChanged;
+                    component.LstProcess.CollectionChanged -= MachiningGrid.LstProcess_CollectionChanged;
+                    component.LstProcess?.ForEach(p => p.PropertyChanged -= MachiningGrid.Process_PropertyChanged);
+                    component.LstOneTimeOperationDetail.CollectionChanged -= OneTimeOperationGrid.LstOneTimeOperation_CollectionChanged;
+                    component.LstOneTimeOperationDetail?.ForEach(p => p.PropertyChanged -= OneTimeOperationGrid.OneTimeOperation_PropertyChanged);
+                    component.LstLaserAndBendingDetail.CollectionChanged -= LaserAndBendingDetailGrid.LstLaserAndBendingDetail_CollectionChanged;
+                    component.LstLaserAndBendingDetail?.ForEach(p => p.PropertyChanged -= LaserAndBendingDetailGrid.LaserAndBendingDetail_PropertyChanged);
+                }
+            }
+        }
+
         private void ShowSummaryRow()
         {
+            _componentGrid.Style.TableSummaryRowStyle.HorizontalAlignment = HorizontalAlignment.Right;
             _componentGrid.TableSummaryRows.Add(new GridTableSummaryRow()
             {
                 Name = "tableSumamryTrue",
-                ShowSummaryInRow = true,
-                Title = "Total cost for all components : {AllComponentCost}",
+                ShowSummaryInRow = false,
+                Title = "Total cost for all components : ",
+                TitleColumnCount = 3,
+                Position = VerticalPosition.Bottom,
                 SummaryColumns = new System.Collections.ObjectModel.ObservableCollection<Syncfusion.Data.ISummaryColumn>()
                 {
                     new GridSummaryColumn()
                     {
-                        Name = "AllComponentCost",
+                        Name = "LaserCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="LaserCost",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "BendTotalCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="BendTotalCost",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "ProcurementCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="ProcurementCost",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "FabricationTotalCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="FabricationTotalCost",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "SurfaceTreatmentCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="SurfaceTreatmentCost",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "HardwareCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="HardwareCost",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "Others_BO",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="Others_BO",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "TotalMachiningCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="TotalMachiningCost",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "MiscellaneousCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="MiscellaneousCost",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "LabourCostPerPart",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="LabourCostPerPart",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "RawMaterialCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="RawMaterialCost",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "TotalCost",
                         SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
                         Format="{Sum:c}",
                         MappingName="TotalCost",
-                    }
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "GrindingCost",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="GrindingCost",
+                    },
+                    new GridSummaryColumn()
+                    {
+                        Name = "TotalCostPerPart",
+                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
+                        Format="{Sum:c}",
+                        MappingName="TotalCostPerPart",
+                    },
                 }
             });
 
@@ -207,25 +351,6 @@ namespace CostMater.DataGrids
             {
                 e.Cancel = true;
             }
-        }
-
-        private void ComponentGrid_AddNewRowInitiating(object sender, Syncfusion.WinForms.DataGrid.Events.AddNewRowInitiatingEventArgs e)
-        {
-            ObservableCollection<Component> lstComponent = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<Component>;
-            var component = new Component
-            {
-                ComponentID = lstComponent == null ? 1 : lstComponent.Max(x => x.ComponentID) + 1,
-                MaterialTypeID = 0,
-                MaterialID = 0,
-            };
-            component.PropertyChanged += Component_PropertyChanged;
-            component.LstProcess.CollectionChanged += MachiningGrid.LstProcess_CollectionChanged;
-            component.LstProcess?.ForEach(p => p.PropertyChanged += MachiningGrid.Process_PropertyChanged);
-            component.LstLaserAndBendingDetail.CollectionChanged += LaserAndBendingDetailGrid.LstLaserAndBendingDetail_CollectionChanged;
-            component.LstLaserAndBendingDetail?.ForEach(p => p.PropertyChanged += LaserAndBendingDetailGrid.LaserAndBendingDetail_PropertyChanged);
-            component.LstOneTimeOperationDetail.CollectionChanged += OneTimeOperationGrid.LstOneTimeOperation_CollectionChanged;
-            component.LstOneTimeOperationDetail?.ForEach(p => p.PropertyChanged += OneTimeOperationGrid.OneTimeOperation_PropertyChanged);
-            e.NewObject = component;
         }
 
         public static void Component_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -271,6 +396,12 @@ namespace CostMater.DataGrids
         private void ComponentGrid_RowValidating(object sender, Syncfusion.WinForms.DataGrid.Events.RowValidatingEventArgs e)
         {
             var component = e.DataRow.RowData as Component;
+
+            if (!component.AllowMaterialIdReset(component.MaterialTypeID))
+            {
+                MessageBoxAdv.Show("Error");
+                e.IsValid = false;
+            }
 
             foreach (var column in _componentGrid.Columns)
             {
