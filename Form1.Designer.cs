@@ -56,29 +56,37 @@ namespace DetailsView
             // 
             componentGrid.AccessibleName = "Table";
             componentGrid.AddNewRowPosition = Syncfusion.WinForms.DataGrid.Enums.RowPosition.Top;
+            componentGrid.AllowResizingColumns = true;
+            componentGrid.AllowTriStateSorting = true;
             componentGrid.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            componentGrid.Location = new System.Drawing.Point(14, 27);
-            componentGrid.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            componentGrid.AutoGenerateColumns = false;
+            componentGrid.Location = new System.Drawing.Point(17, 33);
+            componentGrid.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
             componentGrid.Name = "componentGrid";
             componentGrid.RowHeight = 21;
-            componentGrid.Size = new System.Drawing.Size(926, 559);
+            componentGrid.ShowHeaderToolTip = true;
+            componentGrid.ShowToolTip = true;
+            componentGrid.Size = new System.Drawing.Size(1201, 530);
             componentGrid.TabIndex = 0;
             componentGrid.Text = "sfDataGrid1";
+            componentGrid.ValidationMode = Syncfusion.WinForms.DataGrid.Enums.GridValidationMode.InEdit;
             // 
             // menuStrip1
             // 
             menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem1, openToolStripMenuItem, saveToolStripMenuItem1, exportToolStripMenuItem1 });
             menuStrip1.Location = new System.Drawing.Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new System.Drawing.Size(954, 24);
+            menuStrip1.Padding = new System.Windows.Forms.Padding(8, 4, 0, 4);
+            menuStrip1.Size = new System.Drawing.Size(1233, 27);
             menuStrip1.TabIndex = 1;
             menuStrip1.Text = "menuStrip1";
             // 
             // toolStripMenuItem1
             // 
             toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem1, saveToolStripMenuItem, exportToolStripMenuItem, exitToolStripMenuItem });
+            toolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
             toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new System.Drawing.Size(37, 20);
+            toolStripMenuItem1.Size = new System.Drawing.Size(38, 19);
             toolStripMenuItem1.Text = "File";
             // 
             // openToolStripMenuItem1
@@ -115,35 +123,39 @@ namespace DetailsView
             // 
             // openToolStripMenuItem
             // 
+            openToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            openToolStripMenuItem.Size = new System.Drawing.Size(49, 19);
             openToolStripMenuItem.Text = "Open";
             openToolStripMenuItem.Click += Form1_CtrlOPressed;
             // 
             // saveToolStripMenuItem1
             // 
+            saveToolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
             saveToolStripMenuItem1.Name = "saveToolStripMenuItem1";
-            saveToolStripMenuItem1.Size = new System.Drawing.Size(43, 20);
+            saveToolStripMenuItem1.Size = new System.Drawing.Size(46, 19);
             saveToolStripMenuItem1.Text = "Save";
             saveToolStripMenuItem1.Click += Form1_CtrlSPressed;
             // 
             // exportToolStripMenuItem1
             // 
+            exportToolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
             exportToolStripMenuItem1.Name = "exportToolStripMenuItem1";
-            exportToolStripMenuItem1.Size = new System.Drawing.Size(53, 20);
+            exportToolStripMenuItem1.Size = new System.Drawing.Size(56, 19);
             exportToolStripMenuItem1.Text = "Export";
             exportToolStripMenuItem1.Click += Form1_CtrlEPressed;
             // 
             // Form1
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(954, 600);
+            ClientSize = new System.Drawing.Size(1233, 576);
             Controls.Add(componentGrid);
             Controls.Add(menuStrip1);
+            Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
-            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
             Name = "Form1";
             Text = "CostMater";
             ((System.ComponentModel.ISupportInitialize)componentGrid).EndInit();

@@ -186,5 +186,10 @@ namespace CostMater.Data
 
             return isColumnApplicableToOperation;
         }
+
+        internal bool AllowOperation(int operationId)
+        {
+            return !(operationId > 0 && Component.RawMaterialCost == 0);
+        }
     }
 }

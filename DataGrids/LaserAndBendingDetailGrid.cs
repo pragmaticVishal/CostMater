@@ -5,6 +5,7 @@ using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
 using Syncfusion.WinForms.DataGrid.Events;
+using Syncfusion.WinForms.Input.Enums;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -32,6 +33,10 @@ namespace CostMater.DataGrids
         {
             #region laserAndBendingDetailGrid
             laserAndBendingDetailGrid.SelectionController = new RowSelectionControllerExt(laserAndBendingDetailGrid);
+            laserAndBendingDetailGrid.AllowResizingColumns = true;
+            laserAndBendingDetailGrid.AllowTriStateSorting = true;
+            laserAndBendingDetailGrid.ShowHeaderToolTip = true;
+            laserAndBendingDetailGrid.ShowToolTip = true;
             laserAndBendingDetailGrid.EditMode = EditMode.SingleClick;
             laserAndBendingDetailGrid.AddNewRowText = "Click here to add new laser and bending detail";
             laserAndBendingDetailGrid.AddNewRowPosition = RowPosition.FixedBottom;
@@ -49,18 +54,22 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.AllowDeleting = true;
             laserAndBendingDetailGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(21.0f);
             laserAndBendingDetailGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
+            laserAndBendingDetailGrid.SelectionMode = GridSelectionMode.Extended;
+            laserAndBendingDetailGrid.CopyOption = CopyOptions.IncludeHeaders;
+            laserAndBendingDetailGrid.PasteOption = PasteOptions.PasteData;
 
             laserAndBendingDetailGrid.RecordDeleting += LaserAndBendingDetailGrid_RecordDeleting;
             laserAndBendingDetailGrid.CurrentCellBeginEdit += LaserAndBendingDetailGrid_CurrentCellBeginEdit;
             laserAndBendingDetailGrid.QueryCellStyle += LaserAndBendingDetailGrid_QueryCellStyle;
+            laserAndBendingDetailGrid.CurrentCellValidating += LaserAndBendingDetailGrid_CurrentCellValidating;
             laserAndBendingDetailGrid.RowValidating += LaserAndBendingDetailGrid_RowValidating;
             laserAndBendingDetailGrid.CurrentCellActivating += LaserAndBendingDetailGrid_CurrentCellActivating;
 
-            laserAndBendingDetailGrid.Columns.Add(new GridComboBoxColumn { MappingName = "OperationNameSelectedID", HeaderText = "Operations", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new LaserAndBendingList(), Width = 180 });
+            laserAndBendingDetailGrid.Columns.Add(new GridComboBoxColumn { MappingName = "OperationNameSelectedID", HeaderText = "Operations", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new LaserAndBendingList(), Width = 210 });
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "LaserAndBendingDetailID", HeaderText = "Laser ID", AllowEditing = false });
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "DrawingNo", HeaderText = "Drawing / Part No.", AllowEditing = false });
-            laserAndBendingDetailGrid.Columns.Add(new GridComboBoxColumn { MappingName = "MaterialShapeSelectedID", HeaderText = "Material Shape", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new MaterialShapeList() });
+            laserAndBendingDetailGrid.Columns.Add(new GridComboBoxColumn { MappingName = "MaterialShapeSelectedID", HeaderText = "Material Profile", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new MaterialShapeList() });
 
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Length", HeaderText = "Length" });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Width", HeaderText = "Width" });
@@ -74,10 +83,10 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Perimeter", HeaderText = "Perimeter" });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "NoOfStart", HeaderText = "No. of start" });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Qty", HeaderText = "Qty" });
-            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "LaserCost", HeaderText = "Laser Cost", AllowEditing = false });
+            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "LaserCost", HeaderText = "Laser Cost", AllowEditing = false, FormatMode = FormatMode.Currency });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "NoOfBend", HeaderText = "No. of bend" });
-            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "BendRate", HeaderText = "Rate" });
-            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Bending Cost", AllowEditing = false });
+            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "BendRate", HeaderText = "Rate", FormatMode = FormatMode.Currency });
+            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Bending Cost", AllowEditing = false, FormatMode = FormatMode.Currency });
 
 
             foreach (var column in laserAndBendingDetailGrid.Columns)
@@ -91,6 +100,17 @@ namespace CostMater.DataGrids
             ShowSummaryRow();
             laserAndBendingDetailGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
+        }
+
+        private void LaserAndBendingDetailGrid_CurrentCellValidating(object sender, CurrentCellValidatingEventArgs e)
+        {
+            var laserAndBendingDetail = e.RowData as LaserAndBendingDetail;
+
+            if (e.Column.MappingName == "OperationNameSelectedID" && !laserAndBendingDetail.AllowOperation(Convert.ToInt32(e.NewValue)))
+            {
+                MessageBoxAdv.Show("Cannot add laser and bending without component raw material cost. Please update component raw material cost and then retry.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                e.IsValid = false;
+            }
         }
 
         private void LaserAndBendingDetailGrid_CurrentCellActivating(object sender, CurrentCellActivatingEventArgs e)
@@ -131,11 +151,15 @@ namespace CostMater.DataGrids
 
         private void ShowSummaryRow()
         {
+            laserAndBendingDetailGrid.Style.TableSummaryRowStyle.HorizontalAlignment = HorizontalAlignment.Right;
+            laserAndBendingDetailGrid.Style.TableSummaryRowStyle.Font.Bold = true;
             laserAndBendingDetailGrid.TableSummaryRows.Add(new GridTableSummaryRow()
             {
                 Name = "tableSumamryTrue",
-                ShowSummaryInRow = true,
-                Title = "Total cost for laser work is {AllLaserCost} and for bending work is {AllBendingCost}",
+                ShowSummaryInRow = false,
+                Title = "Total cost for laser and bending work : ",
+                TitleColumnCount = 4,
+                Position = VerticalPosition.Bottom,
                 SummaryColumns = new System.Collections.ObjectModel.ObservableCollection<Syncfusion.Data.ISummaryColumn>()
                 {
                     new GridSummaryColumn()

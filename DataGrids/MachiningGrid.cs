@@ -4,6 +4,7 @@ using DetailsView.Data;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
+using Syncfusion.WinForms.Input.Enums;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -33,6 +34,10 @@ namespace CostMater.DataGrids
         {
             #region machiningGrid
             machiningGrid.SelectionController = new RowSelectionControllerExt(machiningGrid);
+            machiningGrid.AllowResizingColumns = true;
+            machiningGrid.AllowTriStateSorting = true;
+            machiningGrid.ShowHeaderToolTip = true;
+            machiningGrid.ShowToolTip = true;
             machiningGrid.EditMode = EditMode.SingleClick;
             machiningGrid.AddNewRowText = "Click here to add new machining detail";
             machiningGrid.AddNewRowPosition = RowPosition.FixedBottom;
@@ -48,6 +53,9 @@ namespace CostMater.DataGrids
             machiningGrid.AutoGenerateColumns = false;
             machiningGrid.ValidationMode = GridValidationMode.InEdit;
             machiningGrid.AllowDeleting = true;
+            machiningGrid.SelectionMode = GridSelectionMode.Extended;
+            machiningGrid.CopyOption = CopyOptions.IncludeHeaders;
+            machiningGrid.PasteOption = PasteOptions.PasteData;
             machiningGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(21.0f);
             machiningGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
             machiningGrid.RecordDeleting += MachiningGrid_RecordDeleting;
@@ -55,6 +63,7 @@ namespace CostMater.DataGrids
             machiningGrid.QueryCellStyle += MachiningGrid_QueryCellStyle;
             machiningGrid.RowValidating += MachiningGrid_RowValidating;
             machiningGrid.CurrentCellActivating += MachiningGrid_CurrentCellActivating;
+            machiningGrid.CurrentCellValidating += MachiningGrid_CurrentCellValidating;
 
             NumberFormatInfo nfi = new NumberFormatInfo();
             nfi.NumberDecimalDigits = 0;
@@ -87,9 +96,9 @@ namespace CostMater.DataGrids
 
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "RPM", HeaderText = "RPM (N)", AllowEditing = false });
 
-            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "MachiningCostPerHour", HeaderText = "Machining Cost per hour" });
+            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "MachiningCostPerHour", HeaderText = "Machining Cost per hour", FormatMode = FormatMode.Currency });
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "MachiningTime", HeaderText = "Machining Time in minutes", AllowEditing = false });
-            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "MachiningCost", HeaderText = "Machining Cost", AllowEditing = false });
+            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "MachiningCost", HeaderText = "Machining Cost", AllowEditing = false, FormatMode = FormatMode.Currency });
 
             StackedHeaderRow childGridStackedHeaderRow = new StackedHeaderRow();
             childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ProcessID,ComponentID,ProcessTypeID", HeaderText = "Operation" });
@@ -114,6 +123,17 @@ namespace CostMater.DataGrids
             ShowSummaryRow();
             machiningGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
+        }
+
+        private void MachiningGrid_CurrentCellValidating(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellValidatingEventArgs e)
+        {
+            var process = e.RowData as Process;
+
+            if (e.Column.MappingName == "ProcessTypeID" && !process.AllowOperation(Convert.ToInt32(e.NewValue)))
+            {
+                MessageBoxAdv.Show("Cannot add machining operation without component raw material cost. Please update component raw material cost and then retry.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                e.IsValid = false;
+            }
         }
 
         private void MachiningGrid_CurrentCellActivating(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellActivatingEventArgs e)
@@ -156,11 +176,14 @@ namespace CostMater.DataGrids
 
         private void ShowSummaryRow()
         {
+            machiningGrid.Style.TableSummaryRowStyle.HorizontalAlignment = HorizontalAlignment.Right;
+            machiningGrid.Style.TableSummaryRowStyle.Font.Bold = true;
             machiningGrid.TableSummaryRows.Add(new GridTableSummaryRow()
             {
                 Name = "tableSumamryTrue",
-                ShowSummaryInRow = true,
-                Title = "Total cost for machining work : {AllMachiningCost}",
+                ShowSummaryInRow = false,
+                Title = "Total cost for machining work : ",
+                TitleColumnCount = 4,
                 SummaryColumns = new System.Collections.ObjectModel.ObservableCollection<Syncfusion.Data.ISummaryColumn>()
                 {
                     new GridSummaryColumn()

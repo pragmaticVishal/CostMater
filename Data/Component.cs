@@ -831,7 +831,9 @@ namespace DetailsView.Data
             bool allow = true;
             if(materialTypeId == 0)
             {
-                if (LaserCost > 0 || BendTotalCost > 0 || TotalMachiningCost > 0)
+                if (LaserCost > 0 || BendTotalCost > 0 || ProcurementCost > 0 || FabricationTotalCost > 0 || 
+                    SurfaceTreatmentCost > 0 || TotalMachiningCost > 0 || GrindingCost > 0 || Others_BO > 0 || HardwareCost > 0 || 
+                    MiscellaneousCost > 0 )
                 {
                     allow = false;
                 }

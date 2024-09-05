@@ -5,6 +5,7 @@ using Syncfusion.Data.Extensions;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
+using Syncfusion.WinForms.Input.Enums;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,6 +23,7 @@ namespace CostMater.DataGrids
 {
     public class ComponentGrid
     {
+        string materialTypeResetError = "Material type cannot be reset if there are child rows associated with cost. Reset the child rows first and then retry.";
         private SfDataGrid _componentGrid;
         private ObservableCollection<Component> _lstComponent;
         public ComponentGrid(SfDataGrid componentGrid, ObservableCollection<Component> lstComponent) 
@@ -63,9 +65,12 @@ namespace CostMater.DataGrids
             _componentGrid.AutoGenerateColumns = false;
 
             _componentGrid.DataSource = _lstComponent;
-            _componentGrid.AllowGrouping = true;
-            _componentGrid.ShowGroupDropArea = true;
+            _componentGrid.AllowGrouping = false;
+            _componentGrid.ShowGroupDropArea = false;
             _componentGrid.AllowDeleting = true;
+            _componentGrid.SelectionMode = GridSelectionMode.Extended;
+            _componentGrid.CopyOption = CopyOptions.IncludeHeaders;
+            _componentGrid.PasteOption = PasteOptions.PasteData;
             _componentGrid.QueryCellStyle += ComponentGrid_QueryCellStyle;
             _componentGrid.CurrentCellBeginEdit += _componentGrid_CurrentCellBeginEdit;
             _componentGrid.RowValidating += ComponentGrid_RowValidating;
@@ -97,33 +102,33 @@ namespace CostMater.DataGrids
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "NetWeight", HeaderText = "Net Weight", AllowEditing = false });
             _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "GrossWeight", HeaderText = "Gross Weight", AllowEditing = false });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "LaserCost", HeaderText = "Laser Cost", AllowEditing = false, Width = 120 });
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Bending Cost", AllowEditing = false, Width = 120 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "LaserCost", HeaderText = "Laser Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Bending Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "ProcurementCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "ProcurementCost", HeaderText = "Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "FabricationTotalCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "FabricationTotalCost", HeaderText = "Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "SurfaceTreatmentCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "SurfaceTreatmentCost", HeaderText = "Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalMachiningCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalMachiningCost", HeaderText = "Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "GrindingCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "GrindingCost", HeaderText = "Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "Others_BO", HeaderText = "Cost", AllowEditing = false, Width = 120 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "Others_BO", HeaderText = "Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "HardwareCost", HeaderText = "Cost", AllowEditing = false, Width = 120 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "HardwareCost", HeaderText = "Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "MiscellaneousCost", HeaderText = "Cost", AllowEditing = false, Width = 100 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "MiscellaneousCost", HeaderText = "Cost", AllowEditing = false, Width = 100, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "LabourCostPerPart", HeaderText = "Cost", AllowEditing = false, Width = 150 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "LabourCostPerPart", HeaderText = "Cost", AllowEditing = false, Width = 150, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialRate", HeaderText = "Rate" });
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialCost", HeaderText = "Amount", AllowEditing = false });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialRate", HeaderText = "Rate", FormatMode = FormatMode.Currency });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialCost", HeaderText = "Amount", AllowEditing = false, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalCostPerPart", HeaderText = "Total Cost Per Part", AllowEditing = false, AllowHeaderTextWrapping = true, Width = 150 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalCostPerPart", HeaderText = "Total Cost Per Part", AllowEditing = false, AllowHeaderTextWrapping = true, Width = 150, FormatMode = FormatMode.Currency });
 
-            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalCost", HeaderText = "Total Cost", AllowEditing = false, Width = 150 });
+            _componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalCost", HeaderText = "Total Cost", AllowEditing = false, Width = 150, FormatMode = FormatMode.Currency });
 
             StackedHeaderRow stackedHeaderRow = new StackedHeaderRow();
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ComponentID,PartName,DrawingNo", HeaderText = "Component Details" });
@@ -160,9 +165,9 @@ namespace CostMater.DataGrids
         {
             var component = e.RowData as Component;
 
-            if (e.Column.MappingName == "MaterialShapeSelectedID" && !component.AllowMaterialIdReset(Convert.ToInt32(e.NewValue)))
+            if (e.Column.MappingName == "MaterialTypeID" && !component.AllowMaterialIdReset(Convert.ToInt32(e.NewValue)))
             {
-                MessageBoxAdv.Show("Error");
+                MessageBoxAdv.Show(materialTypeResetError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 e.IsValid = false;
             }
         }
@@ -231,12 +236,13 @@ namespace CostMater.DataGrids
         private void ShowSummaryRow()
         {
             _componentGrid.Style.TableSummaryRowStyle.HorizontalAlignment = HorizontalAlignment.Right;
+            _componentGrid.Style.TableSummaryRowStyle.Font.Bold = true;
             _componentGrid.TableSummaryRows.Add(new GridTableSummaryRow()
             {
                 Name = "tableSumamryTrue",
                 ShowSummaryInRow = false,
                 Title = "Total cost for all components : ",
-                TitleColumnCount = 3,
+                TitleColumnCount = 4,
                 Position = VerticalPosition.Bottom,
                 SummaryColumns = new System.Collections.ObjectModel.ObservableCollection<Syncfusion.Data.ISummaryColumn>()
                 {
@@ -399,7 +405,7 @@ namespace CostMater.DataGrids
 
             if (!component.AllowMaterialIdReset(component.MaterialTypeID))
             {
-                MessageBoxAdv.Show("Error");
+                MessageBoxAdv.Show(materialTypeResetError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 e.IsValid = false;
             }
 
