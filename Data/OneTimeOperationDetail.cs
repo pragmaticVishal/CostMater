@@ -142,12 +142,13 @@ namespace CostMater.Data
 
         public void CalculateCost()
         {
-            if(OneTimeOpItemSelectedID == 0)
+            if (OneTimeOpItemSelectedID == 0)
             {
                 ResetAllFields();
             }
             switch (OneTimeOpItemSelectedID)
             {
+                case 0:
                 case 1:
                 case 2:
                     Amount = Rate * Component.NetWeight;
@@ -169,14 +170,16 @@ namespace CostMater.Data
             List<string> excludedColumnsQtyRate = new List<string>() { nameof(OneTimeOperationDetail.Qty), nameof(OneTimeOperationDetail.Rate) };
             List<string> excludedColumnsQtyAmt = new List<string>() { nameof(OneTimeOperationDetail.Qty), nameof(OneTimeOperationDetail.Amount) };
             List<string> excludedColumnsAmt = new List<string>() { nameof(OneTimeOperationDetail.Amount) };
+            List<string> excludedColumnsQtyRateAmt = new List<string>() { nameof(OneTimeOperationDetail.Qty), nameof(OneTimeOperationDetail.Rate), nameof(OneTimeOperationDetail.Amount) };
 
+            dctOperationExcludedColumns.Add(0, excludedColumnsQtyRateAmt);
             dctOperationExcludedColumns.Add(1, excludedColumnsQtyAmt);
             dctOperationExcludedColumns.Add(2, excludedColumnsQtyAmt);
             dctOperationExcludedColumns.Add(3, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(4, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(5, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(6, excludedColumnsAmt);
-            dctOperationExcludedColumns.Add(7, excludedColumnsQtyRate);            
+            dctOperationExcludedColumns.Add(7, excludedColumnsQtyRate);
 
             if (dctOperationExcludedColumns.ContainsKey(OneTimeOpItemSelectedID) &&
                 dctOperationExcludedColumns[OneTimeOpItemSelectedID].Contains(columnName))

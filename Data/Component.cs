@@ -1,5 +1,6 @@
 ﻿using CostMater.Data;
 using Syncfusion.Data.Extensions;
+using Syncfusion.Windows.Forms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,10 +8,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace DetailsView.Data
 {
-    public class Component : INotifyPropertyChanged, IDataErrorInfo
+    public class Component : INotifyPropertyChanged
     {
         #region Fields
         private int _componentID;
@@ -435,202 +437,6 @@ namespace DetailsView.Data
             }
         }
 
-        public string this[string columnName]
-        {
-            get
-            {
-                string result = string.Empty;
-                switch (columnName)
-                {
-                    //case nameof(ComponentName):
-                    //    break;
-                    //case nameof(MaterialID):
-                    //    if (MaterialID <= 0)
-                    //    {
-                    //        result = "Material is required.";
-                    //    }
-                    //    break;
-                    //case nameof(MaterialTypeID):
-                    //    if (MaterialTypeID <= 0)
-                    //    {
-                    //        result = "Material Type is required.";
-                    //    }
-                    //    break;
-                    //case nameof(Qty):
-                    //    if (Qty <= 0)
-                    //    {
-                    //        result = "Quantity must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(Length):
-                    //    if (Qty > 0 && Length <= 0)
-                    //    {
-                    //        result = "Length must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(Width):
-                    //    if (Width <= 0)
-                    //    {
-                    //        result = "Width must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(Thickness):
-                    //    if (Thickness <= 0)
-                    //    {
-                    //        result = "Thickness must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(Diameter):
-                    //    if (Diameter <= 0)
-                    //    {
-                    //        result = "Diameter must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(OD):
-                    //    if (OD <= 0)
-                    //    {
-                    //        result = "Outer Diameter must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(ID):
-                    //    if (ID <= 0)
-                    //    {
-                    //        result = "Inner Diameter must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(Side1):
-                    //    if (Side1 <= 0)
-                    //    {
-                    //        result = "Side 1 must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(Side2):
-                    //    if (Side2 <= 0)
-                    //    {
-                    //        result = "Side 2 must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(NetWeight):
-                    //    if (NetWeight <= 0)
-                    //    {
-                    //        result = "Net Weight must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(GrossWeight):
-                    //    if (GrossWeight <= 0)
-                    //    {
-                    //        result = "Gross Weight must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(Perimeter):
-                    //    if (Perimeter <= 0)
-                    //    {
-                    //        result = "Perimeter must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(BendRate):
-                    //    if (BendRate <= 0)
-                    //    {
-                    //        result = "Bending Rate must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(FabricationRate):
-                    //    if (FabricationRate <= 0)
-                    //    {
-                    //        result = "Fabrication Rate must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(NoOfStart):
-                    //    if (NoOfStart <= 0)
-                    //    {
-                    //        result = "Number of Start must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(LaserCost):
-                    //    if (LaserCost <= 0)
-                    //    {
-                    //        result = "Laser Cost must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(NoOfBend):
-                    //    if (NoOfBend <= 0)
-                    //    {
-                    //        result = "Number of Bend must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(BendTotalCost):
-                    //    if (BendTotalCost <= 0)
-                    //    {
-                    //        result = "Bending Total Cost must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(ProcurementCost):
-                    //    if (ProcurementCost <= 0)
-                    //    {
-                    //        result = "Procurement Cost must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(FabricationTotalCost):
-                    //    if (FabricationTotalCost <= 0)
-                    //    {
-                    //        result = "Fabrication Total Cost must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(SurfaceTreatmentCost):
-                    //    if (SurfaceTreatmentCost <= 0)
-                    //    {
-                    //        result = "Surface Treatment Cost must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(SurfaceTreatmentRate):
-                    //    if (SurfaceTreatmentRate <= 0)
-                    //    {
-                    //        result = "Surface Treatment Rate must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(GrindingCost):
-                    //    if (GrindingCost <= 0)
-                    //    {
-                    //        result = "Grinding Cost must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(RawMaterialRate):
-                    //    if (RawMaterialRate <= 0)
-                    //    {
-                    //        result = "Raw Material Rate must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(LabourCostPerPart):
-                    //    if (LabourCostPerPart <= 0)
-                    //    {
-                    //        result = "Labour Cost Per Part must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(RawMaterialCost):
-                    //    if (RawMaterialCost <= 0)
-                    //    {
-                    //        result = "Raw Material Cost must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(TotalCostPerPart):
-                    //    if (TotalCostPerPart <= 0)
-                    //    {
-                    //        result = "Total Cost Per Part must be greater than zero.";
-                    //    }
-                    //    break;
-                    //case nameof(TotalMachiningCost):
-                    //    break;
-                    //case nameof(MachiningCostPerHour):
-                    //    if (MachiningCostPerHour <= 0)
-                    //    {
-                    //        result = "Machining Cost Per Hour must be greater than zero.";
-                    //    }
-                    //    break;
-                }
-                return result;
-            }
-        }
-
         private void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -644,8 +450,6 @@ namespace DetailsView.Data
                 machiningCost += process.MachiningCost;
             }
             TotalMachiningCost = machiningCost;
-
-            //CalculateCost();
         }
 
         internal void RecalculateOneTimeOperationCost()
@@ -657,54 +461,59 @@ namespace DetailsView.Data
             MiscellaneousCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 5).Sum(x => x.Amount);
             Others_BO = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 6).Sum(x => x.Amount);
             HardwareCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 7).Sum(x => x.Amount);
-
-            //CalculateCost();
         }
 
         internal void RecalculateLaserAndBendingCost()
         {
             LaserCost = LstLaserAndBendingDetail.Sum(x=>x.LaserCost);
             BendTotalCost = LstLaserAndBendingDetail.Sum(x=>x.BendTotalCost);
-            //CalculateCost();
         }
 
         private void CalculateNetWeight()
         {
+            NetWeight = CalculateNetWeight(Length, Width, Thickness, Side1, Side2, Diameter, OD, ID);
+        }
+
+        private decimal CalculateNetWeight(decimal length, decimal width, decimal thickness, decimal side1, decimal side2, decimal diameter, decimal od, decimal id)
+        {
+            decimal netweight = 0;
             switch (MaterialTypeID)
             {
                 case 1:
-                    NetWeight = Length * Width * Thickness * 0.00000786M;
+                    netweight = length * width * thickness * 0.00000786M;
                     break;
                 case 2:
-                    NetWeight = Length * Width * Thickness * 0.00000786M;
+                    netweight = length * width * thickness * 0.00000786M;
                     break;
                 case 3:
-                    NetWeight = Length * Width * Thickness * 0.00000786M;
+                    netweight = length * width * thickness * 0.00000786M;
                     break;
                 case 4:
-                    NetWeight = (Side1 * Thickness * Length * 0.00000786M) + (Side2 * Thickness * Length * 0.00000786M);
+                    netweight = (side1 * thickness * length * 0.00000786M) + (side2 * thickness * length * 0.00000786M);
                     break;
                 case 5:
-                    NetWeight = 0.7854M * Diameter * Diameter * Length * 0.00000786M;
+                    netweight = 0.7854M * diameter * diameter * length * 0.00000786M;
                     break;
                 case 6:
-                    NetWeight = (0.7854M * OD * OD * Length * 0.00000786M) - (0.7854M * ID * ID * Length * 0.00000786M);
+                    netweight = (0.7854M * od * od * length * 0.00000786M) - (0.7854M * id * id * length * 0.00000786M);
                     break;
                 case 7:
-                    NetWeight = Length * Width * Thickness * 0.00000786M;
+                    netweight = length * width * thickness * 0.00000786M;
                     break;
                 case 8:
-                    NetWeight = (Side1 * Side2 * Length * 0.00000786M) - ((Side1 - 2 * Thickness) * (Side2 - 2 * Thickness) * Length * 0.00000786M);
+                    netweight = (side1 * side2 * length * 0.00000786M) - ((side1 - 2 * thickness) * (side2 - 2 * thickness) * length * 0.00000786M);
                     break;
                 case 9:
-                    NetWeight = Length * Width * Thickness * 0.00000786M;
+                    netweight = length * width * thickness * 0.00000786M;
                     break;
                 case 10:
-                    NetWeight = (Side1 * Side2 * Length * 0.00000786M) - ((Side1 - 2 * Thickness) * (Side2 - 2 * Thickness) * Length * 0.00000786M);
+                    netweight = (side1 * side2 * length * 0.00000786M) - ((side1 - 2 * thickness) * (side2 - 2 * thickness) * length * 0.00000786M);
                     break;
                 default:
                     break;
             }
+
+            return netweight;
         }
 
         public void ResetAllFields()
@@ -724,6 +533,13 @@ namespace DetailsView.Data
             _rawMaterialRate = 0;
         }
 
+        public void CalculateRawMaterialCost()
+        {
+            CalculateNetWeight();
+            GrossWeight = NetWeight * 1.2M;
+            RawMaterialCost = GrossWeight * RawMaterialRate;
+        }
+
         public void CalculateCost()
         {
             if(MaterialTypeID == 0)
@@ -738,6 +554,15 @@ namespace DetailsView.Data
             TotalCost = TotalCostPerPart * Qty;
             LstOneTimeOperationDetail.ForEach(x => x.CalculateCost());
             LstLaserAndBendingDetail.ForEach(x => x.CalculateCost());
+            _laserCost = LstLaserAndBendingDetail.Sum(x => x.LaserCost);
+            _bendTotalCost = LstLaserAndBendingDetail.Sum(x => x.BendTotalCost);
+            _fabricationTotalCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 1).Sum(x => x.Amount);
+            _surfaceTreatmentCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 2).Sum(x => x.Amount);
+            _grindingCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 3).Sum(x => x.Amount);
+            _procurementCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 4).Sum(x => x.Amount);
+            _miscellaneousCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 5).Sum(x => x.Amount);
+            _others_BO = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 6).Sum(x => x.Amount);
+            _hardwareCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 7).Sum(x => x.Amount);
         }
 
         public bool IsSideApplicableToTheShape(string sideName)
@@ -745,6 +570,15 @@ namespace DetailsView.Data
             bool isSideApplicableToTheShape = true;
 
             Dictionary<int, List<string>> dctMaterialTypeAllowedSides = new Dictionary<int, List<string>>();
+
+            List<string> excludeAllfields = new List<string>() { nameof(Component.Qty), nameof(Component.Length), nameof(Component.Width),
+                    nameof(Component.Thickness), nameof(Component.Diameter), nameof(Component.OD), nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2),
+                    nameof(Component.NetWeight), nameof(Component.GrossWeight), nameof(Component.LaserCost), nameof(Component.BendTotalCost),
+                    nameof(Component.ProcurementCost), nameof(Component.FabricationTotalCost), nameof(Component.SurfaceTreatmentCost), nameof(Component.TotalMachiningCost),
+                    nameof(Component.GrindingCost), nameof(Component.Others_BO), nameof(Component.HardwareCost), nameof(Component.MiscellaneousCost),
+                    nameof(Component.LabourCostPerPart), nameof(Component.RawMaterialRate), nameof(Component.RawMaterialCost), nameof(Component.TotalCostPerPart), nameof(Component.TotalCost)
+            };
+
             List<string> excludedSidesSheet = new List<string>() { nameof(Component.Diameter), nameof(Component.OD),
                     nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2) };
 
@@ -775,6 +609,7 @@ namespace DetailsView.Data
             List<string> excludedSidesSqTube = new List<string>() {  nameof(Component.Width), nameof(Component.Diameter),
                     nameof(Component.OD), nameof(Component.ID) };
 
+            dctMaterialTypeAllowedSides.Add(0, excludeAllfields);
             dctMaterialTypeAllowedSides.Add(1, excludedSidesSheet);
             dctMaterialTypeAllowedSides.Add(2, excludedSidesPlate);
             dctMaterialTypeAllowedSides.Add(3, excludedSidesFlat);
@@ -829,17 +664,77 @@ namespace DetailsView.Data
         internal bool AllowMaterialIdReset(int materialTypeId)
         {
             bool allow = true;
-            if(materialTypeId == 0)
+            if(materialTypeId == 0 && AreChildRowsWithCostPresent())
             {
-                if (LaserCost > 0 || BendTotalCost > 0 || ProcurementCost > 0 || FabricationTotalCost > 0 || 
-                    SurfaceTreatmentCost > 0 || TotalMachiningCost > 0 || GrindingCost > 0 || Others_BO > 0 || HardwareCost > 0 || 
-                    MiscellaneousCost > 0 )
-                {
-                    allow = false;
-                }
+                allow = false;
             }            
 
             return allow;
+        }
+
+        internal bool AreChildRowsWithCostPresent()
+        {
+            bool present = false;
+
+            if (LaserCost > 0 || BendTotalCost > 0 || ProcurementCost > 0 || FabricationTotalCost > 0 ||
+                   SurfaceTreatmentCost > 0 || TotalMachiningCost > 0 || GrindingCost > 0 || Others_BO > 0 || HardwareCost > 0 ||
+                   MiscellaneousCost > 0)
+            {
+                present = true;
+            }
+
+            return present;
+        }
+
+        internal bool IsRawMaterialCostChangingTo0(string mappingName, object newValue)
+        {
+            decimal length = Length;
+            decimal width = Width;
+            decimal thickness = Thickness;
+            decimal side1 = Side1;
+            decimal side2 = Side2;
+            decimal diameter = Diameter;
+            decimal od = OD;
+            decimal id = ID;
+            decimal rawmaterialRate = RawMaterialRate;
+
+            switch (mappingName)
+            {
+                case nameof(Component.Length):
+                    length = Convert.ToDecimal(newValue);
+                    break;
+                case nameof(Component.Width):
+                    width = Convert.ToDecimal(newValue);
+                    break;
+                case nameof(Component.Thickness):
+                    thickness = Convert.ToDecimal(newValue);
+                    break;
+                case nameof(Component.Side1):
+                    side1 = Convert.ToDecimal(newValue);
+                    break;
+                case nameof(Component.Side2):
+                    side2 = Convert.ToDecimal(newValue);
+                    break;
+                case nameof(Component.Diameter):
+                    diameter = Convert.ToDecimal(newValue);
+                    break;
+                case nameof(Component.OD):
+                    od = Convert.ToDecimal(newValue);
+                    break;
+                case nameof(Component.ID):
+                    id = Convert.ToDecimal(newValue);
+                    break;
+                case nameof(Component.RawMaterialRate):
+                    rawmaterialRate = Convert.ToDecimal(newValue);
+                    break;
+            }
+
+            decimal netweightcost = CalculateNetWeight(length, width, thickness, side1, side2, diameter, od, id);
+            decimal grossweightcost = netweightcost * 1.2M;
+            decimal rawmaterialcost = grossweightcost * rawmaterialRate;
+
+
+            return rawmaterialcost == 0;
         }
     }
 }

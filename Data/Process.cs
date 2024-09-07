@@ -476,6 +476,13 @@ namespace DetailsView.Data
 
             Dictionary<int, List<string>> dctOperationExcludedColumns = new Dictionary<int, List<string>>();
 
+            List<string> excludeAllColumns = new List<string>() { nameof(Process.ToolTypeID), nameof(Process.ToolSurfaceID),
+            nameof(Process.CuttingSpeed), nameof(Process.DrillSize), nameof(Process.FeedRate),
+            nameof(Process.DiameterBeforeTurning), nameof(Process.DiameterAfterTurning), nameof(Process.DepthOfCutEachPass), nameof(Process.LengthOfCut),
+            nameof(Process.ThreadDiameterToCut), nameof(Process.ThreadPitch), nameof(Process.LengthOfThreadToCut), nameof(Process.LengthOfHoleToDrill),
+            nameof(Process.NoOfCuts), nameof(Process.RPM), nameof(Process.MachiningCostPerHour), nameof(Process.MachiningTime), nameof(Process.MachiningCost)
+            };
+
             List<string> excludedColumnsFaceTurning = new List<string>() { nameof(Process.DrillSize), nameof(Process.ThreadDiameterToCut),
             nameof(Process.ThreadPitch), nameof(Process.LengthOfThreadToCut), nameof(Process.LengthOfHoleToDrill),
             nameof(Process.DiameterAfterTurning), nameof(Process.DepthOfCutEachPass), nameof(Process.TotalDepthOfCut), nameof(Process.NoOfCuts)};
@@ -491,6 +498,7 @@ namespace DetailsView.Data
             nameof(Process.DiameterAfterTurning), nameof(Process.DepthOfCutEachPass), nameof(Process.TotalDepthOfCut), nameof(Process.LengthOfCut),
             nameof(Process.LengthOfHoleToDrill)};
 
+            dctOperationExcludedColumns.Add(0, excludeAllColumns);
             dctOperationExcludedColumns.Add(1, excludedColumnsTurning);
             dctOperationExcludedColumns.Add(2, excludedColumnsFaceTurning);
             dctOperationExcludedColumns.Add(3, excludedColumnsTurning);

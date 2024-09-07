@@ -377,27 +377,18 @@ namespace CostMater.Data
 
         public void CalculateCost()
         {
-            if(_operationNameSelectedID == 0)
+            CalculatePerimeter();
+            BendTotalCost = NoOfBend * BendRate;
+            if (NoOfStart > 0)
             {
-                LaserCost = 0;
-                BendTotalCost = 0;
-                TotalCost = 0;
+                LaserCost = Qty * ((Perimeter * 0.06M * Thickness) + (NoOfStart * 1 * Thickness));
             }
             else
             {
-                CalculatePerimeter();
-                BendTotalCost = NoOfBend * BendRate;
-                if (NoOfStart > 0)
-                {
-                    LaserCost = Qty * ((Perimeter * 0.06M * Thickness) + (NoOfStart * 1 * Thickness));
-                }
-                else
-                {
-                    LaserCost = 0;
-                }
+                LaserCost = 0;
+            }
 
-                TotalCost = LaserCost + BendTotalCost;
-            }            
+            TotalCost = LaserCost + BendTotalCost;
         }
 
         public bool IsSideApplicableToTheShape(string sideName)
@@ -405,6 +396,14 @@ namespace CostMater.Data
             bool isSideApplicableToTheShape = true;
 
             Dictionary<int, List<string>> dctMaterialShapeAllowedSides = new Dictionary<int, List<string>>();
+
+            List<string> excludeAllSides = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
+                    nameof(LaserAndBendingDetail.Thickness), nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.ID),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                    nameof(LaserAndBendingDetail.Perimeter), nameof(LaserAndBendingDetail.NoOfStart), nameof(LaserAndBendingDetail.Qty),
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
 
             List<string> excludedSidesSheet = new List<string>() { nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
                     nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
@@ -451,6 +450,7 @@ namespace CostMater.Data
                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
                     nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
 
+            dctMaterialShapeAllowedSides.Add(0, excludeAllSides);
             dctMaterialShapeAllowedSides.Add(1, excludedSidesSheet);
             dctMaterialShapeAllowedSides.Add(2, excludedSidesPlate);
             dctMaterialShapeAllowedSides.Add(3, excludedSidesFlat);

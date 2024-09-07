@@ -111,9 +111,6 @@ namespace CostMater.DataGrids
 
             foreach (var column in machiningGrid.Columns)
             {
-                //column.HeaderStyle.BackColor = Color.LightSteelBlue;
-                //column.HeaderStyle.TextColor = Color.White; // Optional: Set text color
-                //column.HeaderStyle.Font.Bold = true; // Optional: Make header text bold
                 if (!column.AllowEditing)
                 {
                     column.CellStyle.BackColor = Color.LightGray;

@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using Component = DetailsView.Data.Component;
 using Syncfusion.Windows.Forms;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace DetailsView
 {
@@ -239,7 +240,14 @@ namespace DetailsView
 
         private void Form1_CtrlSPressed(object sender, EventArgs e)
         {
-            SaveProjectData();
+            if (componentGrid1.hasValidationError)
+            {
+                MessageBoxAdv.Show("There are validation errors. Please fix them before saving.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                SaveProjectData();
+            }
         }
 
         private void Form1_CtrlOPressed(object sender, EventArgs e)
