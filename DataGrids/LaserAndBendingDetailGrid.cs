@@ -23,6 +23,8 @@ namespace CostMater.DataGrids
     public class LaserAndBendingDetailGrid
     {
         private SfDataGrid laserAndBendingDetailGrid;
+        public bool hasValidationError = false;
+        const string operationSelectionRequiredError = "Operation cannot be empty.";
 
         public LaserAndBendingDetailGrid(SfDataGrid laserAndBendingDetailGrid)
         {
@@ -63,6 +65,7 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.QueryCellStyle += LaserAndBendingDetailGrid_QueryCellStyle;
             laserAndBendingDetailGrid.CurrentCellValidating += LaserAndBendingDetailGrid_CurrentCellValidating;
             laserAndBendingDetailGrid.RowValidating += LaserAndBendingDetailGrid_RowValidating;
+            laserAndBendingDetailGrid.RowValidated += LaserAndBendingDetailGrid_RowValidated;
             laserAndBendingDetailGrid.CurrentCellActivating += LaserAndBendingDetailGrid_CurrentCellActivating;
 
             laserAndBendingDetailGrid.Columns.Add(new GridComboBoxColumn { MappingName = "OperationNameSelectedID", HeaderText = "Operations", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new LaserAndBendingList(), Width = 210 });
@@ -100,6 +103,11 @@ namespace CostMater.DataGrids
             ShowSummaryRow();
             laserAndBendingDetailGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
+        }
+
+        private void LaserAndBendingDetailGrid_RowValidated(object sender, RowValidatedEventArgs e)
+        {
+            hasValidationError = false;
         }
 
         private void LaserAndBendingDetailGrid_CurrentCellValidating(object sender, CurrentCellValidatingEventArgs e)
@@ -220,6 +228,14 @@ namespace CostMater.DataGrids
                 {
                     laserAndBendingDetail.ResetValue(column.MappingName);
                 }
+            }
+
+            if (laserAndBendingDetail.MaterialShapeSelectedID > 0 && laserAndBendingDetail.OperationNameSelectedID == 0)
+            {
+                MessageBoxAdv.Show(operationSelectionRequiredError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                e.ErrorMessage = operationSelectionRequiredError;
+                e.IsValid = false;
+                hasValidationError = true;
             }
         }
 

@@ -180,21 +180,34 @@ namespace CostMater.DataGrids
         {
             var component = e.RowData as Component;
 
-            if (e.Column.MappingName == "MaterialTypeID" && !component.AllowMaterialIdReset(Convert.ToInt32(e.NewValue)))
+            if (e.Column.MappingName == "MaterialTypeID")
             {
-                MessageBoxAdv.Show(materialTypeResetError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                e.ErrorMessage = materialTypeResetError;
-                e.IsValid = false;
-                hasValidationError = true;
+                if (!component.AllowMaterialIdReset(Convert.ToInt32(e.NewValue)))
+                {
+                    MessageBoxAdv.Show(materialTypeResetError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    e.ErrorMessage = materialTypeResetError;
+                    e.IsValid = false;
+                    hasValidationError = true;
+                }
+                else
+                {
+                    foreach (var column in componentGrid.Columns)
+                    {
+                        if (!component.IsSideApplicableToTheShape(Convert.ToInt32(e.NewValue), column.MappingName))
+                        {
+                            component.ResetValue(column.MappingName);
+                        }
+                    }
+                }
             }
-            else if(component.IsRawMaterialCostChangingTo0(e.Column.MappingName, e.NewValue))
-            {
-                string error = string.Format(rawMaterialZeroError, e.Column.HeaderText);
-                MessageBoxAdv.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                e.ErrorMessage = error;
-                e.IsValid = false;
-                hasValidationError = true;
-            }
+            //else if(component.IsRawMaterialCostChangingTo0(e.Column.MappingName, e.NewValue))
+            //{
+            //    string error = string.Format(rawMaterialZeroError, e.Column.HeaderText);
+            //    MessageBoxAdv.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    e.ErrorMessage = error;
+            //    e.IsValid = false;
+            //    hasValidationError = true;
+            //}
         }
 
         private void _componentGrid_CurrentCellActivating(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellActivatingEventArgs e)
@@ -376,7 +389,7 @@ namespace CostMater.DataGrids
         private void _componentGrid_CurrentCellBeginEdit(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellBeginEditEventArgs e)
         {
             var component = e.DataRow.RowData as Component;
-            if (!component.IsSideApplicableToTheShape(e.DataColumn.GridColumn.MappingName))
+            if (!component.IsSideApplicableToTheShape(component.MaterialTypeID, e.DataColumn.GridColumn.MappingName))
             {
                 e.Cancel = true;
             }
@@ -412,7 +425,7 @@ namespace CostMater.DataGrids
             if (e.DataRow.RowType == RowType.DefaultRow)
             {
                 var component = e.DataRow.RowData as Component;
-                if (!component.IsSideApplicableToTheShape(e.Column.MappingName))
+                if (!component.IsSideApplicableToTheShape(component.MaterialTypeID, e.Column.MappingName))
                 {
                     e.Style.BackColor = Color.LightGray;
                 }
@@ -428,7 +441,7 @@ namespace CostMater.DataGrids
 
             foreach (var column in componentGrid.Columns)
             {
-                if (!component.IsSideApplicableToTheShape(column.MappingName))
+                if (!component.IsSideApplicableToTheShape(component.MaterialTypeID, column.MappingName))
                 {
                     component.ResetValue(column.MappingName);
                 }

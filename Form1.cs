@@ -30,6 +30,7 @@ namespace DetailsView
         public event EventHandler CtrlOPressed;
         public event EventHandler CtrlSPressed;
         private ComponentGrid componentGrid1;
+        private LaserAndBendingDetailGrid laserAndBendingDetailGrid1;
         public Form1()
         {
             InitializeComponent();
@@ -55,7 +56,7 @@ namespace DetailsView
             oneTimeOperationGrid1.Setup();
 
             SfDataGrid laserAndBendingDetailGrid = new SfDataGrid() { Parent = componentGrid};
-            LaserAndBendingDetailGrid laserAndBendingDetailGrid1 = new LaserAndBendingDetailGrid(laserAndBendingDetailGrid);
+            laserAndBendingDetailGrid1 = new LaserAndBendingDetailGrid(laserAndBendingDetailGrid);
             laserAndBendingDetailGrid1.Setup();
 
             #region Master-Detail Relation in Grid
@@ -240,7 +241,7 @@ namespace DetailsView
 
         private void Form1_CtrlSPressed(object sender, EventArgs e)
         {
-            if (componentGrid1.hasValidationError)
+            if (componentGrid1.hasValidationError || laserAndBendingDetailGrid1.hasValidationError)
             {
                 MessageBoxAdv.Show("There are validation errors. Please fix them before saving.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

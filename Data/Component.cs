@@ -565,7 +565,7 @@ namespace DetailsView.Data
             _hardwareCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 7).Sum(x => x.Amount);
         }
 
-        public bool IsSideApplicableToTheShape(string sideName)
+        public bool IsSideApplicableToTheShape(int materialTypeId, string sideName)
         {
             bool isSideApplicableToTheShape = true;
 
@@ -621,8 +621,8 @@ namespace DetailsView.Data
             dctMaterialTypeAllowedSides.Add(9, excludedSidesSqBar);
             dctMaterialTypeAllowedSides.Add(10, excludedSidesSqTube);
 
-            if (dctMaterialTypeAllowedSides.ContainsKey(MaterialTypeID) &&
-                dctMaterialTypeAllowedSides[MaterialTypeID].Contains(sideName))
+            if (dctMaterialTypeAllowedSides.ContainsKey(materialTypeId) &&
+                dctMaterialTypeAllowedSides[materialTypeId].Contains(sideName))
             {
                 isSideApplicableToTheShape = false;
             }
