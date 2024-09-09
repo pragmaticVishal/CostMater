@@ -32,6 +32,7 @@ namespace CostMater.Data
         private decimal _rate;
         private decimal _amount;
         private Component _component;
+        private Dictionary<int, List<string>> dctOperationExcludedColumns = GetOneTimeOpExcludedColumnsDct();
 
         [Display(Name = "Component")]
         public Component Component
@@ -156,6 +157,12 @@ namespace CostMater.Data
                 case 6:
                     Amount = Rate * Qty;
                     break;
+                case 7:
+                    Amount = Rate * Qty;
+                    break;
+                case 8:
+                    Amount = (Rate == 0) ? 0 : (Component.Length * Component.Width) / (Rate * 2 * 1000000);
+                    break;
                 default:
                     break;
             }
@@ -165,6 +172,17 @@ namespace CostMater.Data
         {
             bool isColumnApplicableToOperation = true;
 
+            if (dctOperationExcludedColumns.ContainsKey(OneTimeOpItemSelectedID) &&
+                dctOperationExcludedColumns[OneTimeOpItemSelectedID].Contains(columnName))
+            {
+                isColumnApplicableToOperation = false;
+            }
+
+            return isColumnApplicableToOperation;
+        }
+
+        private static Dictionary<int, List<string>> GetOneTimeOpExcludedColumnsDct()
+        {
             Dictionary<int, List<string>> dctOperationExcludedColumns = new Dictionary<int, List<string>>();
             List<string> excludedColumnsQty = new List<string>() { nameof(OneTimeOperationDetail.Qty) };
             List<string> excludedColumnsQtyRate = new List<string>() { nameof(OneTimeOperationDetail.Qty), nameof(OneTimeOperationDetail.Rate) };
@@ -179,15 +197,8 @@ namespace CostMater.Data
             dctOperationExcludedColumns.Add(4, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(5, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(6, excludedColumnsAmt);
-            dctOperationExcludedColumns.Add(7, excludedColumnsQtyRate);
-
-            if (dctOperationExcludedColumns.ContainsKey(OneTimeOpItemSelectedID) &&
-                dctOperationExcludedColumns[OneTimeOpItemSelectedID].Contains(columnName))
-            {
-                isColumnApplicableToOperation = false;
-            }
-
-            return isColumnApplicableToOperation;
+            dctOperationExcludedColumns.Add(7, excludedColumnsAmt);
+            return dctOperationExcludedColumns;
         }
 
         internal bool AllowOperation(int operationId)

@@ -1,6 +1,5 @@
 ﻿using CostMater.Data;
 using CostMater.Framework;
-using DetailsView.Data;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
@@ -11,11 +10,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CostMater.DataGrids
@@ -72,23 +68,22 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "LaserAndBendingDetailID", HeaderText = "Laser ID", AllowEditing = false });
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "DrawingNo", HeaderText = "Drawing / Part No.", AllowEditing = false });
-            laserAndBendingDetailGrid.Columns.Add(new GridComboBoxColumn { MappingName = "MaterialShapeSelectedID", HeaderText = "Material Profile", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new MaterialShapeList() });
+            laserAndBendingDetailGrid.Columns.Add(new GridComboBoxColumn { MappingName = "MaterialShapeSelectedID", HeaderText = "Cutting Profile", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new MaterialShapeList() });
 
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Length", HeaderText = "Length" });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Width", HeaderText = "Width" });
-            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Thickness", HeaderText = "Thickness" });
+            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Thickness", HeaderText = "Thickness", AllowEditing = false });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Diameter", HeaderText = "Diameter" });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "OD", HeaderText = "Outer Diameter" });
-            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "ID", HeaderText = "Inner Diameter" });
+            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "NoOfSides", HeaderText = "No. of sides" });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Side1", HeaderText = "Side 1" });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Side2", HeaderText = "Side 2" });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Side3", HeaderText = "Side 3" });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Perimeter", HeaderText = "Perimeter" });
-            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "NoOfStart", HeaderText = "No. of start" });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "Qty", HeaderText = "Qty" });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "LaserCost", HeaderText = "Laser Cost", AllowEditing = false, FormatMode = FormatMode.Currency });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "NoOfBend", HeaderText = "No. of bend" });
-            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "BendRate", HeaderText = "Rate", FormatMode = FormatMode.Currency });
+            laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "BendRate", HeaderText = "Rate per Bend", FormatMode = FormatMode.Currency });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Bending Cost", AllowEditing = false, FormatMode = FormatMode.Currency });
 
 
@@ -114,10 +109,45 @@ namespace CostMater.DataGrids
         {
             var laserAndBendingDetail = e.RowData as LaserAndBendingDetail;
 
-            if (e.Column.MappingName == "OperationNameSelectedID" && !laserAndBendingDetail.AllowOperation(Convert.ToInt32(e.NewValue)))
+            if (e.Column.MappingName == nameof(LaserAndBendingDetail.OperationNameSelectedID))
             {
-                MessageBoxAdv.Show("Cannot add laser and bending without component raw material cost. Please update component raw material cost and then retry.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                e.IsValid = false;
+                int operationId = Convert.ToInt32(e.NewValue);
+                if (!laserAndBendingDetail.AllowOperation(operationId))
+                {
+                    MessageBoxAdv.Show("Cannot add laser and bending without component raw material cost. Please update component raw material cost and then retry.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    e.IsValid = false;
+                }
+                else if(operationId == 2 || operationId == 3)
+                {
+                    foreach (var column in laserAndBendingDetailGrid.Columns)
+                    {
+                        if (!laserAndBendingDetail.IsSideApplicableToTheShape(operationId, Convert.ToInt32(e.NewValue), column.MappingName))
+                        {
+                            laserAndBendingDetail.ResetValue(column.MappingName);
+                        }
+                    }
+                }
+                
+            }
+            else if(laserAndBendingDetail.OperationNameSelectedID == 1 && e.Column.MappingName == nameof(LaserAndBendingDetail.MaterialShapeSelectedID))
+            {
+                foreach (var column in laserAndBendingDetailGrid.Columns)
+                {
+                    if (!laserAndBendingDetail.IsSideApplicableToTheShape(1, Convert.ToInt32(e.NewValue), column.MappingName))
+                    {
+                        laserAndBendingDetail.ResetValue(column.MappingName);
+                    }
+                }
+            }
+            else if (laserAndBendingDetail.OperationNameSelectedID == 2 && e.Column.MappingName == nameof(LaserAndBendingDetail.MaterialShapeSelectedID))
+            {
+                foreach (var column in laserAndBendingDetailGrid.Columns)
+                {
+                    if (!laserAndBendingDetail.IsSideApplicableToTheShape(1, Convert.ToInt32(e.NewValue), column.MappingName))
+                    {
+                        laserAndBendingDetail.ResetValue(column.MappingName);
+                    }
+                }
             }
         }
 
@@ -224,7 +254,7 @@ namespace CostMater.DataGrids
             
             foreach(var column in laserAndBendingDetailGrid.Columns)
             {
-                if (!laserAndBendingDetail.IsSideApplicableToTheShape(column.MappingName))
+                if (!laserAndBendingDetail.IsSideApplicableToTheShape(laserAndBendingDetail.OperationNameSelectedID, laserAndBendingDetail.MaterialShapeSelectedID, column.MappingName))
                 {
                     laserAndBendingDetail.ResetValue(column.MappingName);
                 }
@@ -244,7 +274,7 @@ namespace CostMater.DataGrids
             if(e.DataRow.RowType == RowType.DefaultRow)
             {
                 var laserAndBendingDetail = e.DataRow.RowData as LaserAndBendingDetail;
-                if(!laserAndBendingDetail.IsSideApplicableToTheShape(e.Column.MappingName))
+                if(!laserAndBendingDetail.IsSideApplicableToTheShape(laserAndBendingDetail.OperationNameSelectedID, laserAndBendingDetail.MaterialShapeSelectedID,e.Column.MappingName))
                 {
                     e.Style.BackColor = Color.LightGray;
                 }
@@ -254,7 +284,7 @@ namespace CostMater.DataGrids
         private void LaserAndBendingDetailGrid_CurrentCellBeginEdit(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellBeginEditEventArgs e)
         {
             var laserAndBendingDetail = e.DataRow.RowData as LaserAndBendingDetail;
-            if (!laserAndBendingDetail.IsSideApplicableToTheShape(e.DataColumn.GridColumn.MappingName))
+            if (!laserAndBendingDetail.IsSideApplicableToTheShape(laserAndBendingDetail.OperationNameSelectedID, laserAndBendingDetail.MaterialShapeSelectedID, e.DataColumn.GridColumn.MappingName))
             {
                 e.Cancel = true;
             }

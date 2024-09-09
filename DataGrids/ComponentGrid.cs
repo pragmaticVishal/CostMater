@@ -145,7 +145,7 @@ namespace CostMater.DataGrids
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "FabricationTotalCost", HeaderText = "Fabrication/Pol" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "SurfaceTreatmentCost", HeaderText = "Surface Treat(E.P)" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "TotalMachiningCost", HeaderText = "Machining" });
-            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "GrindingCost", HeaderText = "Grinding" });
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "GrindingCost", HeaderText = "Polishing" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "Others_BO", HeaderText = "Others/B.O" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "HardwareCost", HeaderText = "Hardware" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "MiscellaneousCost", HeaderText = "Miscellaneous" });

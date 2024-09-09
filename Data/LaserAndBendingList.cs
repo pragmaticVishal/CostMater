@@ -21,7 +21,9 @@ namespace CostMater.Data
             return new List<LaserAndBendingItem>()
             {
                 new LaserAndBendingItem(){ ID = 0, Name = ""},
-                new LaserAndBendingItem(){ ID = 1, Name = "Laser Cutting and Bending"}
+                new LaserAndBendingItem(){ ID = 1, Name = "Laser Cutting"},
+                new LaserAndBendingItem(){ ID = 2, Name = "Material Bending (Counts)"},
+                new LaserAndBendingItem(){ ID = 3, Name = "Material Bending (Dimension)"}
             };
         }
         public IEnumerable GetDataSource(object record, object dataSource)

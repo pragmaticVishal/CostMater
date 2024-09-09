@@ -12,9 +12,9 @@ namespace CostMater.Data
 {
     public class LaserAndBendingDetail : INotifyPropertyChanged, IDataErrorInfo
     {
-        public string this[string columnName] 
-        { 
-            get 
+        public string this[string columnName]
+        {
+            get
             {
                 //if (columnName == "MaterialShapeSelectedID")
                 //{
@@ -39,8 +39,8 @@ namespace CostMater.Data
                 //    }
                 //}
 
-                return string.Empty; 
-            } 
+                return string.Empty;
+            }
         }
 
         public string Error
@@ -116,12 +116,7 @@ namespace CostMater.Data
 
         public decimal Thickness
         {
-            get => _thickness;
-            set
-            {
-                _thickness = value;
-                RaisePropertyChanged(nameof(Thickness));
-            }
+            get => Component.Thickness;
         }
 
         public decimal Diameter
@@ -141,16 +136,6 @@ namespace CostMater.Data
             {
                 _od = value;
                 RaisePropertyChanged(nameof(OD));
-            }
-        }
-
-        public decimal ID
-        {
-            get => _id;
-            set
-            {
-                _id = value;
-                RaisePropertyChanged(nameof(ID));
             }
         }
 
@@ -197,11 +182,6 @@ namespace CostMater.Data
         public int NoOfStart
         {
             get => _noOfStart;
-            set
-            {
-                _noOfStart = value;
-                RaisePropertyChanged(nameof(NoOfStart));
-            }
         }
 
         public decimal Qty
@@ -231,6 +211,16 @@ namespace CostMater.Data
             {
                 _noOfBend = value;
                 RaisePropertyChanged(nameof(NoOfBend));
+            }
+        }
+
+        public int NoOfSides
+        {
+            get => _noOfSides;
+            set
+            {
+                _noOfSides = value;
+                RaisePropertyChanged(nameof(NoOfSides));
             }
         }
 
@@ -283,22 +273,23 @@ namespace CostMater.Data
         private int _operationNameSelectedID;
         private decimal _length;
         private decimal _width;
-        private decimal _thickness;
         private decimal _diameter;
         private decimal _od;
-        private decimal _id;
         private decimal _side1;
         private decimal _side2;
         private decimal _side3;
         private decimal _perimeter;
-        private int _noOfStart;
+        private int _noOfStart = 1;
         private decimal _qty;
         private decimal _laserCost;
         private int _noOfBend;
+        private int _noOfSides;
         private decimal _bendRate;
         private decimal _bendTotalCost;
         private decimal _totalCost;
         private Component _component;
+        private Dictionary<int, List<string>> dctLaserMaterialShapeAllowedSides = GetLaserAllowedSidesDct();
+        private Dictionary<int, List<string>> dctBendingAllowedSides = GetBendingAllowedSidesDct();
 
         private void RaisePropertyChanged(string propertyName)
         {
@@ -309,18 +300,16 @@ namespace CostMater.Data
         {
             _length = 0;
             _width = 0;
-            _thickness = 0;
             _diameter = 0;
             _od = 0;
-            _id = 0;
             _side1 = 0;
             _side2 = 0;
             _side3 = 0;
             _perimeter = 0;
-            _noOfStart = 0;
             _qty = 0;
             _laserCost = 0;
             _noOfBend = 0;
+            _noOfSides = 0;
             _bendRate = 0;
             _bendTotalCost = 0;
             _totalCost = 0;
@@ -338,37 +327,46 @@ namespace CostMater.Data
                     Perimeter = 2 * (Length + Width);
                     break;
                 case 2:
-                    Perimeter = 2 * (Length + Width);
-                    break;
-                case 3:
-                    Perimeter = 2 * (Length + Width);
-                    break;
-                case 4:
                     Perimeter = Side1 + Side2;
                     break;
-                case 5:
+                case 3:
                     Perimeter = 3.1416M * Diameter;
                     break;
-                case 6:
+                case 4:
                     Perimeter = 3.1416M * OD;
                     break;
+                case 5:
+                    Perimeter = 2 * (Length + Width);
+                    break;
+                case 6:
+                    Perimeter = 4 * Length;
+                    break;
                 case 7:
-                    Perimeter = 2 * (Length + Width);
-                    break;
-                case 8:
-                    Perimeter = 2 * (Side1 + Side2);
-                    break;
-                case 9:
-                    Perimeter = 2 * (Length + Width);
-                    break;
-                case 10:
-                    Perimeter = 2 * (Side1 + Side2);
-                    break;
-                case 11:
                     Perimeter = Side1 + Side2 + Side3;
                     break;
-                case 12:
+                case 8:
                     Perimeter = (2 * Length) + (3.1416M * Diameter);
+                    break;
+                case 9:
+                    Perimeter = NoOfSides * Side1;  
+                    break;
+                case 10:
+                    // User Input
+                    break;
+                case 11:
+                    Perimeter = Length + Side1 + Side2 + Side3;
+                    break;
+                case 12:
+                    Perimeter = 5 * Length;
+                    break;
+                case 13:
+                    Perimeter = 6 * Length;
+                    break;
+                case 14:
+                    Perimeter = 8 * Length;
+                    break;
+                case 15:
+                    Perimeter = Convert.ToDecimal((Convert.ToDouble((2 * 3.1416M)) * Math.Sqrt(Convert.ToDouble(((Side1 * Side1) + (Side2 * Side2)) / 2))));
                     break;
                 default:
                     break;
@@ -378,101 +376,228 @@ namespace CostMater.Data
         public void CalculateCost()
         {
             CalculatePerimeter();
-            BendTotalCost = NoOfBend * BendRate;
+
             if (NoOfStart > 0)
             {
-                LaserCost = Qty * ((Perimeter * 0.06M * Thickness) + (NoOfStart * 1 * Thickness));
+                LaserCost = Qty * ((Perimeter * 0.06M * Component.Thickness) + (NoOfStart * 1 * Component.Thickness));
+                BendTotalCost = 0;
             }
             else
             {
                 LaserCost = 0;
             }
 
+            if (OperationNameSelectedID == 2)
+            {
+                LaserCost = 0;
+                BendTotalCost = NoOfBend * BendRate;
+            }
+            else if (OperationNameSelectedID == 3)
+            {
+                LaserCost = 0;
+                BendTotalCost = Length * Thickness * NoOfBend * BendRate;
+            }
+
             TotalCost = LaserCost + BendTotalCost;
         }
 
-        public bool IsSideApplicableToTheShape(string sideName)
+        public bool IsSideApplicableToTheShape(int operationNameSelectedID, int materialShapeSelectedID, string sideName)
         {
             bool isSideApplicableToTheShape = true;
 
+            switch (operationNameSelectedID)
+            {
+                case 1:
+                    if (dctLaserMaterialShapeAllowedSides.ContainsKey(materialShapeSelectedID) && dctLaserMaterialShapeAllowedSides[materialShapeSelectedID].Contains(sideName))
+                    {
+                        isSideApplicableToTheShape = false;
+                    }
+                    break;
+                case 2:
+                case 3:
+                    if (dctBendingAllowedSides.ContainsKey(operationNameSelectedID) && dctBendingAllowedSides[operationNameSelectedID].Contains(sideName))
+                    {
+                        isSideApplicableToTheShape = false;
+                    }
+                    break;
+            }
+
+
+            return isSideApplicableToTheShape;
+        }
+
+        private static Dictionary<int, List<string>> GetLaserAllowedSidesDct()
+        {
             Dictionary<int, List<string>> dctMaterialShapeAllowedSides = new Dictionary<int, List<string>>();
 
             List<string> excludeAllSides = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
-                    nameof(LaserAndBendingDetail.Thickness), nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.ID),
+                    nameof(LaserAndBendingDetail.Thickness), nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                    nameof(LaserAndBendingDetail.Perimeter), nameof(LaserAndBendingDetail.NoOfStart), nameof(LaserAndBendingDetail.Qty),
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost), nameof(LaserAndBendingDetail.NoOfSides)
+            };
+
+            List<string> excludeSidesSheet = new List<string>() { nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
+                    nameof(LaserAndBendingDetail.NoOfSides), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                    nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate), nameof(LaserAndBendingDetail.BendTotalCost)};
+
+            List<string> excludeSidesAngle = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width), nameof(LaserAndBendingDetail.Diameter),
+                    nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides), nameof(LaserAndBendingDetail.Side3),
+                    nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate), nameof(LaserAndBendingDetail.BendTotalCost)};
+
+            List<string> excludeSidesRound = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
+                    nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                    nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesCylindrical = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
+                     nameof(LaserAndBendingDetail.Diameter),  nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                     nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesRectangular = new List<string>() { nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
+                nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                     nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesSquare = new List<string>() {  nameof(LaserAndBendingDetail.Width),
+                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                    nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesTriangle = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
+                    nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                     nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesSlot = new List<string>() {  nameof(LaserAndBendingDetail.Width),
+                      nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                     nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesIrregular = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
+                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
+                    nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                     nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesOthers = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
+                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                     nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesTrapezoid = new List<string>() { nameof(LaserAndBendingDetail.Width),
+                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                     nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesPentagon = new List<string>() { nameof(LaserAndBendingDetail.Width),
+                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                     nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesHexagon = new List<string>() {  nameof(LaserAndBendingDetail.Width),
+                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                     nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesOctagon = new List<string>() {  nameof(LaserAndBendingDetail.Width),
+                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
+                     nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            List<string> excludeSidesEllipsisOval = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
+                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side3),
+                     nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
+                    nameof(LaserAndBendingDetail.BendTotalCost)
+            };
+
+            dctMaterialShapeAllowedSides.Add(0, excludeAllSides);
+            dctMaterialShapeAllowedSides.Add(1, excludeSidesSheet);
+            dctMaterialShapeAllowedSides.Add(2, excludeSidesAngle);
+            dctMaterialShapeAllowedSides.Add(3, excludeSidesRound);
+            dctMaterialShapeAllowedSides.Add(4, excludeSidesCylindrical);
+            dctMaterialShapeAllowedSides.Add(5, excludeSidesRectangular);
+            dctMaterialShapeAllowedSides.Add(6, excludeSidesSquare);
+            dctMaterialShapeAllowedSides.Add(7, excludeSidesTriangle);
+            dctMaterialShapeAllowedSides.Add(8, excludeSidesSlot);
+            dctMaterialShapeAllowedSides.Add(9, excludeSidesIrregular);
+            dctMaterialShapeAllowedSides.Add(10, excludeSidesOthers);
+            dctMaterialShapeAllowedSides.Add(11, excludeSidesTrapezoid);
+            dctMaterialShapeAllowedSides.Add(12, excludeSidesPentagon);
+            dctMaterialShapeAllowedSides.Add(13, excludeSidesHexagon);
+            dctMaterialShapeAllowedSides.Add(14, excludeSidesOctagon);
+            dctMaterialShapeAllowedSides.Add(15, excludeSidesEllipsisOval);
+            return dctMaterialShapeAllowedSides;
+        }
+
+        private static Dictionary<int, List<string>> GetBendingAllowedSidesDct()
+        {
+            Dictionary<int, List<string>> dctBendingAllowedSides = new Dictionary<int, List<string>>();
+
+            List<string> excludeAllSides = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
+                    nameof(LaserAndBendingDetail.Thickness), nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
                     nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3),
                     nameof(LaserAndBendingDetail.Perimeter), nameof(LaserAndBendingDetail.NoOfStart), nameof(LaserAndBendingDetail.Qty),
                     nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.NoOfBend), nameof(LaserAndBendingDetail.BendRate),
                     nameof(LaserAndBendingDetail.BendTotalCost)
             };
 
-            List<string> excludedSidesSheet = new List<string>() { nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
-                    nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
+            List<string> excludeSidesBendingCount = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
+                    nameof(LaserAndBendingDetail.Thickness), nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3), nameof(LaserAndBendingDetail.Qty),
+                    nameof(LaserAndBendingDetail.Perimeter), nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost)
+            };
 
-            List<string> excludedSidesPlate = new List<string>() { nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
-                    nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
+            List<string> excludeSidesBendingDimension = new List<string>() {nameof(LaserAndBendingDetail.Width),
+                    nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
+                    nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3), nameof(LaserAndBendingDetail.Qty),
+                    nameof(LaserAndBendingDetail.Perimeter), nameof(LaserAndBendingDetail.NoOfStart), 
+                    nameof(LaserAndBendingDetail.LaserCost)
+            };
 
-            List<string> excludedSidesFlat = new List<string>() { nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
-                    nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
+            dctBendingAllowedSides.Add(0, excludeAllSides);
+            dctBendingAllowedSides.Add(2, excludeSidesBendingCount);
+            dctBendingAllowedSides.Add(3, excludeSidesBendingDimension);
 
-            List<string> excludedSidesAngle = new List<string>() { nameof(LaserAndBendingDetail.Width), nameof(LaserAndBendingDetail.Diameter),
-                    nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side3) };
-
-            List<string> excludedSidesRoundBar = new List<string>() { nameof(LaserAndBendingDetail.Width), 
-                    nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2),
-                    nameof(LaserAndBendingDetail.Side3) };
-
-            List<string> excludedSidesRoundTube = new List<string>() { nameof(LaserAndBendingDetail.Width),
-                    nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
-
-            List<string> excludedSidesRectBar = new List<string>() { nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
-                    nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
-
-            List<string> excludedSidesRectTube = new List<string>() {  nameof(LaserAndBendingDetail.Width), nameof(LaserAndBendingDetail.Diameter),
-                    nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side3) };
-
-            List<string> excludedSidesSqBar = new List<string>() { nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
-                    nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
-
-            List<string> excludedSidesSqTube = new List<string>() {  nameof(LaserAndBendingDetail.Width), nameof(LaserAndBendingDetail.Diameter),
-                    nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side3) };
-
-            List<string> excludedSidesTriangle = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
-                    nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),nameof(LaserAndBendingDetail.ID) };
-
-            List<string> excludedSidesSlot = new List<string>() { nameof(LaserAndBendingDetail.Width),nameof(LaserAndBendingDetail.OD),
-                    nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
-
-            List<string> excludedSidesIrregularShape = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
-                    nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
-                    nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
-
-            List<string> excludedSidesOthers = new List<string>() { nameof(LaserAndBendingDetail.Length), nameof(LaserAndBendingDetail.Width),
-                    nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD),
-                    nameof(LaserAndBendingDetail.ID), nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3) };
-
-            dctMaterialShapeAllowedSides.Add(0, excludeAllSides);
-            dctMaterialShapeAllowedSides.Add(1, excludedSidesSheet);
-            dctMaterialShapeAllowedSides.Add(2, excludedSidesPlate);
-            dctMaterialShapeAllowedSides.Add(3, excludedSidesFlat);
-            dctMaterialShapeAllowedSides.Add(4, excludedSidesAngle);
-            dctMaterialShapeAllowedSides.Add(5, excludedSidesRoundBar);
-            dctMaterialShapeAllowedSides.Add(6, excludedSidesRoundTube);
-            dctMaterialShapeAllowedSides.Add(7, excludedSidesRectBar);
-            dctMaterialShapeAllowedSides.Add(8, excludedSidesRectTube);
-            dctMaterialShapeAllowedSides.Add(9, excludedSidesSqBar);
-            dctMaterialShapeAllowedSides.Add(10, excludedSidesSqTube);
-            dctMaterialShapeAllowedSides.Add(11, excludedSidesTriangle);
-            dctMaterialShapeAllowedSides.Add(12, excludedSidesSlot);
-            dctMaterialShapeAllowedSides.Add(13, excludedSidesIrregularShape);
-            dctMaterialShapeAllowedSides.Add(14, excludedSidesOthers);
-
-            if (dctMaterialShapeAllowedSides.ContainsKey(MaterialShapeSelectedID) &&
-                dctMaterialShapeAllowedSides[MaterialShapeSelectedID].Contains(sideName))
-            {
-                isSideApplicableToTheShape = false;
-            }
-
-            return isSideApplicableToTheShape;
+            return dctBendingAllowedSides;
         }
 
         public void ResetValue(string mappingName)
@@ -485,17 +610,14 @@ namespace CostMater.Data
                 case nameof(LaserAndBendingDetail.Width):
                     Width = 0;
                     break;
-                case nameof(LaserAndBendingDetail.Thickness):
-                    Thickness = 0;
-                    break;
                 case nameof(LaserAndBendingDetail.Diameter):
                     Diameter = 0;
                     break;
                 case nameof(LaserAndBendingDetail.OD):
                     OD = 0;
                     break;
-                case nameof(LaserAndBendingDetail.ID):
-                    ID = 0;
+                case nameof(LaserAndBendingDetail.NoOfSides):
+                    NoOfSides = 0;
                     break;
                 case nameof(LaserAndBendingDetail.Side1):
                     Side1 = 0;
@@ -510,7 +632,7 @@ namespace CostMater.Data
         }
 
         internal bool AllowOperation(int operationId)
-        {   
+        {
             return !(operationId > 0 && Component.RawMaterialCost == 0);
         }
     }

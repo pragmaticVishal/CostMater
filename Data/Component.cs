@@ -455,7 +455,7 @@ namespace DetailsView.Data
         internal void RecalculateOneTimeOperationCost()
         {
             FabricationTotalCost = LstOneTimeOperationDetail.Where(x=>x.OneTimeOpItemSelectedID == 1).Sum(x=>x.Amount);
-            SurfaceTreatmentCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 2).Sum(x => x.Amount); 
+            SurfaceTreatmentCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 2 || x.OneTimeOpItemSelectedID == 8).Sum(x => x.Amount); 
             GrindingCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 3).Sum(x => x.Amount);
             ProcurementCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 4).Sum(x => x.Amount);
             MiscellaneousCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 5).Sum(x => x.Amount);
@@ -557,7 +557,7 @@ namespace DetailsView.Data
             _laserCost = LstLaserAndBendingDetail.Sum(x => x.LaserCost);
             _bendTotalCost = LstLaserAndBendingDetail.Sum(x => x.BendTotalCost);
             _fabricationTotalCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 1).Sum(x => x.Amount);
-            _surfaceTreatmentCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 2).Sum(x => x.Amount);
+            _surfaceTreatmentCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 2 || x.OneTimeOpItemSelectedID == 8).Sum(x => x.Amount);
             _grindingCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 3).Sum(x => x.Amount);
             _procurementCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 4).Sum(x => x.Amount);
             _miscellaneousCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 5).Sum(x => x.Amount);
@@ -591,10 +591,10 @@ namespace DetailsView.Data
             List<string> excludedSidesAngle = new List<string>() { nameof(Component.Width), nameof(Component.Diameter),
                     nameof(Component.OD), nameof(Component.ID) };
 
-            List<string> excludedSidesRoundBar = new List<string>() { nameof(Component.Width), nameof(Component.Thickness),
+            List<string> excludedSidesRoundBar = new List<string>() { nameof(Component.Width),
                     nameof(Component.OD), nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2)};
 
-            List<string> excludedSidesRoundTube = new List<string>() { nameof(Component.Width), nameof(Component.Thickness),
+            List<string> excludedSidesRoundTube = new List<string>() { nameof(Component.Width),
                     nameof(Component.Diameter), nameof(Component.Side1), nameof(Component.Side2) };
 
             List<string> excludedSidesRectBar = new List<string>() { nameof(Component.Diameter), nameof(Component.OD), nameof(Component.ID),
