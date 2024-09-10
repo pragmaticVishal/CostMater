@@ -39,17 +39,22 @@ namespace DetailsView
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             componentGrid = new Syncfusion.WinForms.DataGrid.SfDataGrid();
-            menuStrip1 = new System.Windows.Forms.MenuStrip();
-            toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            openToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            saveToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            exportToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            costingTabCtrl = new System.Windows.Forms.TabControl();
+            costingPage = new System.Windows.Forms.TabPage();
+            menuStrip2 = new System.Windows.Forms.MenuStrip();
+            toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem7 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
+            costConfigPage = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)componentGrid).BeginInit();
-            menuStrip1.SuspendLayout();
+            costingTabCtrl.SuspendLayout();
+            costingPage.SuspendLayout();
+            menuStrip2.SuspendLayout();
             SuspendLayout();
             // 
             // componentGrid
@@ -58,125 +63,159 @@ namespace DetailsView
             componentGrid.AddNewRowPosition = Syncfusion.WinForms.DataGrid.Enums.RowPosition.Top;
             componentGrid.AllowResizingColumns = true;
             componentGrid.AllowTriStateSorting = true;
-            componentGrid.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             componentGrid.AutoGenerateColumns = false;
-            componentGrid.Location = new System.Drawing.Point(17, 33);
+            componentGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            componentGrid.Location = new System.Drawing.Point(3, 30);
             componentGrid.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
             componentGrid.Name = "componentGrid";
             componentGrid.RowHeight = 21;
             componentGrid.ShowHeaderToolTip = true;
             componentGrid.ShowToolTip = true;
-            componentGrid.Size = new System.Drawing.Size(1201, 530);
+            componentGrid.Size = new System.Drawing.Size(1292, 548);
             componentGrid.TabIndex = 0;
             componentGrid.Text = "sfDataGrid1";
             componentGrid.ValidationMode = Syncfusion.WinForms.DataGrid.Enums.GridValidationMode.InEdit;
             // 
-            // menuStrip1
+            // costingTabCtrl
             // 
-            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem1, openToolStripMenuItem, saveToolStripMenuItem1, exportToolStripMenuItem1 });
-            menuStrip1.Location = new System.Drawing.Point(0, 0);
-            menuStrip1.Name = "menuStrip1";
-            menuStrip1.Padding = new System.Windows.Forms.Padding(8, 4, 0, 4);
-            menuStrip1.Size = new System.Drawing.Size(1233, 27);
-            menuStrip1.TabIndex = 1;
-            menuStrip1.Text = "menuStrip1";
+            costingTabCtrl.Controls.Add(costingPage);
+            costingTabCtrl.Controls.Add(costConfigPage);
+            costingTabCtrl.Dock = System.Windows.Forms.DockStyle.Fill;
+            costingTabCtrl.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            costingTabCtrl.HotTrack = true;
+            costingTabCtrl.Location = new System.Drawing.Point(0, 0);
+            costingTabCtrl.Name = "costingTabCtrl";
+            costingTabCtrl.SelectedIndex = 0;
+            costingTabCtrl.Size = new System.Drawing.Size(1306, 611);
+            costingTabCtrl.TabIndex = 2;
             // 
-            // toolStripMenuItem1
+            // costingPage
             // 
-            toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem1, saveToolStripMenuItem, exportToolStripMenuItem, exitToolStripMenuItem });
-            toolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-            toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new System.Drawing.Size(38, 19);
-            toolStripMenuItem1.Text = "File";
+            costingPage.Controls.Add(componentGrid);
+            costingPage.Controls.Add(menuStrip2);
+            costingPage.Location = new System.Drawing.Point(4, 26);
+            costingPage.Name = "costingPage";
+            costingPage.Padding = new System.Windows.Forms.Padding(3);
+            costingPage.Size = new System.Drawing.Size(1298, 581);
+            costingPage.TabIndex = 0;
+            costingPage.Text = "Costing";
             // 
-            // openToolStripMenuItem1
+            // menuStrip2
             // 
-            openToolStripMenuItem1.Name = "openToolStripMenuItem1";
-            openToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
-            openToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            openToolStripMenuItem1.Text = "Open";
-            openToolStripMenuItem1.Click += Form1_CtrlOPressed;
+            menuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem2, toolStripMenuItem7, toolStripMenuItem8, toolStripMenuItem9 });
+            menuStrip2.Location = new System.Drawing.Point(3, 3);
+            menuStrip2.Name = "menuStrip2";
+            menuStrip2.Padding = new System.Windows.Forms.Padding(8, 4, 0, 4);
+            menuStrip2.Size = new System.Drawing.Size(1292, 27);
+            menuStrip2.TabIndex = 2;
+            menuStrip2.Text = "menuStrip2";
             // 
-            // saveToolStripMenuItem
+            // toolStripMenuItem2
             // 
-            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
-            saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            saveToolStripMenuItem.Text = "Save";
-            saveToolStripMenuItem.Click += Form1_CtrlSPressed;
+            toolStripMenuItem2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem3, toolStripMenuItem4, toolStripMenuItem5, toolStripMenuItem6 });
+            toolStripMenuItem2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new System.Drawing.Size(38, 19);
+            toolStripMenuItem2.Text = "File";
             // 
-            // exportToolStripMenuItem
+            // toolStripMenuItem3
             // 
-            exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            exportToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
-            exportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            exportToolStripMenuItem.Text = "Export";
-            exportToolStripMenuItem.Click += Form1_CtrlEPressed;
+            toolStripMenuItem3.Name = "toolStripMenuItem3";
+            toolStripMenuItem3.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
+            toolStripMenuItem3.Size = new System.Drawing.Size(180, 22);
+            toolStripMenuItem3.Text = "Open";
             // 
-            // exitToolStripMenuItem
+            // toolStripMenuItem4
             // 
-            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4;
-            exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            exitToolStripMenuItem.Text = "Exit";
-            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            toolStripMenuItem4.Name = "toolStripMenuItem4";
+            toolStripMenuItem4.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
+            toolStripMenuItem4.Size = new System.Drawing.Size(180, 22);
+            toolStripMenuItem4.Text = "Save";
             // 
-            // openToolStripMenuItem
+            // toolStripMenuItem5
             // 
-            openToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-            openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new System.Drawing.Size(49, 19);
-            openToolStripMenuItem.Text = "Open";
-            openToolStripMenuItem.Click += Form1_CtrlOPressed;
+            toolStripMenuItem5.Name = "toolStripMenuItem5";
+            toolStripMenuItem5.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
+            toolStripMenuItem5.Size = new System.Drawing.Size(180, 22);
+            toolStripMenuItem5.Text = "Export";
             // 
-            // saveToolStripMenuItem1
+            // toolStripMenuItem6
             // 
-            saveToolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-            saveToolStripMenuItem1.Name = "saveToolStripMenuItem1";
-            saveToolStripMenuItem1.Size = new System.Drawing.Size(46, 19);
-            saveToolStripMenuItem1.Text = "Save";
-            saveToolStripMenuItem1.Click += Form1_CtrlSPressed;
+            toolStripMenuItem6.Name = "toolStripMenuItem6";
+            toolStripMenuItem6.ShortcutKeys = System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4;
+            toolStripMenuItem6.Size = new System.Drawing.Size(180, 22);
+            toolStripMenuItem6.Text = "Exit";
+            toolStripMenuItem6.Click += exitToolStripMenuItem_Click;
             // 
-            // exportToolStripMenuItem1
+            // toolStripMenuItem7
             // 
-            exportToolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-            exportToolStripMenuItem1.Name = "exportToolStripMenuItem1";
-            exportToolStripMenuItem1.Size = new System.Drawing.Size(56, 19);
-            exportToolStripMenuItem1.Text = "Export";
-            exportToolStripMenuItem1.Click += Form1_CtrlEPressed;
+            toolStripMenuItem7.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+            toolStripMenuItem7.Name = "toolStripMenuItem7";
+            toolStripMenuItem7.Size = new System.Drawing.Size(49, 19);
+            toolStripMenuItem7.Text = "Open";
+            toolStripMenuItem7.Click += Form1_CtrlOPressed;
+            // 
+            // toolStripMenuItem8
+            // 
+            toolStripMenuItem8.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+            toolStripMenuItem8.Name = "toolStripMenuItem8";
+            toolStripMenuItem8.Size = new System.Drawing.Size(46, 19);
+            toolStripMenuItem8.Text = "Save";
+            toolStripMenuItem8.Click += Form1_CtrlSPressed;
+            // 
+            // toolStripMenuItem9
+            // 
+            toolStripMenuItem9.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+            toolStripMenuItem9.Name = "toolStripMenuItem9";
+            toolStripMenuItem9.Size = new System.Drawing.Size(56, 19);
+            toolStripMenuItem9.Text = "Export";
+            toolStripMenuItem9.Click += Form1_CtrlEPressed;
+            // 
+            // costConfigPage
+            // 
+            costConfigPage.Location = new System.Drawing.Point(4, 26);
+            costConfigPage.Name = "costConfigPage";
+            costConfigPage.Padding = new System.Windows.Forms.Padding(3);
+            costConfigPage.Size = new System.Drawing.Size(1298, 581);
+            costConfigPage.TabIndex = 1;
+            costConfigPage.Text = "Cost Config";
+            costConfigPage.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1233, 576);
-            Controls.Add(componentGrid);
-            Controls.Add(menuStrip1);
+            ClientSize = new System.Drawing.Size(1306, 611);
+            Controls.Add(costingTabCtrl);
             Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-            MainMenuStrip = menuStrip1;
             Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
             Name = "Form1";
             Text = "CostMater";
             ((System.ComponentModel.ISupportInitialize)componentGrid).EndInit();
-            menuStrip1.ResumeLayout(false);
-            menuStrip1.PerformLayout();
+            costingTabCtrl.ResumeLayout(false);
+            costingPage.ResumeLayout(false);
+            costingPage.PerformLayout();
+            menuStrip2.ResumeLayout(false);
+            menuStrip2.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
         private Syncfusion.WinForms.DataGrid.SfDataGrid componentGrid;
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.TabControl costingTabCtrl;
+        private System.Windows.Forms.TabPage costingPage;
+        private System.Windows.Forms.TabPage costConfigPage;
+        private System.Windows.Forms.MenuStrip menuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem7;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem8;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem9;
     }
 }
 
