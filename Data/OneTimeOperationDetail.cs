@@ -154,6 +154,9 @@ namespace CostMater.Data
                 case 2:
                     Amount = Rate * Component.NetWeight;
                     break;
+                case 3:
+                    Amount = Rate * Component.NetWeight;
+                    break;
                 case 6:
                     Amount = Rate * Qty;
                     break;
@@ -193,11 +196,12 @@ namespace CostMater.Data
             dctOperationExcludedColumns.Add(0, excludedColumnsQtyRateAmt);
             dctOperationExcludedColumns.Add(1, excludedColumnsQtyAmt);
             dctOperationExcludedColumns.Add(2, excludedColumnsQtyAmt);
-            dctOperationExcludedColumns.Add(3, excludedColumnsQtyRate);
+            dctOperationExcludedColumns.Add(3, excludedColumnsQtyAmt);
             dctOperationExcludedColumns.Add(4, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(5, excludedColumnsQtyRate);
             dctOperationExcludedColumns.Add(6, excludedColumnsAmt);
             dctOperationExcludedColumns.Add(7, excludedColumnsAmt);
+            dctOperationExcludedColumns.Add(8, excludedColumnsQtyAmt);
             return dctOperationExcludedColumns;
         }
 
