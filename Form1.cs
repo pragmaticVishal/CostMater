@@ -5,22 +5,20 @@
 // licensing@syncfusion.com. Any infringement will be prosecuted under
 // applicable laws. 
 #endregion
+using CostMater.Data;
 using CostMater.DataGrids;
 using DetailsView.Data;
 using Newtonsoft.Json;
+using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGridConverter;
 using Syncfusion.XlsIO;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
 using Component = DetailsView.Data.Component;
-using Syncfusion.Windows.Forms;
-using System.Threading.Tasks;
-using System.ComponentModel;
-
 namespace DetailsView
 {
     public partial class Form1 : Form
@@ -36,26 +34,31 @@ namespace DetailsView
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
             this.WindowState = FormWindowState.Maximized;
+            this.DoubleBuffered = true;
             CtrlEPressed += Form1_CtrlEPressed;
             CtrlOPressed += Form1_CtrlOPressed;
             CtrlSPressed += Form1_CtrlSPressed;
-            SetupDataGrids(new ComponentRepository().GetAll());
+            List<MachiningParameter> lstMachiningParam = MachiningParameterRepository.GetAll();
+            SetupDataGrids(new ComponentRepository().GetAll(), lstMachiningParam);
         }
 
-        private void SetupDataGrids(ObservableCollection<Component> lstComponent)
+        private void SetupDataGrids(ObservableCollection<Component> lstComponent, List<MachiningParameter> lstMachiningParam)
         {
+            MachiningParamGrid machiningParamGrid = new MachiningParamGrid(this.sfDGMachiningParam, lstMachiningParam);
+            machiningParamGrid.SetUp();
+
             componentGrid1 = new ComponentGrid(this.componentGrid, lstComponent);
             componentGrid1.Setup();
 
-            SfDataGrid machiningGrid = new SfDataGrid() { Parent = componentGrid};
+            SfDataGrid machiningGrid = new SfDataGrid() { Parent = componentGrid };
             MachiningGrid machiningGrid1 = new MachiningGrid(machiningGrid);
             machiningGrid1.Setup();
 
-            SfDataGrid oneTimeOperationGrid = new SfDataGrid() { Parent = componentGrid};
+            SfDataGrid oneTimeOperationGrid = new SfDataGrid() { Parent = componentGrid };
             OneTimeOperationGrid oneTimeOperationGrid1 = new OneTimeOperationGrid(oneTimeOperationGrid);
             oneTimeOperationGrid1.Setup();
 
-            SfDataGrid laserAndBendingDetailGrid = new SfDataGrid() { Parent = componentGrid};
+            SfDataGrid laserAndBendingDetailGrid = new SfDataGrid() { Parent = componentGrid };
             laserAndBendingDetailGrid1 = new LaserAndBendingDetailGrid(laserAndBendingDetailGrid);
             laserAndBendingDetailGrid1.Setup();
 
@@ -282,6 +285,23 @@ namespace DetailsView
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void costingTabCtrl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //this.SuspendLayout();
+            //this.ResumeLayout();
+            //menuStrip2.Invalidate();
+            //menuStrip2.Update();
+            this.costingTabCtrl.SelectedTab.Invalidate(true);
+            this.costingTabCtrl.SelectedTab.Update();
+            this.Invalidate();
+            this.Update();
+            this.sfDGMachiningParam.Invalidate();
+            this.sfDGMachiningParam.Update();
+            this.componentGrid.Invalidate();
+            this.componentGrid.Update();
+
         }
     }
 }

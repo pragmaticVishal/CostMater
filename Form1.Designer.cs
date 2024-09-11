@@ -51,10 +51,13 @@ namespace DetailsView
             toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
             toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
             costConfigPage = new System.Windows.Forms.TabPage();
+            sfDGMachiningParam = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             ((System.ComponentModel.ISupportInitialize)componentGrid).BeginInit();
             costingTabCtrl.SuspendLayout();
             costingPage.SuspendLayout();
             menuStrip2.SuspendLayout();
+            costConfigPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)sfDGMachiningParam).BeginInit();
             SuspendLayout();
             // 
             // componentGrid
@@ -88,6 +91,7 @@ namespace DetailsView
             costingTabCtrl.SelectedIndex = 0;
             costingTabCtrl.Size = new System.Drawing.Size(1306, 611);
             costingTabCtrl.TabIndex = 2;
+            costingTabCtrl.SelectedIndexChanged += costingTabCtrl_SelectedIndexChanged;
             // 
             // costingPage
             // 
@@ -122,28 +126,28 @@ namespace DetailsView
             // 
             toolStripMenuItem3.Name = "toolStripMenuItem3";
             toolStripMenuItem3.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
-            toolStripMenuItem3.Size = new System.Drawing.Size(180, 22);
+            toolStripMenuItem3.Size = new System.Drawing.Size(152, 22);
             toolStripMenuItem3.Text = "Open";
             // 
             // toolStripMenuItem4
             // 
             toolStripMenuItem4.Name = "toolStripMenuItem4";
             toolStripMenuItem4.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
-            toolStripMenuItem4.Size = new System.Drawing.Size(180, 22);
+            toolStripMenuItem4.Size = new System.Drawing.Size(152, 22);
             toolStripMenuItem4.Text = "Save";
             // 
             // toolStripMenuItem5
             // 
             toolStripMenuItem5.Name = "toolStripMenuItem5";
             toolStripMenuItem5.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
-            toolStripMenuItem5.Size = new System.Drawing.Size(180, 22);
+            toolStripMenuItem5.Size = new System.Drawing.Size(152, 22);
             toolStripMenuItem5.Text = "Export";
             // 
             // toolStripMenuItem6
             // 
             toolStripMenuItem6.Name = "toolStripMenuItem6";
             toolStripMenuItem6.ShortcutKeys = System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4;
-            toolStripMenuItem6.Size = new System.Drawing.Size(180, 22);
+            toolStripMenuItem6.Size = new System.Drawing.Size(152, 22);
             toolStripMenuItem6.Text = "Exit";
             toolStripMenuItem6.Click += exitToolStripMenuItem_Click;
             // 
@@ -173,6 +177,7 @@ namespace DetailsView
             // 
             // costConfigPage
             // 
+            costConfigPage.Controls.Add(sfDGMachiningParam);
             costConfigPage.Location = new System.Drawing.Point(4, 26);
             costConfigPage.Name = "costConfigPage";
             costConfigPage.Padding = new System.Windows.Forms.Padding(3);
@@ -180,6 +185,25 @@ namespace DetailsView
             costConfigPage.TabIndex = 1;
             costConfigPage.Text = "Cost Config";
             costConfigPage.UseVisualStyleBackColor = true;
+            // 
+            // sfDGMachiningParam
+            // 
+            sfDGMachiningParam.AccessibleName = "Table";
+            sfDGMachiningParam.AllowResizingColumns = true;
+            sfDGMachiningParam.AllowTriStateSorting = true;
+            sfDGMachiningParam.AutoGenerateColumns = false;
+            sfDGMachiningParam.AutoSizeColumnsMode = Syncfusion.WinForms.DataGrid.Enums.AutoSizeColumnsMode.AllCells;
+            sfDGMachiningParam.Dock = System.Windows.Forms.DockStyle.Fill;
+            sfDGMachiningParam.EditMode = Syncfusion.WinForms.DataGrid.Enums.EditMode.SingleClick;
+            sfDGMachiningParam.Location = new System.Drawing.Point(3, 3);
+            sfDGMachiningParam.Name = "sfDGMachiningParam";
+            sfDGMachiningParam.ShowGroupDropArea = true;
+            sfDGMachiningParam.Size = new System.Drawing.Size(1292, 575);
+            sfDGMachiningParam.Style.BorderColor = System.Drawing.Color.FromArgb(100, 100, 100);
+            sfDGMachiningParam.Style.HeaderStyle.Font.Bold = true;
+            sfDGMachiningParam.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.ActiveCaptionText;
+            sfDGMachiningParam.TabIndex = 0;
+            sfDGMachiningParam.Text = "sfDGMachiningParam";
             // 
             // Form1
             // 
@@ -198,6 +222,8 @@ namespace DetailsView
             costingPage.PerformLayout();
             menuStrip2.ResumeLayout(false);
             menuStrip2.PerformLayout();
+            costConfigPage.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)sfDGMachiningParam).EndInit();
             ResumeLayout(false);
         }
 
@@ -216,6 +242,7 @@ namespace DetailsView
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem7;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem8;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem9;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid sfDGMachiningParam;
     }
 }
 

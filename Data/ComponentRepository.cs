@@ -35,7 +35,6 @@ namespace DetailsView.Data
                     ProcessTypeID = 0,
                     ToolTypeID = 0,
                     ToolSurfaceID = 0,
-                    MachiningCostPerHour = 300,
                     Component = component,
                 }
             };

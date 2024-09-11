@@ -28,7 +28,6 @@ namespace DetailsView.Data
         private decimal _feedRate;
         private decimal _drillSize;
         private decimal _threadDiameterToCut;
-        private decimal _threadPitch;
         private decimal _diameterBeforeTurning;
         private decimal _diameterAfterTurning;
         private decimal _rpm;
@@ -37,8 +36,7 @@ namespace DetailsView.Data
         private decimal _lengthOfCut;
         private decimal _lengthOfHoleToDrill;
         private decimal _lengthOfThreadToCut;
-        private decimal _machingTime;
-        private decimal _machiningCostPerHour;
+        private decimal _machingTime;        
         private decimal _machiningCost;
         private decimal _average;
         private Component _component;
@@ -205,17 +203,6 @@ namespace DetailsView.Data
             }
         }
 
-        [Display(Name = "Pitch")]
-        public decimal ThreadPitch
-        {
-            get => _threadPitch;
-            set
-            {
-                _threadPitch = value;
-                RaisePropertyChanged(nameof(ThreadPitch));
-            }
-        }
-
         [Display(Name = "Diameter of stock before turning")]
         public decimal DiameterBeforeTurning
         {
@@ -323,18 +310,7 @@ namespace DetailsView.Data
                 _average = value;
                 RaisePropertyChanged(nameof(Average));
             }
-        }
-
-        [Display(Name = "Machining Cost Per hour")]
-        public decimal MachiningCostPerHour
-        {
-            get => _machiningCostPerHour;
-            set
-            {
-                _machiningCostPerHour = value;
-                RaisePropertyChanged(nameof(MachiningCostPerHour));
-            }
-        }
+        }        
 
         [Display(Name = "Machining Cost")]
         public decimal MachiningCost
@@ -479,24 +455,24 @@ namespace DetailsView.Data
             List<string> excludeAllColumns = new List<string>() { nameof(Process.ToolTypeID), nameof(Process.ToolSurfaceID),
             nameof(Process.CuttingSpeed), nameof(Process.DrillSize), nameof(Process.FeedRate),
             nameof(Process.DiameterBeforeTurning), nameof(Process.DiameterAfterTurning), nameof(Process.DepthOfCutEachPass), nameof(Process.LengthOfCut),
-            nameof(Process.ThreadDiameterToCut), nameof(Process.ThreadPitch), nameof(Process.LengthOfThreadToCut), nameof(Process.LengthOfHoleToDrill),
-            nameof(Process.NoOfCuts), nameof(Process.RPM), nameof(Process.MachiningCostPerHour), nameof(Process.MachiningTime), nameof(Process.MachiningCost)
+            nameof(Process.ThreadDiameterToCut), nameof(Process.LengthOfThreadToCut), nameof(Process.LengthOfHoleToDrill),
+            nameof(Process.NoOfCuts), nameof(Process.RPM), nameof(Process.MachiningTime), nameof(Process.MachiningCost)
             };
 
             List<string> excludedColumnsFaceTurning = new List<string>() { nameof(Process.DrillSize), nameof(Process.ThreadDiameterToCut),
-            nameof(Process.ThreadPitch), nameof(Process.LengthOfThreadToCut), nameof(Process.LengthOfHoleToDrill),
+            nameof(Process.LengthOfThreadToCut), nameof(Process.LengthOfHoleToDrill),
             nameof(Process.DiameterAfterTurning), nameof(Process.DepthOfCutEachPass), nameof(Process.TotalDepthOfCut), nameof(Process.NoOfCuts)};
 
             List<string> excludedColumnsTurning = new List<string>() { nameof(Process.DrillSize), nameof(Process.ThreadDiameterToCut),
-            nameof(Process.ThreadPitch), nameof(Process.LengthOfThreadToCut), nameof(Process.LengthOfHoleToDrill)};
+            nameof(Process.LengthOfThreadToCut), nameof(Process.LengthOfHoleToDrill)};
 
             List<string> excludedColumnsDrilling = new List<string>() { nameof(Process.DiameterBeforeTurning), nameof(Process.DiameterAfterTurning),
             nameof(Process.DepthOfCutEachPass), nameof(Process.TotalDepthOfCut), nameof(Process.LengthOfCut), nameof(Process.ThreadDiameterToCut),
-            nameof(Process.ThreadPitch), nameof(Process.LengthOfThreadToCut), nameof(Process.NoOfCuts)};
+            nameof(Process.LengthOfThreadToCut), nameof(Process.NoOfCuts), nameof(Process.ToolSurfaceID)};
 
             List<string> excludedColumnsThreading = new List<string>() { nameof(Process.DrillSize), nameof(Process.DiameterBeforeTurning), 
             nameof(Process.DiameterAfterTurning), nameof(Process.DepthOfCutEachPass), nameof(Process.TotalDepthOfCut), nameof(Process.LengthOfCut),
-            nameof(Process.LengthOfHoleToDrill)};
+            nameof(Process.LengthOfHoleToDrill), nameof(Process.ToolSurfaceID)};
 
             dctOperationExcludedColumns.Add(0, excludeAllColumns);
             dctOperationExcludedColumns.Add(1, excludedColumnsTurning);
@@ -525,9 +501,6 @@ namespace DetailsView.Data
                     break;
                 case nameof(Process.ThreadDiameterToCut):
                     ThreadDiameterToCut = 0;
-                    break;
-                case nameof(Process.ThreadPitch):
-                    ThreadPitch = 0;
                     break;
                 case nameof(Process.LengthOfThreadToCut):
                     LengthOfThreadToCut = 0;
@@ -566,7 +539,6 @@ namespace DetailsView.Data
             _feedRate = 0;
             _drillSize = 0;
             _threadDiameterToCut = 0;
-            _threadPitch = 0;
             _diameterBeforeTurning = 0;
             _diameterAfterTurning = 0;
             _rpm = 0;
@@ -576,7 +548,6 @@ namespace DetailsView.Data
             _lengthOfHoleToDrill = 0;
             _lengthOfThreadToCut = 0;
             _machingTime = 0;
-            _machiningCostPerHour = 0;
             _machiningCost = 0;
             _average = 0;
             _totalDepthOfCut = 0;
@@ -587,40 +558,41 @@ namespace DetailsView.Data
             {
                 ResetAllFields();
             }
+            MachiningParameter machiningParameter = MachiningParameterRepository.GetMachiningParameter(this);
             switch (ProcessTypeID)
             {
                 case 2:
-                    CalculateRPMForFaceTurning();
-                    CalculateMachiningTimeForFaceTurning();
+                    CalculateRPMForFaceTurning(machiningParameter);
+                    CalculateMachiningTimeForFaceTurning(machiningParameter);
                     break;
                 case 1:
                 case 3:
                 case 4:
-                    CalculateRPMForTurning();
-                    CalculateNoOfCutForTurning();
-                    CalculateMachiningTimeForTurning();
+                    CalculateRPMForTurning(machiningParameter);
+                    CalculateNoOfCutForTurning(machiningParameter);
+                    CalculateMachiningTimeForTurning(machiningParameter);
                     break;
                 case 5:
-                    CalculateRPMForDrilling();
-                    CalculateMachingTimeForDrilling();
+                    CalculateRPMForDrilling(machiningParameter);
+                    CalculateMachingTimeForDrilling(machiningParameter);
                     break;
                 case 6:
-                    CalculateRPMForThreading();
-                    CalculateNoOfCutForThreading();
-                    CalculateMachingTimeForThreading();
+                    CalculateRPMForThreading(machiningParameter);
+                    CalculateNoOfCutForThreading(machiningParameter);
+                    CalculateMachingTimeForThreading(machiningParameter);
                     break;
                 default:
                     break;
             }
 
-            MachiningCost = (MachiningTime * MachiningCostPerHour) / 60;
+            MachiningCost = (MachiningTime * machiningParameter.MachiningCostPerHour) / 60;
         }
 
-        private void CalculateNoOfCutForTurning()
+        private void CalculateNoOfCutForTurning(MachiningParameter machiningParameter)
         {
-            if (DepthOfCutEachPass != 0)
+            if (machiningParameter.DepthOfCutEachPass != 0)
             {
-                NoOfCuts = TotalDepthOfCut / DepthOfCutEachPass;
+                NoOfCuts = TotalDepthOfCut / machiningParameter.DepthOfCutEachPass;
             }
             else
             {
@@ -628,11 +600,11 @@ namespace DetailsView.Data
             }
         }
 
-        private void CalculateNoOfCutForThreading()
+        private void CalculateNoOfCutForThreading(MachiningParameter machiningParameter)
         {
-            if (ThreadPitch != 0)
+            if (machiningParameter.ThreadPitch != 0)
             {
-                NoOfCuts = 25 / (10 / ThreadPitch);
+                NoOfCuts = 25 / (10 / machiningParameter.ThreadPitch);
             }
             else
             {
@@ -640,11 +612,11 @@ namespace DetailsView.Data
             }
         }
 
-        private void CalculateMachiningTimeForTurning()
+        private void CalculateMachiningTimeForTurning(MachiningParameter machiningParameter)
         {
-            if (FeedRate != 0 && RPM != 0)
+            if (machiningParameter.FeedRate != 0 && RPM != 0)
             {
-                MachiningTime = (LengthOfCut * NoOfCuts) / (FeedRate * RPM);
+                MachiningTime = (LengthOfCut * NoOfCuts) / (machiningParameter.FeedRate * RPM);
             }
             else
             {
@@ -652,11 +624,11 @@ namespace DetailsView.Data
             }
         }
 
-        private void CalculateMachiningTimeForFaceTurning()
+        private void CalculateMachiningTimeForFaceTurning(MachiningParameter machiningParameter)
         {
-            if (FeedRate != 0 && RPM != 0)
+            if (machiningParameter.FeedRate != 0 && RPM != 0)
             {
-                MachiningTime = (LengthOfCut) / (FeedRate * RPM);
+                MachiningTime = (LengthOfCut) / (machiningParameter.FeedRate * RPM);
             }
             else
             {
@@ -664,11 +636,11 @@ namespace DetailsView.Data
             }
         }
 
-        private void CalculateMachingTimeForDrilling()
+        private void CalculateMachingTimeForDrilling(MachiningParameter machiningParameter)
         {
-            if (FeedRate != 0 && RPM != 0)
+            if (machiningParameter.FeedRate != 0 && RPM != 0)
             {
-                MachiningTime = LengthOfHoleToDrill / (FeedRate * RPM);
+                MachiningTime = LengthOfHoleToDrill / (machiningParameter.FeedRate * RPM);
             }
             else
             {
@@ -676,11 +648,11 @@ namespace DetailsView.Data
             }
         }
 
-        private void CalculateMachingTimeForThreading()
+        private void CalculateMachingTimeForThreading(MachiningParameter machiningParameter)
         {
-            if (FeedRate != 0 && RPM != 0)
+            if (machiningParameter.FeedRate != 0 && RPM != 0)
             {
-                MachiningTime = (LengthOfThreadToCut * NoOfCuts) / (FeedRate * RPM);
+                MachiningTime = (LengthOfThreadToCut * NoOfCuts) / (machiningParameter.FeedRate * RPM);
             }
             else
             {
@@ -688,12 +660,12 @@ namespace DetailsView.Data
             }
         }
 
-        private void CalculateRPMForTurning()
+        private void CalculateRPMForTurning(MachiningParameter machiningParameter)
         {
             Average = DiameterBeforeTurning + (DiameterAfterTurning / 2);
             if (Average != 0)
             {
-                RPM = 1000 * CuttingSpeed / (3.14M * Average);
+                RPM = 1000 * machiningParameter.CuttingSpeed / (3.14M * Average);
             }
             else
             {
@@ -701,11 +673,11 @@ namespace DetailsView.Data
             }
         }
 
-        private void CalculateRPMForFaceTurning()
+        private void CalculateRPMForFaceTurning(MachiningParameter machiningParameter)
         {
             if (DiameterBeforeTurning != 0)
             {
-                RPM = 1000 * CuttingSpeed / (3.14M * DiameterBeforeTurning);
+                RPM = 1000 * machiningParameter.CuttingSpeed / (3.14M * DiameterBeforeTurning);
             }
             else
             {
@@ -713,11 +685,11 @@ namespace DetailsView.Data
             }
         }
 
-        private void CalculateRPMForDrilling()
+        private void CalculateRPMForDrilling(MachiningParameter machiningParameter)
         {
-            if (DrillSize != 0)
+            if (machiningParameter.DrillSize != 0)
             {
-                RPM = 1000 * CuttingSpeed / (3.14M * DrillSize);
+                RPM = 1000 * machiningParameter.CuttingSpeed / (3.14M * machiningParameter.DrillSize);
             }
             else
             {
@@ -725,11 +697,11 @@ namespace DetailsView.Data
             }
         }
 
-        private void CalculateRPMForThreading()
+        private void CalculateRPMForThreading(MachiningParameter machiningParameter)
         {
             if (ThreadDiameterToCut != 0)
             {
-                RPM = 1000 * CuttingSpeed / (3.14M * ThreadDiameterToCut);
+                RPM = 1000 * machiningParameter.CuttingSpeed / (3.14M * ThreadDiameterToCut);
             }
             else
             {
@@ -739,7 +711,7 @@ namespace DetailsView.Data
 
         internal bool AllowOperation(int operationId)
         {
-            return !(operationId > 0 && Component.RawMaterialCost == 0);
+            return !(operationId > 0 && (Component.RawMaterialCost == 0 || Component.MaterialID == 0));
         }
     }
 

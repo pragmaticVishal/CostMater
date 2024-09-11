@@ -75,19 +75,13 @@ namespace CostMater.DataGrids
             machiningGrid.Columns.Add(new GridComboBoxColumn { MappingName = "ProcessTypeID", HeaderText = "Name", ValueMember = "ProcessTypeID", DisplayMember = "ProcessTypeName", IDataSourceSelector = new ProcessTypeDataSourceSelector(), Width = 120 });
             machiningGrid.Columns.Add(new GridComboBoxColumn { MappingName = "ToolTypeID", HeaderText = "Tool Type", ValueMember = "ToolTypeID", DisplayMember = "ToolTypeName", IDataSourceSelector = new ToolTypeDataSourceSelector() });
             machiningGrid.Columns.Add(new GridComboBoxColumn { MappingName = "ToolSurfaceID", HeaderText = "Rough / Finish", ValueMember = "ToolSurfaceID", DisplayMember = "ToolSurfaceName", IDataSourceSelector = new ToolSurfaceDataSourceSelector() });
-            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "CuttingSpeed", HeaderText = "Cutting Speed (S)" });
-            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "DrillSize", HeaderText = "Drill Size (D)" });
-
-            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "FeedRate", HeaderText = "Feed Rate (f) in mm/rev" });
 
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "DiameterBeforeTurning", HeaderText = "Diameter of stock before turning (D)" });
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "DiameterAfterTurning", HeaderText = "Diameter of job after turning (d)" });
-            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "DepthOfCutEachPass", HeaderText = "Depth of Cut for Each Pass in mm (dc)" });
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalDepthOfCut", HeaderText = "Total depth of cut (td)" });
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "LengthOfCut", HeaderText = "Length of the cut in mm (L)" });
 
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "ThreadDiameterToCut", HeaderText = "Diameter of the thread to cut (D)" });
-            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "ThreadPitch", HeaderText = "Pitch (P)" });
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "LengthOfThreadToCut", HeaderText = "Length of thread to cut in mm (L)" });
 
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "LengthOfHoleToDrill", HeaderText = "Length of hole to drill in mm (L)" });
@@ -96,15 +90,14 @@ namespace CostMater.DataGrids
 
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "RPM", HeaderText = "RPM (N)", AllowEditing = false });
 
-            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "MachiningCostPerHour", HeaderText = "Machining Cost per hour", FormatMode = FormatMode.Currency });
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "MachiningTime", HeaderText = "Machining Time in minutes", AllowEditing = false });
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "MachiningCost", HeaderText = "Machining Cost", AllowEditing = false, FormatMode = FormatMode.Currency });
 
             StackedHeaderRow childGridStackedHeaderRow = new StackedHeaderRow();
             childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ProcessID,ComponentID,ProcessTypeID", HeaderText = "Operation" });
-            childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ToolTypeID,ToolSurfaceID,CuttingSpeed,DrillSize", HeaderText = "Tool Details" });
+            childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ToolTypeID,ToolSurfaceID,", HeaderText = "Tool Details" });
             childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "DiameterBeforeTurning,DiameterAfterTurning,DepthOfCutEachPass,TotalDepthOfCut,LengthOfCut", HeaderText = "Turning Inputs" });
-            childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ThreadDiameterToCut,ThreadPitch,LengthOfThreadToCut", HeaderText = "Threading inputs" });
+            childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ThreadDiameterToCut,LengthOfThreadToCut", HeaderText = "Threading inputs" });
             childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "LengthOfHoleToDrill", HeaderText = "Drilling Inputs" });
 
             machiningGrid.StackedHeaderRows.Add(childGridStackedHeaderRow);
@@ -128,7 +121,7 @@ namespace CostMater.DataGrids
 
             if (e.Column.MappingName == "ProcessTypeID" && !process.AllowOperation(Convert.ToInt32(e.NewValue)))
             {
-                MessageBoxAdv.Show("Cannot add machining operation without component raw material cost. Please update component raw material cost and then retry.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxAdv.Show("Cannot add machining operation without component material name and raw material cost. Please update them and then retry.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 e.IsValid = false;
             }
         }
@@ -153,7 +146,6 @@ namespace CostMater.DataGrids
                     ProcessID = lstProcess == null ? 1 : lstProcess.Max(x => x.ProcessID) + 1,
                     ComponentID = lstProcess[0].ComponentID,
                     Component = lstProcess[0].Component,
-                    MachiningCostPerHour = 300,
                 };
                 process.PropertyChanged += Process_PropertyChanged;
 

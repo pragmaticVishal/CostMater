@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Syncfusion.XlsIO.Parser.Biff_Records;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +29,7 @@ namespace CostMater.Data
         private decimal _depthOfCutEachPass;
         private decimal _drillSize;
         private decimal _threadPitch;
+        private decimal _machiningCostPerHour;
         #endregion
 
         #region Properties
@@ -145,7 +148,15 @@ namespace CostMater.Data
             get => _feedRate;
             set
             {
-                _feedRate = value;
+                if(ProcessTypeID == 6)
+                {
+                    _feedRate = value;
+                    _threadPitch = value;
+                }
+                else
+                {
+                    _feedRate = value;
+                }
                 RaisePropertyChanged(nameof(FeedRate));
             }
         }
@@ -167,7 +178,15 @@ namespace CostMater.Data
             get => _threadPitch;
             set
             {
-                _threadPitch = value;
+                if (ProcessTypeID == 6)
+                {
+                    _feedRate = value;
+                    _threadPitch = value;
+                }
+                else
+                {
+                    _threadPitch = value;
+                }
                 RaisePropertyChanged(nameof(ThreadPitch));
             }
         }
@@ -182,11 +201,41 @@ namespace CostMater.Data
                 RaisePropertyChanged(nameof(DepthOfCutEachPass));
             }
         }
+
+        [Display(Name = "Machining Cost Per hour")]
+        public decimal MachiningCostPerHour
+        {
+            get => _machiningCostPerHour;
+            set
+            {
+                _machiningCostPerHour = value;
+                RaisePropertyChanged(nameof(MachiningCostPerHour));
+            }
+        }
         #endregion
 
         private void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public bool IsColumnApplicable(string mappingName)
+        {
+            bool isApplicable = true;
+            if ((ProcessTypeID == 1 || ProcessTypeID == 5) && (mappingName == nameof(ThreadPitch)))
+            {
+                isApplicable = false;
+            }
+            else if ((ProcessTypeID == 5 || ProcessTypeID == 6) && (mappingName == nameof(DepthOfCutEachPass)))
+            {
+                isApplicable = false;
+            }
+            else if ((ProcessTypeID == 1 || ProcessTypeID == 6) && (mappingName == nameof(DrillSize)))
+            {
+                isApplicable = false;
+            }
+
+            return isApplicable;
         }
     }
 }

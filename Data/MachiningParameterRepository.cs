@@ -1,14 +1,26 @@
-﻿using System;
+﻿using DetailsView.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace CostMater.Data
 {
-    public class MachiningParameterRepository
+    public static class MachiningParameterRepository
     {
-        public List<MachiningParameter> GetAll()
+        public static List<MachiningParameter> _lstMachiningParam;
+
+        static MachiningParameterRepository()
+        {
+            if(_lstMachiningParam == null)
+            {
+                _lstMachiningParam = new List<MachiningParameter>();
+                _lstMachiningParam = Populate();
+            }
+        }
+        private static List<MachiningParameter> Populate()
         {
             List<MachiningParameter> lstMachiningParam = new List<MachiningParameter>();
 
@@ -28,7 +40,8 @@ namespace CostMater.Data
                 FeedRate = 0.3m,
                 DepthOfCutEachPass = 2,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -46,7 +59,8 @@ namespace CostMater.Data
                 FeedRate = 0.1m,
                 DepthOfCutEachPass = 0.5m,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -64,7 +78,8 @@ namespace CostMater.Data
                 FeedRate = 0.4m,
                 DepthOfCutEachPass = 3,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -82,7 +97,8 @@ namespace CostMater.Data
                 FeedRate = 0.1m,
                 DepthOfCutEachPass = 1,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -100,7 +116,8 @@ namespace CostMater.Data
                 FeedRate = 0.35m,
                 DepthOfCutEachPass = 2.5m,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -118,7 +135,8 @@ namespace CostMater.Data
                 FeedRate = 0.15m,
                 DepthOfCutEachPass = 1,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -136,7 +154,8 @@ namespace CostMater.Data
                 FeedRate = 0.1m,
                 DepthOfCutEachPass = 0,
                 DrillSize = 3,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -154,7 +173,8 @@ namespace CostMater.Data
                 FeedRate = 0.2m,
                 DepthOfCutEachPass = 0,
                 DrillSize = 3,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -169,10 +189,11 @@ namespace CostMater.Data
                 ToolSurfaceID = 0,
                 ToolSurfaceName = "",
                 CuttingSpeed = 10,
-                FeedRate = 0,
+                FeedRate = 1,
                 DepthOfCutEachPass = 0,
                 DrillSize = 0,
-                ThreadPitch = 1
+                ThreadPitch = 1,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -187,10 +208,11 @@ namespace CostMater.Data
                 ToolSurfaceID = 0,
                 ToolSurfaceName = "",
                 CuttingSpeed = 10,
-                FeedRate = 0,
+                FeedRate = 1,
                 DepthOfCutEachPass = 0,
                 DrillSize = 0,
-                ThreadPitch = 1
+                ThreadPitch = 1,
+                MachiningCostPerHour = 300,
             });
             #endregion
 
@@ -210,7 +232,8 @@ namespace CostMater.Data
                 FeedRate = 0.2m,
                 DepthOfCutEachPass = 1,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -228,7 +251,8 @@ namespace CostMater.Data
                 FeedRate = 0.05m,
                 DepthOfCutEachPass = 0.5m,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -246,7 +270,8 @@ namespace CostMater.Data
                 FeedRate = 0.3m,
                 DepthOfCutEachPass = 2,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -264,7 +289,8 @@ namespace CostMater.Data
                 FeedRate = 0.1m,
                 DepthOfCutEachPass = 0.5m,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -282,7 +308,8 @@ namespace CostMater.Data
                 FeedRate = 0.25m,
                 DepthOfCutEachPass = 1.5m,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -300,7 +327,8 @@ namespace CostMater.Data
                 FeedRate = 0.1m,
                 DepthOfCutEachPass = 0.5m,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -318,7 +346,8 @@ namespace CostMater.Data
                 FeedRate = 0.1m,
                 DepthOfCutEachPass = 0,
                 DrillSize = 2,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -336,7 +365,8 @@ namespace CostMater.Data
                 FeedRate = 0.15m,
                 DepthOfCutEachPass = 0,
                 DrillSize = 2,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -351,10 +381,11 @@ namespace CostMater.Data
                 ToolSurfaceID = 0,
                 ToolSurfaceName = "",
                 CuttingSpeed = 8,
-                FeedRate = 0,
+                FeedRate = 0.75m,
                 DepthOfCutEachPass = 0,
                 DrillSize = 0,
-                ThreadPitch = 0.75m
+                ThreadPitch = 0.75m,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
@@ -369,10 +400,11 @@ namespace CostMater.Data
                 ToolSurfaceID = 0,
                 ToolSurfaceName = "",
                 CuttingSpeed = 15,
-                FeedRate = 0,
+                FeedRate = 0.75m,
                 DepthOfCutEachPass = 0,
                 DrillSize = 0,
-                ThreadPitch = 0.75m
+                ThreadPitch = 0.75m,
+                MachiningCostPerHour = 300,
             });
             #endregion
 
@@ -380,8 +412,8 @@ namespace CostMater.Data
             lstMachiningParam.Add(new MachiningParameter()
             {
                 MachiningParameterId = 21,
-                MaterialID = 4,
-                MaterialName = "Mild Steel",
+                MaterialID = 5,
+                MaterialName = "Aluminium",
                 ProcessTypeID = 1,
                 ProcessTypeName = "Turning",
                 ToolTypeID = 1,
@@ -392,14 +424,15 @@ namespace CostMater.Data
                 FeedRate = 0.4m,
                 DepthOfCutEachPass = 3,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
             {
                 MachiningParameterId = 22,
-                MaterialID = 4,
-                MaterialName = "Mild Steel",
+                MaterialID = 5,
+                MaterialName = "Aluminium",
                 ProcessTypeID = 1,
                 ProcessTypeName = "Turning",
                 ToolTypeID = 1,
@@ -410,14 +443,15 @@ namespace CostMater.Data
                 FeedRate = 0.2m,
                 DepthOfCutEachPass = 1,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
             {
                 MachiningParameterId = 23,
-                MaterialID = 4,
-                MaterialName = "Mild Steel",
+                MaterialID = 5,
+                MaterialName = "Aluminium",
                 ProcessTypeID = 1,
                 ProcessTypeName = "Turning",
                 ToolTypeID = 2,
@@ -428,14 +462,15 @@ namespace CostMater.Data
                 FeedRate = 0.5m,
                 DepthOfCutEachPass = 4,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
             {
                 MachiningParameterId = 24,
-                MaterialID = 4,
-                MaterialName = "Mild Steel",
+                MaterialID = 5,
+                MaterialName = "Aluminium",
                 ProcessTypeID = 1,
                 ProcessTypeName = "Turning",
                 ToolTypeID = 2,
@@ -446,14 +481,15 @@ namespace CostMater.Data
                 FeedRate = 0.3m,
                 DepthOfCutEachPass = 2,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
             {
                 MachiningParameterId = 25,
-                MaterialID = 4,
-                MaterialName = "Mild Steel",
+                MaterialID = 5,
+                MaterialName = "Aluminium",
                 ProcessTypeID = 1,
                 ProcessTypeName = "Turning",
                 ToolTypeID = 3,
@@ -464,14 +500,15 @@ namespace CostMater.Data
                 FeedRate = 0.5m,
                 DepthOfCutEachPass = 4,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
             {
                 MachiningParameterId = 26,
-                MaterialID = 4,
-                MaterialName = "Mild Steel",
+                MaterialID = 5,
+                MaterialName = "Aluminium",
                 ProcessTypeID = 1,
                 ProcessTypeName = "Turning",
                 ToolTypeID = 3,
@@ -482,14 +519,15 @@ namespace CostMater.Data
                 FeedRate = 0.25m,
                 DepthOfCutEachPass = 2,
                 DrillSize = 0,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
             {
                 MachiningParameterId = 27,
-                MaterialID = 4,
-                MaterialName = "Mild Steel",
+                MaterialID = 5,
+                MaterialName = "Aluminium",
                 ProcessTypeID = 5,
                 ProcessTypeName = "Drilling",
                 ToolTypeID = 1,
@@ -500,14 +538,15 @@ namespace CostMater.Data
                 FeedRate = 0.2m,
                 DepthOfCutEachPass = 0,
                 DrillSize = 2,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
             {
                 MachiningParameterId = 28,
-                MaterialID = 4,
-                MaterialName = "Mild Steel",
+                MaterialID = 5,
+                MaterialName = "Aluminium",
                 ProcessTypeID = 5,
                 ProcessTypeName = "Drilling",
                 ToolTypeID = 2,
@@ -518,14 +557,15 @@ namespace CostMater.Data
                 FeedRate = 0.3m,
                 DepthOfCutEachPass = 0,
                 DrillSize = 2,
-                ThreadPitch = 0
+                ThreadPitch = 0,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
             {
                 MachiningParameterId = 29,
-                MaterialID = 4,
-                MaterialName = "Mild Steel",
+                MaterialID = 5,
+                MaterialName = "Aluminium",
                 ProcessTypeID = 6,
                 ProcessTypeName = "Threading",
                 ToolTypeID = 1,
@@ -533,17 +573,18 @@ namespace CostMater.Data
                 ToolSurfaceID = 0,
                 ToolSurfaceName = "",
                 CuttingSpeed = 50,
-                FeedRate = 0,
+                FeedRate = 1.5m,
                 DepthOfCutEachPass = 0,
                 DrillSize = 0,
-                ThreadPitch = 1.5m
+                ThreadPitch = 1.5m,
+                MachiningCostPerHour = 300,
             });
 
             lstMachiningParam.Add(new MachiningParameter()
             {
                 MachiningParameterId = 30,
-                MaterialID = 4,
-                MaterialName = "Mild Steel",
+                MaterialID = 5,
+                MaterialName = "Aluminium",
                 ProcessTypeID = 6,
                 ProcessTypeName = "Threading",
                 ToolTypeID = 2,
@@ -551,14 +592,41 @@ namespace CostMater.Data
                 ToolSurfaceID = 0,
                 ToolSurfaceName = "",
                 CuttingSpeed = 100,
-                FeedRate = 0,
+                FeedRate = 1.5m,
                 DepthOfCutEachPass = 0,
                 DrillSize = 0,
-                ThreadPitch = 1.5m
+                ThreadPitch = 1.5m,
+                MachiningCostPerHour = 300,
             });
             #endregion
 
             return lstMachiningParam;
+        }
+
+        public static List<MachiningParameter> GetAll()
+        {
+            return _lstMachiningParam;
+        }
+
+        public static MachiningParameter GetMachiningParameter(Process machiningOperation)
+        {
+            MachiningParameter machiningParameter = null;
+            List<int> lstTurningOpsId = new List<int>() { 1, 2, 3, 4 };
+            List<int> lstSSMaterialId = new List<int>() { 1, 2, 3 };
+            int materialId = lstSSMaterialId.Contains(machiningOperation.Component.MaterialID) ? 1 : machiningOperation.Component.MaterialID;
+            int processTypeId = lstTurningOpsId.Contains(machiningOperation.ProcessTypeID) ? 1 : machiningOperation.ProcessTypeID;
+            int toolsurfaceId = machiningOperation.ToolSurfaceID;
+            int tooltypeId = machiningOperation.ToolTypeID;
+
+            machiningParameter = _lstMachiningParam.Find(x => (x.MaterialID == materialId && x.ProcessTypeID == processTypeId && x.ToolTypeID == tooltypeId
+            && x.ToolSurfaceID == toolsurfaceId));
+
+            if(machiningParameter == null)
+            {
+                machiningParameter = new MachiningParameter();
+            }
+
+            return machiningParameter;
         }
     }
 }
