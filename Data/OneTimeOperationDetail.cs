@@ -164,7 +164,7 @@ namespace CostMater.Data
                     Amount = Rate * Qty;
                     break;
                 case 8:
-                    Amount = (Rate == 0) ? 0 : (Component.Length * Component.Width) / (Rate * 2 * 1000000);
+                    Amount = (Rate == 0) ? 0 : (Component.Length * Component.Width / 1000000) * 2 * Rate;
                     break;
                 default:
                     break;

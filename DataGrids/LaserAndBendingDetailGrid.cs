@@ -52,7 +52,8 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.AllowDeleting = true;
             laserAndBendingDetailGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(21.0f);
             laserAndBendingDetailGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
-            laserAndBendingDetailGrid.SelectionMode = GridSelectionMode.Extended;
+            laserAndBendingDetailGrid.SelectionMode = GridSelectionMode.Single;
+            laserAndBendingDetailGrid.SelectionUnit = SelectionUnit.Cell;
             laserAndBendingDetailGrid.CopyOption = CopyOptions.IncludeHeaders;
             laserAndBendingDetailGrid.PasteOption = PasteOptions.PasteData;
 

@@ -590,6 +590,7 @@ namespace DetailsView.Data
 
         private void CalculateNoOfCutForTurning(MachiningParameter machiningParameter)
         {
+            TotalDepthOfCut = (DiameterBeforeTurning - DiameterAfterTurning) / 2;
             if (machiningParameter.DepthOfCutEachPass != 0)
             {
                 NoOfCuts = TotalDepthOfCut / machiningParameter.DepthOfCutEachPass;
@@ -662,7 +663,7 @@ namespace DetailsView.Data
 
         private void CalculateRPMForTurning(MachiningParameter machiningParameter)
         {
-            Average = DiameterBeforeTurning + (DiameterAfterTurning / 2);
+            Average = (DiameterBeforeTurning + DiameterAfterTurning) / 2;
             if (Average != 0)
             {
                 RPM = 1000 * machiningParameter.CuttingSpeed / (3.14M * Average);

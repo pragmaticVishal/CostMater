@@ -5,6 +5,7 @@ using Syncfusion.Data.Extensions;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
+using Syncfusion.WinForms.DataGrid.Interactivity;
 using Syncfusion.WinForms.Input.Enums;
 using System;
 using System.Collections.Generic;
@@ -52,7 +53,7 @@ namespace CostMater.DataGrids
             }
 
             #region componentGrid
-            componentGrid.SelectionController = new RowSelectionControllerExt(componentGrid);
+            //componentGrid.SelectionController = new RowSelectionControllerExt(componentGrid);            
             componentGrid.EditMode = EditMode.SingleClick;
             componentGrid.AddNewRowText = "Click here to add new component detail";
             componentGrid.AddNewRowPosition = RowPosition.FixedBottom;
@@ -61,8 +62,9 @@ namespace CostMater.DataGrids
             componentGrid.Style.BorderStyle = BorderStyle.FixedSingle;
             componentGrid.Style.HeaderStyle.Font.Bold = true;
             componentGrid.Style.StackedHeaderStyle.Font.Bold = true;
-            componentGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
-            componentGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+            //componentGrid.Style.HeaderStyle.BackColor = ColorTranslator.FromHtml("#EE6C4D");
+            //componentGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
+            //componentGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
             componentGrid.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             componentGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(22.0f);
             componentGrid.AutoGenerateColumns = false;
@@ -71,7 +73,8 @@ namespace CostMater.DataGrids
             componentGrid.AllowGrouping = false;
             componentGrid.ShowGroupDropArea = false;
             componentGrid.AllowDeleting = true;
-            componentGrid.SelectionMode = GridSelectionMode.Extended;
+            componentGrid.SelectionMode = GridSelectionMode.Single;
+            componentGrid.SelectionUnit = SelectionUnit.Cell;
             componentGrid.CopyOption = CopyOptions.IncludeHeaders;
             componentGrid.PasteOption = PasteOptions.PasteData;
             componentGrid.QueryCellStyle += ComponentGrid_QueryCellStyle;
@@ -82,9 +85,10 @@ namespace CostMater.DataGrids
             componentGrid.CurrentCellValidating += _componentGrid_CurrentCellValidating;
             componentGrid.CurrentCellValidated += ComponentGrid_CurrentCellValidated;
             componentGrid.CurrentCellActivating += _componentGrid_CurrentCellActivating;
+            componentGrid.SelectionChanged += ComponentGrid_SelectionChanged;
             componentGrid.ShowRowHeaderErrorIcon = true;
             componentGrid.ValidationMode = GridValidationMode.InEdit;
-            componentGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
+            componentGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;            
             //sfDataGrid1.FrozenRowCount = 2;
 
             componentGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
@@ -164,6 +168,31 @@ namespace CostMater.DataGrids
             ShowSummaryRow();
             componentGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
+        }
+
+        private void ComponentGrid_SelectionChanged(object sender, Syncfusion.WinForms.DataGrid.Events.SelectionChangedEventArgs e)
+        {
+            SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
+            Component component = selectedCellInfo?.RowData as Component;
+
+            if(selectedCellInfo != null && component != null)
+            {
+                if (!component.IsSideApplicableToTheShape(component.MaterialTypeID, selectedCellInfo.Column.MappingName))
+                {
+                    componentGrid.Style.SelectionStyle.BackColor = Color.LightGray;
+                    componentGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
+                    componentGrid.Style.SelectionStyle.TextColor = Color.Black;
+                }
+                else
+                {
+                    componentGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
+                    componentGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                }
+            }
+            else
+            {
+                componentGrid.ExpandAllDetailsView();
+            }
         }
 
         private void ComponentGrid_RowValidated(object sender, Syncfusion.WinForms.DataGrid.Events.RowValidatedEventArgs e)

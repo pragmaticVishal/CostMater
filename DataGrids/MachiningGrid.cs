@@ -53,7 +53,8 @@ namespace CostMater.DataGrids
             machiningGrid.AutoGenerateColumns = false;
             machiningGrid.ValidationMode = GridValidationMode.InEdit;
             machiningGrid.AllowDeleting = true;
-            machiningGrid.SelectionMode = GridSelectionMode.Extended;
+            machiningGrid.SelectionMode = GridSelectionMode.Single;
+            machiningGrid.SelectionUnit = SelectionUnit.Cell;
             machiningGrid.CopyOption = CopyOptions.IncludeHeaders;
             machiningGrid.PasteOption = PasteOptions.PasteData;
             machiningGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(21.0f);
@@ -78,7 +79,7 @@ namespace CostMater.DataGrids
 
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "DiameterBeforeTurning", HeaderText = "Diameter of stock before turning (D)" });
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "DiameterAfterTurning", HeaderText = "Diameter of job after turning (d)" });
-            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalDepthOfCut", HeaderText = "Total depth of cut (td)" });
+            machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalDepthOfCut", HeaderText = "Total depth of cut (td)", AllowEditing = false });
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "LengthOfCut", HeaderText = "Length of the cut in mm (L)" });
 
             machiningGrid.Columns.Add(new GridNumericColumn { MappingName = "ThreadDiameterToCut", HeaderText = "Diameter of the thread to cut (D)" });
@@ -260,7 +261,7 @@ namespace CostMater.DataGrids
         public static void Process_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             List<string> excludeProps = new List<string>()
-            { nameof(Process.NoOfCuts), nameof(Process.RPM), nameof(Process.Average), nameof(Process.MachiningTime),
+            { nameof(Process.NoOfCuts), nameof(Process.TotalDepthOfCut), nameof(Process.RPM), nameof(Process.Average), nameof(Process.MachiningTime),
               nameof(Process.MachiningCost)
             };
 

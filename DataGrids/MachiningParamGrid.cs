@@ -56,6 +56,14 @@ namespace CostMater.DataGrids
             }
         }
 
+        internal void Reset(List<MachiningParameter> lstMachiningParam)
+        {
+            this.lstMachiningParam = lstMachiningParam;
+            BindingSource machiningParamBindingSource = new BindingSource();
+            machiningParamBindingSource.DataSource = this.lstMachiningParam;
+            machiningParamGrid.DataSource = machiningParamBindingSource;
+        }
+
         private void MachiningParamGrid_CurrentCellBeginEdit(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellBeginEditEventArgs e)
         {
             var machiningParam = e.DataRow.RowData as MachiningParameter;

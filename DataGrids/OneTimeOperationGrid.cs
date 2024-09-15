@@ -56,7 +56,8 @@ namespace CostMater.DataGrids
             oneTimeOperationGrid.AllowDeleting = true;
             oneTimeOperationGrid.RowHeight = (int)DpiAware.LogicalToDeviceUnits(21.0f);
             oneTimeOperationGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
-            oneTimeOperationGrid.SelectionMode = GridSelectionMode.Extended;
+            oneTimeOperationGrid.SelectionUnit = SelectionUnit.Cell;
+            oneTimeOperationGrid.SelectionMode = GridSelectionMode.Single;
             oneTimeOperationGrid.CopyOption = CopyOptions.IncludeHeaders;
             oneTimeOperationGrid.PasteOption = PasteOptions.PasteData;
             oneTimeOperationGrid.QueryRowStyle += (sender, e) =>
