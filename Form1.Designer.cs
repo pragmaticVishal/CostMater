@@ -200,7 +200,7 @@ namespace DetailsView
             costConfigPage.Location = new System.Drawing.Point(4, 26);
             costConfigPage.Name = "costConfigPage";
             costConfigPage.Padding = new System.Windows.Forms.Padding(3);
-            costConfigPage.Size = new System.Drawing.Size(192, 70);
+            costConfigPage.Size = new System.Drawing.Size(1298, 581);
             costConfigPage.TabIndex = 1;
             costConfigPage.Text = "Cost Config";
             costConfigPage.UseVisualStyleBackColor = true;
@@ -216,8 +216,9 @@ namespace DetailsView
             sfDGMachiningParam.EditMode = Syncfusion.WinForms.DataGrid.Enums.EditMode.SingleClick;
             sfDGMachiningParam.Location = new System.Drawing.Point(3, 3);
             sfDGMachiningParam.Name = "sfDGMachiningParam";
+            sfDGMachiningParam.SelectionUnit = Syncfusion.WinForms.DataGrid.Enums.SelectionUnit.Cell;
             sfDGMachiningParam.ShowGroupDropArea = true;
-            sfDGMachiningParam.Size = new System.Drawing.Size(186, 64);
+            sfDGMachiningParam.Size = new System.Drawing.Size(1292, 575);
             sfDGMachiningParam.Style.BorderColor = System.Drawing.Color.FromArgb(100, 100, 100);
             sfDGMachiningParam.Style.HeaderStyle.Font.Bold = true;
             sfDGMachiningParam.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.ActiveCaptionText;

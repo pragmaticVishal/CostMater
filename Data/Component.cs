@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Windows.Forms;
 
 namespace DetailsView.Data
@@ -39,7 +40,6 @@ namespace DetailsView.Data
 
         private decimal _surfaceTreatmentCost;
         private decimal _others_BO;
-        private decimal _procurementCost;
         private decimal _rawMaterialRate;
         private decimal _labourCostPerPart;
         private decimal _rawMaterialCost;
@@ -279,17 +279,6 @@ namespace DetailsView.Data
             }
         }
 
-        [Display(Name = "Procurement Cost")]
-        public decimal ProcurementCost
-        {
-            get => _procurementCost;
-            set
-            {
-                _procurementCost = value;
-                RaisePropertyChanged(nameof(ProcurementCost));
-            }
-        }
-
         [Display(Name = "Fabrication total cost")]
         public decimal FabricationTotalCost
         {
@@ -457,7 +446,6 @@ namespace DetailsView.Data
             FabricationTotalCost = LstOneTimeOperationDetail.Where(x=>x.OneTimeOpItemSelectedID == 1).Sum(x=>x.Amount);
             SurfaceTreatmentCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 2 || x.OneTimeOpItemSelectedID == 8).Sum(x => x.Amount); 
             GrindingCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 3).Sum(x => x.Amount);
-            ProcurementCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 4).Sum(x => x.Amount);
             MiscellaneousCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 5).Sum(x => x.Amount);
             Others_BO = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 6).Sum(x => x.Amount);
             HardwareCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 7).Sum(x => x.Amount);
@@ -476,38 +464,59 @@ namespace DetailsView.Data
 
         private decimal CalculateNetWeight(decimal length, decimal width, decimal thickness, decimal side1, decimal side2, decimal diameter, decimal od, decimal id)
         {
+            decimal density = 0;
+            const decimal densityMS = 0.00000786M;
+            const decimal densitySS = 0.00000793M;
+            const decimal densityAL = 0.00000270M;
+
+            switch (MaterialID)
+            {
+                case 1:
+                case 2:
+                case 3:
+                    density = densitySS;
+                    break;
+                case 4:
+                    density = densityMS;
+                    break;
+                case 5:
+                    density = densityAL;
+                    break;
+            }
+            
+
             decimal netweight = 0;
             switch (MaterialTypeID)
             {
                 case 1:
-                    netweight = length * width * thickness * 0.00000786M;
+                    netweight = length * width * thickness * density;
                     break;
                 case 2:
-                    netweight = length * width * thickness * 0.00000786M;
+                    netweight = length * width * thickness * density;
                     break;
                 case 3:
-                    netweight = length * width * thickness * 0.00000786M;
+                    netweight = length * width * thickness * density;
                     break;
                 case 4:
-                    netweight = (side1 * thickness * length * 0.00000786M) + (side2 * thickness * length * 0.00000786M);
+                    netweight = (side1 * thickness * length * density) + (side2 * thickness * length * density);
                     break;
                 case 5:
-                    netweight = 0.7854M * diameter * diameter * length * 0.00000786M;
+                    netweight = 0.7854M * diameter * diameter * length * density;
                     break;
                 case 6:
-                    netweight = (0.7854M * od * od * length * 0.00000786M) - (0.7854M * id * id * length * 0.00000786M);
+                    netweight = (0.7854M * od * od * length * density) - (0.7854M * id * id * length * density);
                     break;
                 case 7:
-                    netweight = length * width * thickness * 0.00000786M;
+                    netweight = length * width * thickness * density;
                     break;
                 case 8:
-                    netweight = (side1 * side2 * length * 0.00000786M) - ((side1 - 2 * thickness) * (side2 - 2 * thickness) * length * 0.00000786M);
+                    netweight = (side1 * side2 * length * density) - ((side1 - 2 * thickness) * (side2 - 2 * thickness) * length * density);
                     break;
                 case 9:
-                    netweight = length * width * thickness * 0.00000786M;
+                    netweight = length * width * thickness * density;
                     break;
                 case 10:
-                    netweight = (side1 * side2 * length * 0.00000786M) - ((side1 - 2 * thickness) * (side2 - 2 * thickness) * length * 0.00000786M);
+                    netweight = (side1 * side2 * length * density) - ((side1 - 2 * thickness) * (side2 - 2 * thickness) * length * density);
                     break;
                 default:
                     break;
@@ -549,20 +558,21 @@ namespace DetailsView.Data
             CalculateNetWeight();
             GrossWeight = NetWeight * 1.2M;
             RawMaterialCost = GrossWeight * RawMaterialRate;
-            LabourCostPerPart = LaserCost + BendTotalCost + ProcurementCost + FabricationTotalCost + SurfaceTreatmentCost + TotalMachiningCost + GrindingCost + Others_BO + HardwareCost + MiscellaneousCost;
-            TotalCostPerPart = LabourCostPerPart + RawMaterialCost;
-            TotalCost = TotalCostPerPart * Qty;
             LstOneTimeOperationDetail.ForEach(x => x.CalculateCost());
             LstLaserAndBendingDetail.ForEach(x => x.CalculateCost());
+            LstProcess.ForEach(x => x.CalculateCost());
             _laserCost = LstLaserAndBendingDetail.Sum(x => x.LaserCost);
             _bendTotalCost = LstLaserAndBendingDetail.Sum(x => x.BendTotalCost);
             _fabricationTotalCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 1).Sum(x => x.Amount);
             _surfaceTreatmentCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 2 || x.OneTimeOpItemSelectedID == 8).Sum(x => x.Amount);
             _grindingCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 3).Sum(x => x.Amount);
-            _procurementCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 4).Sum(x => x.Amount);
             _miscellaneousCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 5).Sum(x => x.Amount);
             _others_BO = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 6).Sum(x => x.Amount);
             _hardwareCost = LstOneTimeOperationDetail.Where(x => x.OneTimeOpItemSelectedID == 7).Sum(x => x.Amount);
+            _totalMachiningCost = LstProcess.Sum(x => x.MachiningCost);
+            LabourCostPerPart = LaserCost + BendTotalCost + FabricationTotalCost + SurfaceTreatmentCost + TotalMachiningCost + GrindingCost + Others_BO + HardwareCost + MiscellaneousCost;
+            TotalCostPerPart = LabourCostPerPart + RawMaterialCost;
+            TotalCost = TotalCostPerPart * Qty;
         }
 
         public bool IsSideApplicableToTheShape(int materialTypeId, string sideName)
@@ -574,7 +584,7 @@ namespace DetailsView.Data
             List<string> excludeAllfields = new List<string>() { nameof(Component.Qty), nameof(Component.Length), nameof(Component.Width),
                     nameof(Component.Thickness), nameof(Component.Diameter), nameof(Component.OD), nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2),
                     nameof(Component.NetWeight), nameof(Component.GrossWeight), nameof(Component.LaserCost), nameof(Component.BendTotalCost),
-                    nameof(Component.ProcurementCost), nameof(Component.FabricationTotalCost), nameof(Component.SurfaceTreatmentCost), nameof(Component.TotalMachiningCost),
+                    nameof(Component.FabricationTotalCost), nameof(Component.SurfaceTreatmentCost), nameof(Component.TotalMachiningCost),
                     nameof(Component.GrindingCost), nameof(Component.Others_BO), nameof(Component.HardwareCost), nameof(Component.MiscellaneousCost),
                     nameof(Component.LabourCostPerPart), nameof(Component.RawMaterialRate), nameof(Component.RawMaterialCost), nameof(Component.TotalCostPerPart), nameof(Component.TotalCost)
             };
@@ -592,10 +602,10 @@ namespace DetailsView.Data
                     nameof(Component.OD), nameof(Component.ID) };
 
             List<string> excludedSidesRoundBar = new List<string>() { nameof(Component.Width),
-                    nameof(Component.OD), nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2)};
+                    nameof(Component.OD), nameof(Component.ID), nameof(Component.Side1), nameof(Component.Side2), nameof(Component.Thickness)};
 
             List<string> excludedSidesRoundTube = new List<string>() { nameof(Component.Width),
-                    nameof(Component.Diameter), nameof(Component.Side1), nameof(Component.Side2) };
+                    nameof(Component.Diameter), nameof(Component.Side1), nameof(Component.Side2), nameof(Component.Thickness) };
 
             List<string> excludedSidesRectBar = new List<string>() { nameof(Component.Diameter), nameof(Component.OD), nameof(Component.ID),
                     nameof(Component.Side1), nameof(Component.Side2)};
@@ -676,7 +686,7 @@ namespace DetailsView.Data
         {
             bool present = false;
 
-            if (LaserCost > 0 || BendTotalCost > 0 || ProcurementCost > 0 || FabricationTotalCost > 0 ||
+            if (LaserCost > 0 || BendTotalCost > 0 || FabricationTotalCost > 0 ||
                    SurfaceTreatmentCost > 0 || TotalMachiningCost > 0 || GrindingCost > 0 || Others_BO > 0 || HardwareCost > 0 ||
                    MiscellaneousCost > 0)
             {

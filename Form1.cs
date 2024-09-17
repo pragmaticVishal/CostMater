@@ -44,7 +44,7 @@ namespace DetailsView
             CtrlOPressed += Form1_CtrlOPressed;
             CtrlSPressed += Form1_CtrlSPressed;
             CtrlRPressed += Form1_CtrlRPressed;
-            List<MachiningParameter> lstMachiningParam = MachiningParameterRepository.GetAll();
+            ObservableCollection<MachiningParameter> lstMachiningParam = MachiningParameterRepository.GetAll();
             ObservableCollection<Component> lstComponent = new ComponentRepository().GetAll();
             costMaterProject = new CostMaterProject(lstComponent, lstMachiningParam);
             SetupDataGrids(costMaterProject.lstComponent, costMaterProject.lstMachiningParam);
@@ -60,7 +60,7 @@ namespace DetailsView
             MessageBoxAdv.Show("Cost recalculated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void SetupDataGrids(ObservableCollection<Component> lstComponent, List<MachiningParameter> lstMachiningParam)
+        private void SetupDataGrids(ObservableCollection<Component> lstComponent, ObservableCollection<MachiningParameter> lstMachiningParam)
         {
             machiningParamGrid = new MachiningParamGrid(this.sfDGMachiningParam, lstMachiningParam);
             machiningParamGrid.SetUp();
@@ -94,11 +94,11 @@ namespace DetailsView
             //oneTimeOperationDetailView.DataGrid.Style.HeaderStyle.BackColor = ColorTranslator.FromHtml("#CAECCF");
             this.componentGrid.DetailsViewDefinitions.Add(oneTimeOperationDetailView);
 
-            GridViewDefinition componentDetailView = new GridViewDefinition();
-            componentDetailView.RelationalColumn = "LstProcess";
-            componentDetailView.DataGrid = machiningGrid;
+            GridViewDefinition machiningDetailView = new GridViewDefinition();
+            machiningDetailView.RelationalColumn = "LstProcess";
+            machiningDetailView.DataGrid = machiningGrid;
             //componentDetailView.DataGrid.Style.HeaderStyle.BackColor = ColorTranslator.FromHtml("#CAECCF");
-            this.componentGrid.DetailsViewDefinitions.Add(componentDetailView);
+            this.componentGrid.DetailsViewDefinitions.Add(machiningDetailView);
 
             #endregion
         }
@@ -191,7 +191,7 @@ namespace DetailsView
         private void SaveProjectData()
         {
             this.costMaterProject.lstComponent = this.componentGrid.DataSource as ObservableCollection<Component>;
-            this.costMaterProject.lstMachiningParam = (this.machiningParamGrid.machiningParamGrid.DataSource as BindingSource).DataSource as List<MachiningParameter>;
+            this.costMaterProject.lstMachiningParam = this.machiningParamGrid.machiningParamGrid.DataSource as ObservableCollection<MachiningParameter>;
             string json = JsonConvert.SerializeObject(this.costMaterProject,
                 new JsonSerializerSettings
                 {

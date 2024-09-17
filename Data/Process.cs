@@ -552,9 +552,24 @@ namespace DetailsView.Data
             _average = 0;
             _totalDepthOfCut = 0;
         }
+
+        public void ResetTurningOperationBasedOnParentMaterialType()
+        {
+            List<int> notAllowedMaterialType = new List<int>() { 1, 2, 3 };
+            List<int> turningOperations = new List<int>() { 1, 2, 3, 4 };
+            if (notAllowedMaterialType.Contains(Component.MaterialTypeID))
+            {
+                if (turningOperations.Contains(ProcessTypeID))
+                {
+                    _processTypeID = 0;
+                }
+            }
+        }
+
         public void CalculateCost()
         {
-            if(ProcessTypeID == 0)
+            ResetTurningOperationBasedOnParentMaterialType();
+            if (ProcessTypeID == 0)
             {
                 ResetAllFields();
             }

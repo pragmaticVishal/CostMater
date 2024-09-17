@@ -17,10 +17,10 @@ namespace CostMater.Data
             return new List<MaterialShapeItem>()
             {
                 new MaterialShapeItem() {ID=0, Name = ""},
-                new MaterialShapeItem() {ID=1, Name = "Sheet"},
-                new MaterialShapeItem() {ID=2, Name = "Angle"},
+                //new MaterialShapeItem() {ID=1, Name = "Sheet"},
+                //new MaterialShapeItem() {ID=2, Name = "Angle"},
                 new MaterialShapeItem() {ID=3, Name = "Round"},
-                new MaterialShapeItem() {ID=4, Name = "Cylindrical"},
+                //new MaterialShapeItem() {ID=4, Name = "Cylindrical"},
                 new MaterialShapeItem() {ID=5, Name = "Rectangular"},
                 new MaterialShapeItem() {ID=6, Name = "Square"},
                 new MaterialShapeItem() {ID=7, Name = "Triangle"},

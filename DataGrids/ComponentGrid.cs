@@ -56,7 +56,7 @@ namespace CostMater.DataGrids
             //componentGrid.SelectionController = new RowSelectionControllerExt(componentGrid);            
             componentGrid.EditMode = EditMode.SingleClick;
             componentGrid.AddNewRowText = "Click here to add new component detail";
-            componentGrid.AddNewRowPosition = RowPosition.FixedBottom;
+            componentGrid.AddNewRowPosition = RowPosition.FixedTop;
             componentGrid.Style.AddNewRowStyle.BackColor = Color.DarkCyan;
             componentGrid.Style.AddNewRowStyle.TextColor = Color.White;
             componentGrid.Style.BorderStyle = BorderStyle.FixedSingle;
@@ -86,6 +86,7 @@ namespace CostMater.DataGrids
             componentGrid.CurrentCellValidated += ComponentGrid_CurrentCellValidated;
             componentGrid.CurrentCellActivating += _componentGrid_CurrentCellActivating;
             componentGrid.SelectionChanged += ComponentGrid_SelectionChanged;
+            //componentGrid.SelectionChanging += ComponentGrid_SelectionChanging;
             componentGrid.ShowRowHeaderErrorIcon = true;
             componentGrid.ValidationMode = GridValidationMode.InEdit;
             componentGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;            
@@ -111,10 +112,12 @@ namespace CostMater.DataGrids
             componentGrid.Columns.Add(new GridNumericColumn { MappingName = "NetWeight", HeaderText = "Net Weight", AllowEditing = false });
             componentGrid.Columns.Add(new GridNumericColumn { MappingName = "GrossWeight", HeaderText = "Gross Weight", AllowEditing = false });
 
+            componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialRate", HeaderText = "Rate", FormatMode = FormatMode.Currency });
+            componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialCost", HeaderText = "Amount", AllowEditing = false, FormatMode = FormatMode.Currency });
+
+
             componentGrid.Columns.Add(new GridNumericColumn { MappingName = "LaserCost", HeaderText = "Laser Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
             componentGrid.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Bending Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
-
-            componentGrid.Columns.Add(new GridNumericColumn { MappingName = "ProcurementCost", HeaderText = "Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
 
             componentGrid.Columns.Add(new GridNumericColumn { MappingName = "FabricationTotalCost", HeaderText = "Cost", AllowEditing = false, Width = 120, FormatMode = FormatMode.Currency });
 
@@ -132,9 +135,6 @@ namespace CostMater.DataGrids
 
             componentGrid.Columns.Add(new GridNumericColumn { MappingName = "LabourCostPerPart", HeaderText = "Cost", AllowEditing = false, Width = 150, FormatMode = FormatMode.Currency });
 
-            componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialRate", HeaderText = "Rate", FormatMode = FormatMode.Currency });
-            componentGrid.Columns.Add(new GridNumericColumn { MappingName = "RawMaterialCost", HeaderText = "Amount", AllowEditing = false, FormatMode = FormatMode.Currency });
-
             componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalCostPerPart", HeaderText = "Total Cost Per Part", AllowEditing = false, AllowHeaderTextWrapping = true, Width = 150, FormatMode = FormatMode.Currency });
 
             componentGrid.Columns.Add(new GridNumericColumn { MappingName = "TotalCost", HeaderText = "Total Cost", AllowEditing = false, Width = 150, FormatMode = FormatMode.Currency });
@@ -145,7 +145,6 @@ namespace CostMater.DataGrids
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "Length,Width,Thickness,Diameter,OD,ID,Side1,Side2", HeaderText = "Material Dimensions" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "NetWeight,GrossWeight", HeaderText = "Weight" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "LaserCost,BendTotalCost", HeaderText = "Laser Cutting and Bending" });
-            stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ProcurementCost", HeaderText = "Procurement"});
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "FabricationTotalCost", HeaderText = "Fabrication/Pol" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "SurfaceTreatmentCost", HeaderText = "Surface Treat(E.P)" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "TotalMachiningCost", HeaderText = "Machining" });
@@ -175,9 +174,15 @@ namespace CostMater.DataGrids
             SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
             Component component = selectedCellInfo?.RowData as Component;
 
-            if(selectedCellInfo != null && component != null)
+            if (selectedCellInfo != null && component != null)
             {
-                if (!component.IsSideApplicableToTheShape(component.MaterialTypeID, selectedCellInfo.Column.MappingName))
+                bool allowEdit = selectedCellInfo.Column.AllowEditing ? component.IsSideApplicableToTheShape(component.MaterialTypeID, selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
+
+                if (allowEdit)
+                {
+                    allowEdit = component.IsSideApplicableToTheShape(component.MaterialTypeID, selectedCellInfo.Column.MappingName);
+                }
+                if (!allowEdit)
                 {
                     componentGrid.Style.SelectionStyle.BackColor = Color.LightGray;
                     componentGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
@@ -188,10 +193,6 @@ namespace CostMater.DataGrids
                     componentGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
                     componentGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
                 }
-            }
-            else
-            {
-                componentGrid.ExpandAllDetailsView();
             }
         }
 
@@ -243,14 +244,21 @@ namespace CostMater.DataGrids
         {
             if (e.DataRow.RowType == RowType.AddNewRow)
             {
+                if (KeyStateHelper.IsKeyDown(Keys.Tab) && KeyStateHelper.IsKeyDown(Keys.ShiftKey))
+                {
+                    e.Cancel = true;
+                    return;
+                }
                 if (KeyStateHelper.IsKeyDown(Keys.Down))
                 {
                     System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    e.Cancel = true;
                     return;
                 }
                 if (KeyStateHelper.IsKeyDown(Keys.Up))
                 {
                     System.Windows.Forms.SendKeys.Send("{UP}");
+                    e.Cancel = true;
                     return;
                 }
                 ObservableCollection<Component> lstComponent = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<Component>;
@@ -264,6 +272,7 @@ namespace CostMater.DataGrids
                 component.LstOneTimeOperationDetail.CollectionChanged += OneTimeOperationGrid.LstOneTimeOperation_CollectionChanged;
                 component.LstOneTimeOperationDetail?.ForEach(p => p.PropertyChanged += OneTimeOperationGrid.OneTimeOperation_PropertyChanged);
                 lstComponent.Add(component);
+                e.Cancel = true;
             }
 
             //if (e.DataRow.RowType == RowType.DefaultRow && e.DataColumn?.GridColumn != null && e.DataColumn.GridColumn.AllowEditing == false)
@@ -326,13 +335,6 @@ namespace CostMater.DataGrids
                         SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
                         Format="{Sum:c}",
                         MappingName="BendTotalCost",
-                    },
-                    new GridSummaryColumn()
-                    {
-                        Name = "ProcurementCost",
-                        SummaryType = Syncfusion.Data.SummaryType.DoubleAggregate,
-                        Format="{Sum:c}",
-                        MappingName="ProcurementCost",
                     },
                     new GridSummaryColumn()
                     {

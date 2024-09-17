@@ -316,10 +316,10 @@ namespace CostMater.Data
         }
         public void CalculatePerimeter()
         {
-            if (_operationNameSelectedID == 0 || _materialShapeSelectedID == 0)
+            if (_operationNameSelectedID == 0)
             {
                 ResetAllFields();
-            }
+            }    
 
             switch (MaterialShapeSelectedID)
             {
@@ -375,6 +375,16 @@ namespace CostMater.Data
 
         public void CalculateCost()
         {
+            ResetOperationAndMaterialShapeBasedOnParentMaterialType();
+            if (_operationNameSelectedID == 3)
+            {
+                _length = Component.Length;
+            }
+            else
+            {
+                _length = 0;
+            }
+
             CalculatePerimeter();
 
             if (NoOfStart > 0)
@@ -401,9 +411,19 @@ namespace CostMater.Data
             TotalCost = LaserCost + BendTotalCost;
         }
 
+        public void ResetOperationAndMaterialShapeBasedOnParentMaterialType()
+        {
+            List<int> allowedMaterialType = new List<int>() { 1, 2, 3 };
+            if (!allowedMaterialType.Contains(Component.MaterialTypeID))
+            {
+                _materialShapeSelectedID = 0;
+                _operationNameSelectedID = 0;
+            }
+        }
+
         public bool IsSideApplicableToTheShape(int operationNameSelectedID, int materialShapeSelectedID, string sideName)
         {
-            bool isSideApplicableToTheShape = true;
+            bool isSideApplicableToTheShape = true;               
 
             switch (operationNameSelectedID)
             {
@@ -414,14 +434,22 @@ namespace CostMater.Data
                     }
                     break;
                 case 2:
-                case 3:
                     if (dctBendingAllowedSides.ContainsKey(operationNameSelectedID) && dctBendingAllowedSides[operationNameSelectedID].Contains(sideName))
                     {
                         isSideApplicableToTheShape = false;
                     }
                     break;
+                case 3:                    
+                    if (dctBendingAllowedSides.ContainsKey(operationNameSelectedID) && dctBendingAllowedSides[operationNameSelectedID].Contains(sideName))
+                    {
+                        isSideApplicableToTheShape = false;
+                    }
+                    else if(sideName == nameof(LaserAndBendingDetail.Length))
+                    {
+                        isSideApplicableToTheShape = false;
+                    }
+                    break;
             }
-
 
             return isSideApplicableToTheShape;
         }
@@ -583,14 +611,14 @@ namespace CostMater.Data
                     nameof(LaserAndBendingDetail.Thickness), nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
                     nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3), nameof(LaserAndBendingDetail.Qty),
                     nameof(LaserAndBendingDetail.Perimeter), nameof(LaserAndBendingDetail.NoOfStart), 
-                    nameof(LaserAndBendingDetail.LaserCost)
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.MaterialShapeSelectedID)
             };
 
             List<string> excludeSidesBendingDimension = new List<string>() {nameof(LaserAndBendingDetail.Width),
                     nameof(LaserAndBendingDetail.Diameter), nameof(LaserAndBendingDetail.OD), nameof(LaserAndBendingDetail.NoOfSides),
                     nameof(LaserAndBendingDetail.Side1), nameof(LaserAndBendingDetail.Side2), nameof(LaserAndBendingDetail.Side3), nameof(LaserAndBendingDetail.Qty),
                     nameof(LaserAndBendingDetail.Perimeter), nameof(LaserAndBendingDetail.NoOfStart), 
-                    nameof(LaserAndBendingDetail.LaserCost)
+                    nameof(LaserAndBendingDetail.LaserCost), nameof(LaserAndBendingDetail.MaterialShapeSelectedID)
             };
 
             dctBendingAllowedSides.Add(0, excludeAllSides);
@@ -627,6 +655,9 @@ namespace CostMater.Data
                     break;
                 case nameof(LaserAndBendingDetail.Side3):
                     Side3 = 0;
+                    break;
+                case nameof(LaserAndBendingDetail.MaterialShapeSelectedID):
+                    MaterialShapeSelectedID = 0;
                     break;
             }
         }

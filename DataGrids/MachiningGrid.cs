@@ -4,6 +4,7 @@ using DetailsView.Data;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
+using Syncfusion.WinForms.DataGrid.Interactivity;
 using Syncfusion.WinForms.Input.Enums;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,7 @@ namespace CostMater.DataGrids
             machiningGrid.RowValidating += MachiningGrid_RowValidating;
             machiningGrid.CurrentCellActivating += MachiningGrid_CurrentCellActivating;
             machiningGrid.CurrentCellValidating += MachiningGrid_CurrentCellValidating;
+            machiningGrid.SelectionChanged += MachiningGrid_SelectionChanged;
 
             NumberFormatInfo nfi = new NumberFormatInfo();
             nfi.NumberDecimalDigits = 0;
@@ -116,6 +118,28 @@ namespace CostMater.DataGrids
             #endregion
         }
 
+        private void MachiningGrid_SelectionChanged(object sender, Syncfusion.WinForms.DataGrid.Events.SelectionChangedEventArgs e)
+        {
+            SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
+            Process process = selectedCellInfo?.RowData as Process;
+
+            if (selectedCellInfo != null && process != null)
+            {
+                bool allowEdit = selectedCellInfo.Column.AllowEditing ? process.IsColumnApplicableToOperation(selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
+                if (!allowEdit)
+                {
+                    machiningGrid.Style.SelectionStyle.BackColor = Color.LightGray;
+                    machiningGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
+                    machiningGrid.Style.SelectionStyle.TextColor = Color.Black;
+                }
+                else
+                {
+                    machiningGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
+                    machiningGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                }
+            }
+        }
+
         private void MachiningGrid_CurrentCellValidating(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellValidatingEventArgs e)
         {
             var process = e.RowData as Process;
@@ -131,6 +155,11 @@ namespace CostMater.DataGrids
         {
             if (e.DataRow.RowType == RowType.AddNewRow)
             {
+                if (KeyStateHelper.IsKeyDown(Keys.ShiftKey) && KeyStateHelper.IsKeyDown(Keys.Tab))
+                {
+                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    return;
+                }
                 if (KeyStateHelper.IsKeyDown(Keys.Down))
                 {
                     System.Windows.Forms.SendKeys.Send("{DOWN}");
@@ -152,16 +181,6 @@ namespace CostMater.DataGrids
 
                 lstProcess.Add(process);
             }
-
-            //var machingOperation = e.DataRow.RowData as Process;
-            //if (!machingOperation.IsColumnApplicableToOperation(e.DataColumn.GridColumn.MappingName))
-            //{
-            //    if (KeyStateHelper.IsKeyDown(Keys.Tab))
-            //    {
-            //        System.Windows.Forms.SendKeys.Send("{TAB}");
-            //        return;
-            //    }
-            //}
         }
 
         private void ShowSummaryRow()

@@ -1,9 +1,11 @@
 ﻿using CostMater.Data;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
+using Syncfusion.WinForms.DataGrid.Interactivity;
 using Syncfusion.WinForms.Input.Enums;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -15,9 +17,9 @@ namespace CostMater.DataGrids
     public class MachiningParamGrid
     {
         public SfDataGrid machiningParamGrid;
-        public List<MachiningParameter> lstMachiningParam;
+        public ObservableCollection<MachiningParameter> lstMachiningParam;
 
-        public MachiningParamGrid(SfDataGrid machiningParamGrid, List<MachiningParameter> lstMachiningParam) 
+        public MachiningParamGrid(SfDataGrid machiningParamGrid, ObservableCollection<MachiningParameter> lstMachiningParam) 
         {
             this.machiningParamGrid = machiningParamGrid;
             this.lstMachiningParam = lstMachiningParam;
@@ -27,9 +29,8 @@ namespace CostMater.DataGrids
         {
             this.machiningParamGrid.QueryCellStyle += MachiningParamGrid_QueryCellStyle;
             this.machiningParamGrid.CurrentCellBeginEdit += MachiningParamGrid_CurrentCellBeginEdit;
-            BindingSource machiningParamBindingSource = new BindingSource();
-            machiningParamBindingSource.DataSource = this.lstMachiningParam;
-            machiningParamGrid.DataSource = machiningParamBindingSource;
+            this.machiningParamGrid.SelectionChanged += MachiningParamGrid_SelectionChanged;
+            machiningParamGrid.DataSource = this.lstMachiningParam;
 
             machiningParamGrid.Columns.Add(new GridTextColumn { MappingName = "MachiningParameterId", HeaderText = "#", AllowEditing = false });
             machiningParamGrid.Columns.Add(new GridTextColumn { MappingName = "MaterialName", HeaderText = "Material", AllowEditing = false });
@@ -56,12 +57,32 @@ namespace CostMater.DataGrids
             }
         }
 
-        internal void Reset(List<MachiningParameter> lstMachiningParam)
+        private void MachiningParamGrid_SelectionChanged(object sender, Syncfusion.WinForms.DataGrid.Events.SelectionChangedEventArgs e)
+        {
+            SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
+            MachiningParameter machingParam = selectedCellInfo?.RowData as MachiningParameter;
+
+            if (selectedCellInfo != null && machingParam != null)
+            {
+                bool allowEdit = selectedCellInfo.Column.AllowEditing ? machingParam.IsColumnApplicable(selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
+                if (!allowEdit)
+                {
+                    machiningParamGrid.Style.SelectionStyle.BackColor = Color.LightGray;
+                    machiningParamGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
+                    machiningParamGrid.Style.SelectionStyle.TextColor = Color.Black;
+                }
+                else
+                {
+                    machiningParamGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
+                    machiningParamGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                }
+            }
+        }
+
+        internal void Reset(ObservableCollection<MachiningParameter> lstMachiningParam)
         {
             this.lstMachiningParam = lstMachiningParam;
-            BindingSource machiningParamBindingSource = new BindingSource();
-            machiningParamBindingSource.DataSource = this.lstMachiningParam;
-            machiningParamGrid.DataSource = machiningParamBindingSource;
+            machiningParamGrid.DataSource = lstMachiningParam;
         }
 
         private void MachiningParamGrid_CurrentCellBeginEdit(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellBeginEditEventArgs e)

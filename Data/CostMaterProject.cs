@@ -11,8 +11,8 @@ namespace CostMater.Data
     public class CostMaterProject
     {
         public ObservableCollection<Component> lstComponent { get; set; }
-        public List<MachiningParameter> lstMachiningParam { get; set; }
-        public CostMaterProject(ObservableCollection<Component> lstComponent, List<MachiningParameter> lstMachiningParam) 
+        public ObservableCollection<MachiningParameter> lstMachiningParam { get; set; }
+        public CostMaterProject(ObservableCollection<Component> lstComponent, ObservableCollection<MachiningParameter> lstMachiningParam) 
         { 
             this.lstComponent = lstComponent;
             this.lstMachiningParam = lstMachiningParam;

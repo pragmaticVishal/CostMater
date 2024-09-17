@@ -1,6 +1,7 @@
 ﻿using DetailsView.Data;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,19 +11,19 @@ namespace CostMater.Data
 {
     public static class MachiningParameterRepository
     {
-        public static List<MachiningParameter> _lstMachiningParam;
+        public static ObservableCollection<MachiningParameter> _lstMachiningParam;
 
         static MachiningParameterRepository()
         {
             if(_lstMachiningParam == null)
             {
-                _lstMachiningParam = new List<MachiningParameter>();
+                _lstMachiningParam = new ObservableCollection<MachiningParameter>();
                 _lstMachiningParam = Populate();
             }
         }
-        private static List<MachiningParameter> Populate()
+        private static ObservableCollection<MachiningParameter> Populate()
         {
-            List<MachiningParameter> lstMachiningParam = new List<MachiningParameter>();
+            ObservableCollection<MachiningParameter> lstMachiningParam = new ObservableCollection<MachiningParameter>();
 
             #region Mild Steel
             lstMachiningParam.Add(new MachiningParameter()
@@ -603,7 +604,7 @@ namespace CostMater.Data
             return lstMachiningParam;
         }
 
-        public static List<MachiningParameter> GetAll()
+        public static ObservableCollection<MachiningParameter> GetAll()
         {
             return _lstMachiningParam;
         }
@@ -618,7 +619,7 @@ namespace CostMater.Data
             int toolsurfaceId = machiningOperation.ToolSurfaceID;
             int tooltypeId = machiningOperation.ToolTypeID;
 
-            machiningParameter = _lstMachiningParam.Find(x => (x.MaterialID == materialId && x.ProcessTypeID == processTypeId && x.ToolTypeID == tooltypeId
+            machiningParameter = _lstMachiningParam.FirstOrDefault(x => (x.MaterialID == materialId && x.ProcessTypeID == processTypeId && x.ToolTypeID == tooltypeId
             && x.ToolSurfaceID == toolsurfaceId));
 
             if(machiningParameter == null)

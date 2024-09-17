@@ -4,6 +4,7 @@ using Microsoft.VisualBasic.Devices;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
+using Syncfusion.WinForms.DataGrid.Interactivity;
 using Syncfusion.WinForms.GridCommon.ScrollAxis;
 using Syncfusion.WinForms.Input.Enums;
 using System;
@@ -71,6 +72,7 @@ namespace CostMater.DataGrids
             oneTimeOperationGrid.RowValidating += OneTimeOperationGrid_RowValidating;
             oneTimeOperationGrid.CurrentCellActivating += OneTimeOperationGrid_CurrentCellActivating;
             oneTimeOperationGrid.CurrentCellValidating += OneTimeOperationGrid_CurrentCellValidating;
+            oneTimeOperationGrid.SelectionChanged += OneTimeOperationGrid_SelectionChanged;
 
             NumberFormatInfo nfi1 = new NumberFormatInfo();
             nfi1.NumberDecimalDigits = 0;
@@ -96,6 +98,28 @@ namespace CostMater.DataGrids
             #endregion
         }
 
+        private void OneTimeOperationGrid_SelectionChanged(object sender, Syncfusion.WinForms.DataGrid.Events.SelectionChangedEventArgs e)
+        {
+            SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
+            OneTimeOperationDetail onetimeoperationdetail = selectedCellInfo?.RowData as OneTimeOperationDetail;
+
+            if (selectedCellInfo != null && onetimeoperationdetail != null)
+            {
+                bool allowEdit = selectedCellInfo.Column.AllowEditing ? onetimeoperationdetail.IsColumnApplicableToOperation(selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
+                if (!allowEdit)
+                {
+                    oneTimeOperationGrid.Style.SelectionStyle.BackColor = Color.LightGray;
+                    oneTimeOperationGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
+                    oneTimeOperationGrid.Style.SelectionStyle.TextColor = Color.Black;
+                }
+                else
+                {
+                    oneTimeOperationGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
+                    oneTimeOperationGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                }
+            }
+        }
+
         private void OneTimeOperationGrid_CurrentCellValidating(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellValidatingEventArgs e)
         {
             var oneTimeOperationDetail = e.RowData as OneTimeOperationDetail;
@@ -111,6 +135,11 @@ namespace CostMater.DataGrids
         {
             if (e.DataRow.RowType == RowType.AddNewRow)
             {
+                if(KeyStateHelper.IsKeyDown(Keys.ShiftKey) && KeyStateHelper.IsKeyDown(Keys.Tab))
+                {
+                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    return;
+                }
                 if (KeyStateHelper.IsKeyDown(Keys.Down))
                 {
                     System.Windows.Forms.SendKeys.Send("{DOWN}");
@@ -131,16 +160,6 @@ namespace CostMater.DataGrids
                 oneTimeOperationDetail.PropertyChanged += OneTimeOperation_PropertyChanged;
                 lstOneTimeOperationDetail.Add(oneTimeOperationDetail);
             }
-
-            //if(e.DataColumn?.GridColumn?.AllowEditing == false)
-            //{
-            //    if (KeyStateHelper.IsKeyDown(Keys.Tab))
-            //    {
-            //        //e.Cancel = true;
-            //        System.Windows.Forms.SendKeys.Send("{TAB}");
-            //        return;
-            //    }
-            //};
         }
 
         private void ShowSummaryRow()
@@ -226,7 +245,7 @@ namespace CostMater.DataGrids
             if (e.NewItems != null)
             {
                 var oneTimeOperation = e.NewItems[0] as OneTimeOperationDetail;
-                oneTimeOperation.Component.RecalculateOneTimeOperationCost();
+                oneTimeOperation.Component.CalculateCost();
             }
 
             if (e.OldItems != null)
@@ -248,7 +267,7 @@ namespace CostMater.DataGrids
             if (oneTimeOperation != null)
             {
                 oneTimeOperation.CalculateCost();
-                oneTimeOperation.Component.RecalculateOneTimeOperationCost();
+                oneTimeOperation.Component.CalculateCost();
             }
         }        
     }
