@@ -86,12 +86,14 @@ namespace CostMater.DataGrids
             componentGrid.CurrentCellValidated += ComponentGrid_CurrentCellValidated;
             componentGrid.CurrentCellActivating += _componentGrid_CurrentCellActivating;
             componentGrid.SelectionChanged += ComponentGrid_SelectionChanged;
+            componentGrid.CellButtonClick += ComponentGrid_CellButtonClick;
             //componentGrid.SelectionChanging += ComponentGrid_SelectionChanging;
             componentGrid.ShowRowHeaderErrorIcon = true;
             componentGrid.ValidationMode = GridValidationMode.InEdit;
-            componentGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;            
+            componentGrid.AutoSizeColumnsMode = AutoSizeColumnsMode.AllCells;
             //sfDataGrid1.FrozenRowCount = 2;
 
+            componentGrid.Columns.Add(new GridButtonColumn { MappingName = "Button", HeaderText = "Action", DefaultButtonText = "Delete", AllowDefaultButtonText = true });
             componentGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
             componentGrid.Columns.Add(new GridTextColumn { MappingName = "DrawingNo", HeaderText = "Drawing / Part No." });
             componentGrid.Columns.Add(new GridTextColumn { MappingName = "PartName", HeaderText = "Part Name" });
@@ -169,29 +171,57 @@ namespace CostMater.DataGrids
             #endregion
         }
 
+        private void ComponentGrid_CellButtonClick(object sender, Syncfusion.WinForms.DataGrid.Events.CellButtonClickEventArgs e)
+        {
+            Component component = (e.Record as DataRow).RowData as Component;
+
+            if (_lstComponent.Count == 1)
+            {
+                MessageBoxAdv.Show("Atleast one component is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                if (component != null)
+                {
+                    component.PropertyChanged -= Component_PropertyChanged;
+                    component.LstProcess.CollectionChanged -= MachiningGrid.LstProcess_CollectionChanged;
+                    component.LstProcess?.ForEach(p => p.PropertyChanged -= MachiningGrid.Process_PropertyChanged);
+                    component.LstOneTimeOperationDetail.CollectionChanged -= OneTimeOperationGrid.LstOneTimeOperation_CollectionChanged;
+                    component.LstOneTimeOperationDetail?.ForEach(p => p.PropertyChanged -= OneTimeOperationGrid.OneTimeOperation_PropertyChanged);
+                    component.LstLaserAndBendingDetail.CollectionChanged -= LaserAndBendingDetailGrid.LstLaserAndBendingDetail_CollectionChanged;
+                    component.LstLaserAndBendingDetail?.ForEach(p => p.PropertyChanged -= LaserAndBendingDetailGrid.LaserAndBendingDetail_PropertyChanged);
+                    _lstComponent.Remove(component);
+                    MessageBoxAdv.Show("Record deleted successfully.", "Delete Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
         private void ComponentGrid_SelectionChanged(object sender, Syncfusion.WinForms.DataGrid.Events.SelectionChangedEventArgs e)
         {
-            SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
-            Component component = selectedCellInfo?.RowData as Component;
-
-            if (selectedCellInfo != null && component != null)
+            if (e.AddedItems.Count > 0)
             {
-                bool allowEdit = selectedCellInfo.Column.AllowEditing ? component.IsSideApplicableToTheShape(component.MaterialTypeID, selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
+                SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
+                Component component = selectedCellInfo?.RowData as Component;
 
-                if (allowEdit)
+                if (selectedCellInfo != null && component != null)
                 {
-                    allowEdit = component.IsSideApplicableToTheShape(component.MaterialTypeID, selectedCellInfo.Column.MappingName);
-                }
-                if (!allowEdit)
-                {
-                    componentGrid.Style.SelectionStyle.BackColor = Color.LightGray;
-                    componentGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
-                    componentGrid.Style.SelectionStyle.TextColor = Color.Black;
-                }
-                else
-                {
-                    componentGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
-                    componentGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                    bool allowEdit = selectedCellInfo.Column.AllowEditing ? component.IsSideApplicableToTheShape(component.MaterialTypeID, selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
+
+                    if (allowEdit)
+                    {
+                        allowEdit = component.IsSideApplicableToTheShape(component.MaterialTypeID, selectedCellInfo.Column.MappingName);
+                    }
+                    if (!allowEdit)
+                    {
+                        componentGrid.Style.SelectionStyle.BackColor = Color.LightGray;
+                        componentGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
+                        componentGrid.Style.SelectionStyle.TextColor = Color.Black;
+                    }
+                    else
+                    {
+                        componentGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
+                        componentGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                    }
                 }
             }
         }

@@ -1,8 +1,10 @@
 ﻿using CostMater.Data;
 using CostMater.Framework;
 using DetailsView.Data;
+using Syncfusion.Data;
 using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
+using Syncfusion.WinForms.DataGrid.Data;
 using Syncfusion.WinForms.DataGrid.Enums;
 using Syncfusion.WinForms.DataGrid.Events;
 using Syncfusion.WinForms.DataGrid.Interactivity;
@@ -58,6 +60,7 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.SelectionUnit = SelectionUnit.Cell;
             laserAndBendingDetailGrid.CopyOption = CopyOptions.IncludeHeaders;
             laserAndBendingDetailGrid.PasteOption = PasteOptions.PasteData;
+            //laserAndBendingDetailGrid.NotifyEventsToParentDataGrid = true;
 
             laserAndBendingDetailGrid.RecordDeleting += LaserAndBendingDetailGrid_RecordDeleting;
             laserAndBendingDetailGrid.CurrentCellBeginEdit += LaserAndBendingDetailGrid_CurrentCellBeginEdit;
@@ -67,7 +70,9 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.RowValidated += LaserAndBendingDetailGrid_RowValidated;
             laserAndBendingDetailGrid.CurrentCellActivating += LaserAndBendingDetailGrid_CurrentCellActivating;
             laserAndBendingDetailGrid.SelectionChanged += LaserAndBendingDetailGrid_SelectionChanged;
+            laserAndBendingDetailGrid.CellButtonClick += LaserAndBendingDetailGrid_CellButtonClick;
 
+            laserAndBendingDetailGrid.Columns.Add(new GridButtonColumn { MappingName = "Button", HeaderText="Action", DefaultButtonText="Delete", AllowDefaultButtonText=true});
             laserAndBendingDetailGrid.Columns.Add(new GridComboBoxColumn { MappingName = "OperationNameSelectedID", HeaderText = "Operations", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new LaserAndBendingList(), Width = 210 });
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "LaserAndBendingDetailID", HeaderText = "Laser ID", AllowEditing = false });
             laserAndBendingDetailGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
@@ -104,26 +109,47 @@ namespace CostMater.DataGrids
             #endregion
         }
 
+        private void LaserAndBendingDetailGrid_CellButtonClick(object sender, CellButtonClickEventArgs e)
+        {
+            LaserAndBendingDetail laserAndBendingDetail = (e.Record as DataRow).RowData as LaserAndBendingDetail;
+
+            if (laserAndBendingDetail != null && laserAndBendingDetail.Component.LstLaserAndBendingDetail.Count == 1)
+            {
+                MessageBoxAdv.Show("Atleast one operation is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                ObservableCollection<LaserAndBendingDetail> lstlaserAndBendingDetail = laserAndBendingDetail.Component.LstLaserAndBendingDetail;
+                laserAndBendingDetail.PropertyChanged -= LaserAndBendingDetail_PropertyChanged;
+                lstlaserAndBendingDetail.Remove(laserAndBendingDetail);
+                MessageBoxAdv.Show("Record deleted successfully.", "Delete Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
         private void LaserAndBendingDetailGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
-            LaserAndBendingDetail laserAndBendingDetail = selectedCellInfo?.RowData as LaserAndBendingDetail;
-
-            if (selectedCellInfo != null && laserAndBendingDetail != null)
+            if(e.AddedItems.Count > 0)
             {
-                bool allowEdit = selectedCellInfo.Column.AllowEditing ? laserAndBendingDetail.IsSideApplicableToTheShape(laserAndBendingDetail.OperationNameSelectedID, laserAndBendingDetail.MaterialShapeSelectedID, selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
-                if (!allowEdit)
+                SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
+                LaserAndBendingDetail laserAndBendingDetail = selectedCellInfo?.RowData as LaserAndBendingDetail;
+
+                if (selectedCellInfo != null && laserAndBendingDetail != null)
                 {
-                    laserAndBendingDetailGrid.Style.SelectionStyle.BackColor = Color.LightGray;
-                    laserAndBendingDetailGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
-                    laserAndBendingDetailGrid.Style.SelectionStyle.TextColor = Color.Black;
-                }
-                else
-                {
-                    laserAndBendingDetailGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
-                    laserAndBendingDetailGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                    bool allowEdit = selectedCellInfo.Column.AllowEditing ? laserAndBendingDetail.IsSideApplicableToTheShape(laserAndBendingDetail.OperationNameSelectedID, laserAndBendingDetail.MaterialShapeSelectedID, selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
+                    if (!allowEdit)
+                    {
+                        laserAndBendingDetailGrid.Style.SelectionStyle.BackColor = Color.LightGray;
+                        laserAndBendingDetailGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
+                        laserAndBendingDetailGrid.Style.SelectionStyle.TextColor = Color.Black;
+                    }
+                    else
+                    {
+                        laserAndBendingDetailGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
+                        laserAndBendingDetailGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                    }
                 }
             }
+            
         }
 
         private void LaserAndBendingDetailGrid_RowValidated(object sender, RowValidatedEventArgs e)
@@ -337,13 +363,13 @@ namespace CostMater.DataGrids
             if (e.NewItems != null)
             {
                 var laserAndBendingDetail = e.NewItems[0] as LaserAndBendingDetail;
-                laserAndBendingDetail.Component.RecalculateLaserAndBendingCost();
+                laserAndBendingDetail.Component.CalculateCost();
             }
 
             if (e.OldItems != null)
             {
                 var laserAndBendingDetail = e.OldItems[0] as LaserAndBendingDetail;
-                laserAndBendingDetail.Component.RecalculateLaserAndBendingCost();
+                laserAndBendingDetail.Component.CalculateCost();
                 laserAndBendingDetail.PropertyChanged -= LaserAndBendingDetailGrid.LaserAndBendingDetail_PropertyChanged;
             }
         }

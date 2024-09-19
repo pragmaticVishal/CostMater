@@ -316,11 +316,6 @@ namespace CostMater.Data
         }
         public void CalculatePerimeter()
         {
-            if (_operationNameSelectedID == 0)
-            {
-                ResetAllFields();
-            }    
-
             switch (MaterialShapeSelectedID)
             {
                 case 1:
@@ -376,13 +371,14 @@ namespace CostMater.Data
         public void CalculateCost()
         {
             ResetOperationAndMaterialShapeBasedOnParentMaterialType();
-            if (_operationNameSelectedID == 3)
+            
+            if (_operationNameSelectedID == 0)
+            {
+                ResetAllFields();
+            }
+            else if (_operationNameSelectedID == 3)
             {
                 _length = Component.Length;
-            }
-            else
-            {
-                _length = 0;
             }
 
             CalculatePerimeter();

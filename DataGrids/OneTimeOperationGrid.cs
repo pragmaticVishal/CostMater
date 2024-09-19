@@ -35,7 +35,7 @@ namespace CostMater.DataGrids
         public void Setup()
         {
             #region OneTimeOperationGrid
-            oneTimeOperationGrid.SelectionController = new RowSelectionControllerExt(oneTimeOperationGrid);
+            //oneTimeOperationGrid.SelectionController = new RowSelectionControllerExt(oneTimeOperationGrid);
             oneTimeOperationGrid.AllowResizingColumns = true;
             oneTimeOperationGrid.AllowTriStateSorting = true;
             oneTimeOperationGrid.ShowHeaderToolTip = true;
@@ -73,11 +73,13 @@ namespace CostMater.DataGrids
             oneTimeOperationGrid.CurrentCellActivating += OneTimeOperationGrid_CurrentCellActivating;
             oneTimeOperationGrid.CurrentCellValidating += OneTimeOperationGrid_CurrentCellValidating;
             oneTimeOperationGrid.SelectionChanged += OneTimeOperationGrid_SelectionChanged;
+            oneTimeOperationGrid.CellButtonClick += OneTimeOperationGrid_CellButtonClick;
 
             NumberFormatInfo nfi1 = new NumberFormatInfo();
             nfi1.NumberDecimalDigits = 0;
             nfi1.NumberGroupSizes = new int[] { };
 
+            oneTimeOperationGrid.Columns.Add(new GridButtonColumn { MappingName = "Button", HeaderText = "Action", DefaultButtonText = "Delete", AllowDefaultButtonText = true });
             oneTimeOperationGrid.Columns.Add(new GridComboBoxColumn { MappingName = "OneTimeOpItemSelectedID", HeaderText = "Operations", ValueMember = "ID", DisplayMember = "Name", IDataSourceSelector = new OneTimeOperationsList(), Width=180 });
             oneTimeOperationGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
             oneTimeOperationGrid.Columns.Add(new GridTextColumn { MappingName = "DrawingNo", HeaderText = "Drawing / Part No.", AllowEditing = false });
@@ -98,24 +100,44 @@ namespace CostMater.DataGrids
             #endregion
         }
 
+        private void OneTimeOperationGrid_CellButtonClick(object sender, Syncfusion.WinForms.DataGrid.Events.CellButtonClickEventArgs e)
+        {
+            OneTimeOperationDetail oneTimeOperationDetail = (e.Record as Syncfusion.WinForms.DataGrid.DataRow).RowData as OneTimeOperationDetail;
+
+            if (oneTimeOperationDetail != null && oneTimeOperationDetail.Component.LstOneTimeOperationDetail.Count == 1)
+            {
+                MessageBoxAdv.Show("Atleast one operation is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                ObservableCollection<OneTimeOperationDetail> lstOneTimeOperationDetail = oneTimeOperationDetail.Component.LstOneTimeOperationDetail;
+                oneTimeOperationDetail.PropertyChanged -= OneTimeOperation_PropertyChanged;
+                lstOneTimeOperationDetail.Remove(oneTimeOperationDetail);
+                MessageBoxAdv.Show("Record deleted successfully.", "Delete Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
         private void OneTimeOperationGrid_SelectionChanged(object sender, Syncfusion.WinForms.DataGrid.Events.SelectionChangedEventArgs e)
         {
-            SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
-            OneTimeOperationDetail onetimeoperationdetail = selectedCellInfo?.RowData as OneTimeOperationDetail;
-
-            if (selectedCellInfo != null && onetimeoperationdetail != null)
+            if (e.AddedItems.Count > 0)
             {
-                bool allowEdit = selectedCellInfo.Column.AllowEditing ? onetimeoperationdetail.IsColumnApplicableToOperation(selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
-                if (!allowEdit)
+                SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
+                OneTimeOperationDetail onetimeoperationdetail = selectedCellInfo?.RowData as OneTimeOperationDetail;
+
+                if (selectedCellInfo != null && onetimeoperationdetail != null)
                 {
-                    oneTimeOperationGrid.Style.SelectionStyle.BackColor = Color.LightGray;
-                    oneTimeOperationGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
-                    oneTimeOperationGrid.Style.SelectionStyle.TextColor = Color.Black;
-                }
-                else
-                {
-                    oneTimeOperationGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
-                    oneTimeOperationGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                    bool allowEdit = selectedCellInfo.Column.AllowEditing ? onetimeoperationdetail.IsColumnApplicableToOperation(selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
+                    if (!allowEdit)
+                    {
+                        oneTimeOperationGrid.Style.SelectionStyle.BackColor = Color.LightGray;
+                        oneTimeOperationGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
+                        oneTimeOperationGrid.Style.SelectionStyle.TextColor = Color.Black;
+                    }
+                    else
+                    {
+                        oneTimeOperationGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
+                        oneTimeOperationGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                    }
                 }
             }
         }
@@ -251,7 +273,7 @@ namespace CostMater.DataGrids
             if (e.OldItems != null)
             {
                 var oneTimeOperation = e.OldItems[0] as OneTimeOperationDetail;
-                oneTimeOperation.Component.RecalculateOneTimeOperationCost();
+                oneTimeOperation.Component.CalculateCost();
                 oneTimeOperation.PropertyChanged -= OneTimeOperationGrid.OneTimeOperation_PropertyChanged;
             }
         }

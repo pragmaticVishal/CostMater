@@ -34,7 +34,7 @@ namespace CostMater.DataGrids
         public void Setup()
         {
             #region machiningGrid
-            machiningGrid.SelectionController = new RowSelectionControllerExt(machiningGrid);
+            //machiningGrid.SelectionController = new RowSelectionControllerExt(machiningGrid);
             machiningGrid.AllowResizingColumns = true;
             machiningGrid.AllowTriStateSorting = true;
             machiningGrid.ShowHeaderToolTip = true;
@@ -67,11 +67,13 @@ namespace CostMater.DataGrids
             machiningGrid.CurrentCellActivating += MachiningGrid_CurrentCellActivating;
             machiningGrid.CurrentCellValidating += MachiningGrid_CurrentCellValidating;
             machiningGrid.SelectionChanged += MachiningGrid_SelectionChanged;
+            machiningGrid.CellButtonClick += MachiningGrid_CellButtonClick;
 
             NumberFormatInfo nfi = new NumberFormatInfo();
             nfi.NumberDecimalDigits = 0;
             nfi.NumberGroupSizes = new int[] { };
 
+            machiningGrid.Columns.Add(new GridButtonColumn { MappingName = "Button", HeaderText = "Action", DefaultButtonText = "Delete", AllowDefaultButtonText = true });
             machiningGrid.Columns.Add(new GridTextColumn { MappingName = "ProcessID", HeaderText = "ID", AllowEditing = false });
             machiningGrid.Columns.Add(new GridTextColumn { MappingName = "ComponentID", HeaderText = "Component ID", AllowEditing = false });
             machiningGrid.Columns.Add(new GridTextColumn { MappingName = "DrawingNo", HeaderText = "Drawing / Part No.", AllowEditing = false });
@@ -118,24 +120,44 @@ namespace CostMater.DataGrids
             #endregion
         }
 
+        private void MachiningGrid_CellButtonClick(object sender, Syncfusion.WinForms.DataGrid.Events.CellButtonClickEventArgs e)
+        {
+            Process machiningOperation = (e.Record as Syncfusion.WinForms.DataGrid.DataRow).RowData as Process;
+
+            if (machiningOperation != null && machiningOperation.Component.LstProcess.Count == 1)
+            {
+                MessageBoxAdv.Show("Atleast one operation is required.", "Deletion Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                ObservableCollection<Process> lstProcess = machiningOperation.Component.LstProcess;
+                machiningOperation.PropertyChanged -= Process_PropertyChanged;
+                lstProcess.Remove(machiningOperation);
+                MessageBoxAdv.Show("Record deleted successfully.", "Delete Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
         private void MachiningGrid_SelectionChanged(object sender, Syncfusion.WinForms.DataGrid.Events.SelectionChangedEventArgs e)
         {
-            SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
-            Process process = selectedCellInfo?.RowData as Process;
-
-            if (selectedCellInfo != null && process != null)
+            if (e.AddedItems.Count > 0)
             {
-                bool allowEdit = selectedCellInfo.Column.AllowEditing ? process.IsColumnApplicableToOperation(selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
-                if (!allowEdit)
+                SelectedCellInfo selectedCellInfo = e.AddedItems[0] as SelectedCellInfo;
+                Process process = selectedCellInfo?.RowData as Process;
+
+                if (selectedCellInfo != null && process != null)
                 {
-                    machiningGrid.Style.SelectionStyle.BackColor = Color.LightGray;
-                    machiningGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
-                    machiningGrid.Style.SelectionStyle.TextColor = Color.Black;
-                }
-                else
-                {
-                    machiningGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
-                    machiningGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                    bool allowEdit = selectedCellInfo.Column.AllowEditing ? process.IsColumnApplicableToOperation(selectedCellInfo.Column.MappingName) : selectedCellInfo.Column.AllowEditing;
+                    if (!allowEdit)
+                    {
+                        machiningGrid.Style.SelectionStyle.BackColor = Color.LightGray;
+                        machiningGrid.Style.CurrentCellStyle.BackColor = Color.LightGray;
+                        machiningGrid.Style.SelectionStyle.TextColor = Color.Black;
+                    }
+                    else
+                    {
+                        machiningGrid.Style.SelectionStyle.BackColor = System.Drawing.SystemColors.Highlight;
+                        machiningGrid.Style.SelectionStyle.TextColor = System.Drawing.SystemColors.HighlightText;
+                    }
                 }
             }
         }
@@ -266,13 +288,13 @@ namespace CostMater.DataGrids
             if (e.NewItems != null)
             {
                 var process = e.NewItems[0] as Process;
-                process.Component.RecalculateMachiningCost();
+                process.Component.CalculateCost();
             }
 
             if (e.OldItems != null)
             {
                 var oldProcess = e.OldItems[0] as Process;
-                oldProcess.Component.RecalculateMachiningCost();
+                oldProcess.Component.CalculateCost();
                 oldProcess.PropertyChanged -= MachiningGrid.Process_PropertyChanged;
             }
         }
