@@ -81,6 +81,7 @@ namespace CostMater.DataGrids
 
         internal void Reset(ObservableCollection<MachiningParameter> lstMachiningParam)
         {
+            MachiningParameterRepository._lstMachiningParam = lstMachiningParam;
             this.lstMachiningParam = lstMachiningParam;
             machiningParamGrid.DataSource = lstMachiningParam;
         }

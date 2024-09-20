@@ -149,6 +149,18 @@ namespace CostMater.DataGrids
                     }
                 }
             }
+            else if (e.RemovedItems.Count > 0)
+            {
+                if((sender as Syncfusion.WinForms.DataGrid.SfDataGrid).RowCount == 1)
+                {
+                    //var recordIndex = (sender as Syncfusion.WinForms.DataGrid.SfDataGrid).TableControl.ResolveToRecordIndex(1);
+                    //(sender as Syncfusion.WinForms.DataGrid.SfDataGrid).SelectedIndex = recordIndex;
+
+                    //(sender as Syncfusion.WinForms.DataGrid.SfDataGrid).ClearSelection();
+
+                    //System.Windows.Forms.SendKeys.Send("{DOWN}");
+                }
+            }
             
         }
 

@@ -169,7 +169,7 @@ namespace DetailsView
                     try
                     {
                         string jsonContent = File.ReadAllText(openFileDialog.FileName);
-                        CostMaterProject costMaterProject = JsonConvert.DeserializeObject<CostMaterProject>(jsonContent);
+                        costMaterProject = JsonConvert.DeserializeObject<CostMaterProject>(jsonContent);
                         componentGrid1.Reset(costMaterProject.lstComponent);
                         machiningParamGrid.Reset(costMaterProject.lstMachiningParam);
                         _currentProjectPath = openFileDialog.FileName;
