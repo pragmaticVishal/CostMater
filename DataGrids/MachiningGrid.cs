@@ -100,13 +100,21 @@ namespace CostMater.DataGrids
 
             StackedHeaderRow childGridStackedHeaderRow = new StackedHeaderRow();
             childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ProcessID,ComponentID,ProcessTypeID", HeaderText = "Operation" });
-            childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ToolTypeID,ToolSurfaceID,", HeaderText = "Tool Details" });
+            childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ToolTypeID,ToolSurfaceID", HeaderText = "Tool Details" });
             childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "DiameterBeforeTurning,DiameterAfterTurning,DepthOfCutEachPass,TotalDepthOfCut,LengthOfCut", HeaderText = "Turning Inputs" });
             childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "ThreadDiameterToCut,LengthOfThreadToCut", HeaderText = "Threading inputs" });
             childGridStackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "LengthOfHoleToDrill", HeaderText = "Drilling Inputs" });
 
-            machiningGrid.StackedHeaderRows.Add(childGridStackedHeaderRow);
+            StackedHeaderRow stackedHeaderRow = new StackedHeaderRow();
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn()
+            {
+                ChildColumns = "Button,ProcessID,ComponentID,DrawingNo,ProcessTypeID,ToolTypeID,ToolSurfaceID,DiameterBeforeTurning,DiameterAfterTurning,DepthOfCutEachPass,TotalDepthOfCut,LengthOfCut,ThreadDiameterToCut,LengthOfThreadToCut,LengthOfHoleToDrill,NoOfCuts,RPM,MachiningTime,MachiningCost",
+                HeaderText = "Machining Operations Section"
+            });
 
+            machiningGrid.StackedHeaderRows.Add(stackedHeaderRow);
+            machiningGrid.StackedHeaderRows.Add(childGridStackedHeaderRow);
+            
             foreach (var column in machiningGrid.Columns)
             {
                 if (!column.AllowEditing)

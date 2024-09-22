@@ -95,6 +95,13 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "BendRate", HeaderText = "Rate per Bend", FormatMode = FormatMode.Currency });
             laserAndBendingDetailGrid.Columns.Add(new GridNumericColumn { MappingName = "BendTotalCost", HeaderText = "Bending Cost", AllowEditing = false, FormatMode = FormatMode.Currency });
 
+            StackedHeaderRow stackedHeaderRow = new StackedHeaderRow();
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn()
+            {
+                ChildColumns = "Button,OperationNameSelectedID,LaserAndBendingDetailID,ComponentID,DrawingNo,MaterialShapeSelectedID,Length,Width,Thickness,Diameter,OD,NoOfSides,Side1,Side2,Side3,Perimeter,Qty,LaserCost,NoOfBend,BendRate,BendTotalCost",
+                HeaderText = "Laser and Bending Details Section"
+            });
+            laserAndBendingDetailGrid.StackedHeaderRows.Add(stackedHeaderRow);
 
             foreach (var column in laserAndBendingDetailGrid.Columns)
             {
@@ -103,7 +110,6 @@ namespace CostMater.DataGrids
                     column.CellStyle.BackColor = Color.LightGray;
                 }
             }
-
             ShowSummaryRow();
             laserAndBendingDetailGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion

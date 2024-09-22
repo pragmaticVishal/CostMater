@@ -6,6 +6,7 @@ using Syncfusion.Windows.Forms;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
 using Syncfusion.WinForms.DataGrid.Interactivity;
+using Syncfusion.WinForms.DataGridConverter;
 using Syncfusion.WinForms.Input.Enums;
 using System;
 using System.Collections.Generic;
@@ -156,6 +157,15 @@ namespace CostMater.DataGrids
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "MiscellaneousCost", HeaderText = "Miscellaneous" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "LabourCostPerPart", HeaderText = "Total Labour Per Part" });
             stackedHeaderRow.StackedColumns.Add(new StackedColumn() { ChildColumns = "RawMaterialRate,RawMaterialCost", HeaderText = "Raw Material" });
+
+            StackedHeaderRow stackedHeaderRow1 = new StackedHeaderRow();
+            stackedHeaderRow1.StackedColumns.Add(new StackedColumn()
+            {
+                ChildColumns = "Button,ComponentID,PartName,DrawingNo,MaterialID,MaterialTypeID,Qty,Length,Width,Thickness,Diameter,OD,ID,Side1,Side2,NetWeight,GrossWeight,LaserCost,BendTotalCost,FabricationTotalCost,SurfaceTreatmentCost,TotalMachiningCost,GrindingCost,Others_BO,HardwareCost,MiscellaneousCost,LabourCostPerPart,RawMaterialRate,RawMaterialCost,TotalCostPerPart,TotalCost",
+                HeaderText = "Component Grid"
+            });
+
+            componentGrid.StackedHeaderRows.Add(stackedHeaderRow1);
             componentGrid.StackedHeaderRows.Add(stackedHeaderRow);
 
             foreach (var column in componentGrid.Columns)

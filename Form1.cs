@@ -237,6 +237,8 @@ namespace DetailsView
             options.ExportStackedHeaders = true;
             options.ExportStyle = true;
             options.ExportBorders = true;
+            //options.ExcludeColumns = new List<string>() { "Button", "BendTotalCost" };
+            options.CellExporting += Options_CellExporting;
             var excelEngine = componentGrid.ExportToExcel(componentGrid.View, options);
             var workBook = excelEngine.Excel.Workbooks[0];
 
@@ -275,6 +277,12 @@ namespace DetailsView
             {
                 MessageBoxAdv.Show(ex.Message);
             }
+        }
+
+        private void Options_CellExporting(object sender, Syncfusion.WinForms.DataGridConverter.Events.DataGridCellExcelExportingEventArgs e)
+        {
+            if(e.ColumnName == "Button")
+                e.Handled = true;
         }
 
         private void Form1_CtrlSPressed(object sender, EventArgs e)

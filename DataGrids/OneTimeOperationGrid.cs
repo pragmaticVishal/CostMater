@@ -73,7 +73,9 @@ namespace CostMater.DataGrids
             oneTimeOperationGrid.CurrentCellActivating += OneTimeOperationGrid_CurrentCellActivating;
             oneTimeOperationGrid.CurrentCellValidating += OneTimeOperationGrid_CurrentCellValidating;
             oneTimeOperationGrid.SelectionChanged += OneTimeOperationGrid_SelectionChanged;
+            oneTimeOperationGrid.SelectionChanging += OneTimeOperationGrid_SelectionChanging;
             oneTimeOperationGrid.CellButtonClick += OneTimeOperationGrid_CellButtonClick;
+            oneTimeOperationGrid.PreviewKeyDown += OneTimeOperationGrid_PreviewKeyDown;
 
             NumberFormatInfo nfi1 = new NumberFormatInfo();
             nfi1.NumberDecimalDigits = 0;
@@ -87,6 +89,14 @@ namespace CostMater.DataGrids
             oneTimeOperationGrid.Columns.Add(new GridNumericColumn { MappingName = "Rate", HeaderText = "Rate", FormatMode = FormatMode.Currency });
             oneTimeOperationGrid.Columns.Add(new GridNumericColumn { MappingName = "Amount", HeaderText = "Amount", FormatMode = FormatMode.Currency });
 
+            StackedHeaderRow stackedHeaderRow = new StackedHeaderRow();
+            stackedHeaderRow.StackedColumns.Add(new StackedColumn()
+            {
+                ChildColumns = "Button,OneTimeOpItemSelectedID,ComponentID,DrawingNo,Qty,Rate,Amount",
+                HeaderText = "Manual Operations Section"
+            });
+            oneTimeOperationGrid.StackedHeaderRows.Add(stackedHeaderRow);
+
             foreach (var column in oneTimeOperationGrid.Columns)
             {
                 if (!column.AllowEditing)
@@ -98,6 +108,25 @@ namespace CostMater.DataGrids
             ShowSummaryRow();
             oneTimeOperationGrid.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping;
             #endregion
+        }
+
+        private void OneTimeOperationGrid_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if(oneTimeOperationGrid.CurrentCell.RowIndex == oneTimeOperationGrid.RowCount)
+            {
+                if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Tab || e.KeyCode == Keys.Down)
+                {
+                    e.IsInputKey = true; // Mark the key event as handled
+                }
+            }
+        }
+
+        private void OneTimeOperationGrid_SelectionChanging(object sender, Syncfusion.WinForms.DataGrid.Events.SelectionChangingEventArgs e)
+        {
+            //if(e.AddedItems.Count > 0 && (e.AddedItems[0] as SelectedCellInfo).IsAddNewRow)
+            //{
+            //    e.Cancel = true;
+            //}
         }
 
         private void OneTimeOperationGrid_CellButtonClick(object sender, Syncfusion.WinForms.DataGrid.Events.CellButtonClickEventArgs e)
