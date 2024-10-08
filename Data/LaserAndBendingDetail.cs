@@ -385,7 +385,7 @@ namespace CostMater.Data
 
             if (NoOfStart > 0)
             {
-                LaserCost = Qty * ((Perimeter * 0.06M * Component.Thickness) + (NoOfStart * 1 * Component.Thickness));
+                LaserCost = Qty * ((Perimeter * 0.04M * Component.Thickness) + (NoOfStart * 1 * Component.Thickness));
                 BendTotalCost = 0;
             }
             else
