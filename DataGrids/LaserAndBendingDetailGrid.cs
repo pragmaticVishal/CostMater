@@ -37,8 +37,8 @@ namespace CostMater.DataGrids
             laserAndBendingDetailGrid.SelectionController = new RowSelectionControllerExt(laserAndBendingDetailGrid);
             laserAndBendingDetailGrid.AllowResizingColumns = true;
             laserAndBendingDetailGrid.AllowTriStateSorting = true;
-            laserAndBendingDetailGrid.ShowHeaderToolTip = true;
-            laserAndBendingDetailGrid.ShowToolTip = true;
+            laserAndBendingDetailGrid.ShowHeaderToolTip = false;
+            laserAndBendingDetailGrid.ShowToolTip = false;
             laserAndBendingDetailGrid.EditMode = EditMode.SingleClick;
             laserAndBendingDetailGrid.AddNewRowText = "Click here to add new laser and bending detail";
             laserAndBendingDetailGrid.AddNewRowPosition = RowPosition.FixedBottom;
@@ -227,17 +227,20 @@ namespace CostMater.DataGrids
             {
                 if (KeyStateHelper.IsKeyDown(Keys.ShiftKey) && KeyStateHelper.IsKeyDown(Keys.Tab))
                 {
-                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    //System.Windows.Forms.SendKeys.Send("{UP}");
+                    e.Cancel = true;
                     return;
                 }
                 if (KeyStateHelper.IsKeyDown(Keys.Down))
                 {
-                    System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    //System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    e.Cancel = true;
                     return;
                 }
                 if (KeyStateHelper.IsKeyDown(Keys.Up))
                 {
-                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    //System.Windows.Forms.SendKeys.Send("{UP}");
+                    e.Cancel = true;
                     return;
                 }
                 ObservableCollection<LaserAndBendingDetail> lstLaserAndBendingDetail = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<LaserAndBendingDetail>;
@@ -325,13 +328,13 @@ namespace CostMater.DataGrids
                 }
             }
 
-            if (laserAndBendingDetail.MaterialShapeSelectedID > 0 && laserAndBendingDetail.OperationNameSelectedID == 0)
-            {
-                MessageBoxAdv.Show(operationSelectionRequiredError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                e.ErrorMessage = operationSelectionRequiredError;
-                e.IsValid = false;
-                hasValidationError = true;
-            }
+            //if (laserAndBendingDetail.MaterialShapeSelectedID > 0 && laserAndBendingDetail.OperationNameSelectedID == 0)
+            //{
+            //    MessageBoxAdv.Show(operationSelectionRequiredError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    e.ErrorMessage = operationSelectionRequiredError;
+            //    e.IsValid = false;
+            //    hasValidationError = true;
+            //}
         }
 
         private void LaserAndBendingDetailGrid_QueryCellStyle(object sender, Syncfusion.WinForms.DataGrid.Events.QueryCellStyleEventArgs e)

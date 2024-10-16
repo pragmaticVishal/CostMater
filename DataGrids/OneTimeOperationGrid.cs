@@ -38,8 +38,8 @@ namespace CostMater.DataGrids
             //oneTimeOperationGrid.SelectionController = new RowSelectionControllerExt(oneTimeOperationGrid);
             oneTimeOperationGrid.AllowResizingColumns = true;
             oneTimeOperationGrid.AllowTriStateSorting = true;
-            oneTimeOperationGrid.ShowHeaderToolTip = true;
-            oneTimeOperationGrid.ShowToolTip = true;
+            oneTimeOperationGrid.ShowHeaderToolTip = false;
+            oneTimeOperationGrid.ShowToolTip = false;
             oneTimeOperationGrid.EditMode = EditMode.SingleClick;
             oneTimeOperationGrid.AddNewRowText = "Click here to add new operation detail";
             oneTimeOperationGrid.AddNewRowPosition = RowPosition.FixedBottom;
@@ -184,21 +184,24 @@ namespace CostMater.DataGrids
 
         private void OneTimeOperationGrid_CurrentCellActivating(object sender, Syncfusion.WinForms.DataGrid.Events.CurrentCellActivatingEventArgs e)
         {
-            if (e.DataRow.RowType == RowType.AddNewRow)
+            if (e.DataRow.RowType == RowType.AddNewRow) 
             {
                 if(KeyStateHelper.IsKeyDown(Keys.ShiftKey) && KeyStateHelper.IsKeyDown(Keys.Tab))
                 {
-                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    //System.Windows.Forms.SendKeys.Send("{UP}");
+                    e.Cancel = true;
                     return;
                 }
                 if (KeyStateHelper.IsKeyDown(Keys.Down))
                 {
-                    System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    //System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    e.Cancel = true;
                     return;
                 }
                 if (KeyStateHelper.IsKeyDown(Keys.Up))
                 {
-                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    //System.Windows.Forms.SendKeys.Send("{UP}");
+                    e.Cancel = true;
                     return;
                 }
                 ObservableCollection<OneTimeOperationDetail> lstOneTimeOperationDetail = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<OneTimeOperationDetail>;

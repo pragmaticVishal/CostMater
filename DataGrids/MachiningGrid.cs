@@ -37,8 +37,8 @@ namespace CostMater.DataGrids
             //machiningGrid.SelectionController = new RowSelectionControllerExt(machiningGrid);
             machiningGrid.AllowResizingColumns = true;
             machiningGrid.AllowTriStateSorting = true;
-            machiningGrid.ShowHeaderToolTip = true;
-            machiningGrid.ShowToolTip = true;
+            machiningGrid.ShowHeaderToolTip = false;
+            machiningGrid.ShowToolTip = false;
             machiningGrid.EditMode = EditMode.SingleClick;
             machiningGrid.AddNewRowText = "Click here to add new machining detail";
             machiningGrid.AddNewRowPosition = RowPosition.FixedBottom;
@@ -187,17 +187,20 @@ namespace CostMater.DataGrids
             {
                 if (KeyStateHelper.IsKeyDown(Keys.ShiftKey) && KeyStateHelper.IsKeyDown(Keys.Tab))
                 {
-                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    //System.Windows.Forms.SendKeys.Send("{UP}");
+                    e.Cancel = true;
                     return;
                 }
                 if (KeyStateHelper.IsKeyDown(Keys.Down))
                 {
-                    System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    //System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    e.Cancel = true;
                     return;
                 }
                 if (KeyStateHelper.IsKeyDown(Keys.Up))
                 {
-                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    //System.Windows.Forms.SendKeys.Send("{UP}");
+                    e.Cancel = true;
                     return;
                 }
                 ObservableCollection<Process> lstProcess = ((Syncfusion.WinForms.DataGrid.SfDataGrid)e.OriginalSender).DataSource as ObservableCollection<Process>;

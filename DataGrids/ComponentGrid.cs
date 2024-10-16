@@ -165,7 +165,7 @@ namespace CostMater.DataGrids
                 HeaderText = "Component Grid"
             });
 
-            componentGrid.StackedHeaderRows.Add(stackedHeaderRow1);
+            //componentGrid.StackedHeaderRows.Add(stackedHeaderRow1);
             componentGrid.StackedHeaderRows.Add(stackedHeaderRow);
 
             foreach (var column in componentGrid.Columns)
@@ -284,20 +284,21 @@ namespace CostMater.DataGrids
         {
             if (e.DataRow.RowType == RowType.AddNewRow)
             {
-                if (KeyStateHelper.IsKeyDown(Keys.Tab) && KeyStateHelper.IsKeyDown(Keys.ShiftKey))
+                if (KeyStateHelper.IsKeyDown(Keys.ShiftKey) && KeyStateHelper.IsKeyDown(Keys.Tab))
                 {
+                    //System.Windows.Forms.SendKeys.Send("{UP}");
                     e.Cancel = true;
                     return;
                 }
                 if (KeyStateHelper.IsKeyDown(Keys.Down))
                 {
-                    System.Windows.Forms.SendKeys.Send("{DOWN}");
+                    //System.Windows.Forms.SendKeys.Send("{DOWN}");
                     e.Cancel = true;
                     return;
                 }
                 if (KeyStateHelper.IsKeyDown(Keys.Up))
                 {
-                    System.Windows.Forms.SendKeys.Send("{UP}");
+                    //System.Windows.Forms.SendKeys.Send("{UP}");
                     e.Cancel = true;
                     return;
                 }

@@ -52,10 +52,13 @@ namespace DetailsView
 
         private void Form1_CtrlRPressed(object sender, EventArgs e)
         {
-            costMaterProject.lstComponent.ForEach(x => x.LstProcess.ForEach(x => x.CalculateCost()));
-            costMaterProject.lstComponent.ForEach(x => x.LstLaserAndBendingDetail.ForEach(x => x.CalculateCost()));
-            costMaterProject.lstComponent.ForEach(x => x.LstOneTimeOperationDetail.ForEach(x => x.CalculateCost()));
-            costMaterProject.lstComponent.ForEach(x => x.CalculateCost());
+            //costMaterProject.lstComponent.ForEach(x => x.LstProcess.ForEach(x => x.CalculateCost()));
+            //costMaterProject.lstComponent.ForEach(x => x.LstLaserAndBendingDetail.ForEach(x => x.CalculateCost()));
+            //costMaterProject.lstComponent.ForEach(x => x.LstOneTimeOperationDetail.ForEach(x => x.CalculateCost()));
+            //costMaterProject.lstComponent.ForEach(x => x.CalculateCost());
+
+            componentGrid1.Reset(costMaterProject.lstComponent);
+            machiningParamGrid.Reset(costMaterProject.lstMachiningParam);
 
             MessageBoxAdv.Show("Cost recalculated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -283,6 +286,54 @@ namespace DetailsView
         {
             if(e.ColumnName == "Button")
                 e.Handled = true;
+
+            if(e.CellType == ExportCellType.RecordCell && e.ColumnName == "OperationNameSelectedID")
+            {
+                e.Range.Cells[0].Value = LaserAndBendingList.GetAll().Find(x=>x.ID == Convert.ToInt32(e.CellValue)).Name;
+                e.Handled = true;
+            }
+
+            if (e.CellType == ExportCellType.RecordCell && e.ColumnName == "OneTimeOpItemSelectedID")
+            {
+                e.Range.Cells[0].Value = OneTimeOperationsList.GetAll().Find(x => x.ID == Convert.ToInt32(e.CellValue)).Name;
+                e.Handled = true;
+            }
+
+            if (e.CellType == ExportCellType.RecordCell && e.ColumnName == "MaterialShapeSelectedID")
+            {
+                e.Range.Cells[0].Value = (new MaterialShapeList().GetDataSource("", "") as List<MaterialShapeItem>).Find(x => x.ID == Convert.ToInt32(e.CellValue)).Name;
+                e.Handled = true;
+            }
+
+            if (e.CellType == ExportCellType.RecordCell && e.ColumnName == "MaterialTypeID")
+            {
+                e.Range.Cells[0].Value = (new MaterialTypeDataSourceSelector().GetDataSource("", "") as List<MaterialTypeDetails>).Find(x => x.MaterialTypeID == Convert.ToInt32(e.CellValue)).MaterialTypeName;
+                e.Handled = true;
+            }
+
+            if (e.CellType == ExportCellType.RecordCell && e.ColumnName == "MaterialID")
+            {
+                e.Range.Cells[0].Value = (new MaterialDataSourceSelector().GetDataSource("", "") as List<Material>).Find(x => x.MaterialID == Convert.ToInt32(e.CellValue)).MaterialName;
+                e.Handled = true;
+            }
+
+            if (e.CellType == ExportCellType.RecordCell && e.ColumnName == "ProcessTypeID")
+            {
+                e.Range.Cells[0].Value = (new ProcessTypeDataSourceSelector().GetDataSource("", "") as List<ProcessTypeDetails>).Find(x => x.ProcessTypeID == Convert.ToInt32(e.CellValue)).ProcessTypeName;
+                e.Handled = true;
+            }
+
+            if (e.CellType == ExportCellType.RecordCell && e.ColumnName == "ToolTypeID")
+            {
+                e.Range.Cells[0].Value = (new ToolTypeDataSourceSelector().GetDataSource("", "") as List<ToolTypeDetails>).Find(x => x.ToolTypeID == Convert.ToInt32(e.CellValue)).ToolTypeName;
+                e.Handled = true;
+            }
+
+            if (e.CellType == ExportCellType.RecordCell && e.ColumnName == "ToolSurfaceID")
+            {
+                e.Range.Cells[0].Value = (new ToolSurfaceDataSourceSelector().GetDataSource("", "") as List<ToolSurfaceDetails>).Find(x => x.ToolSurfaceID == Convert.ToInt32(e.CellValue)).ToolSurfaceName;
+                e.Handled = true;
+            }
         }
 
         private void Form1_CtrlSPressed(object sender, EventArgs e)

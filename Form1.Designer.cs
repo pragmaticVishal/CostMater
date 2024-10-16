@@ -74,8 +74,8 @@ namespace DetailsView
             componentGrid.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
             componentGrid.Name = "componentGrid";
             componentGrid.RowHeight = 21;
-            componentGrid.ShowHeaderToolTip = true;
-            componentGrid.ShowToolTip = true;
+            componentGrid.ShowHeaderToolTip = false;
+            componentGrid.ShowToolTip = false;
             componentGrid.Size = new System.Drawing.Size(1292, 548);
             componentGrid.TabIndex = 0;
             componentGrid.Text = "sfDataGrid1";

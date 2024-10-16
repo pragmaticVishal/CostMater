@@ -9,15 +9,15 @@ namespace DetailsView.Data
     {
         public IEnumerable GetDataSource(object record, object dataSourcee)
         {
-            // Assuming you have a method to get the list of materials
+            // Assuming you have a method to get the list of materialsList
             return GetMaterials();
         }
 
 
-        private ObservableCollection<Material> GetMaterials()
+        private List<Material> GetMaterials()
         {
             // Replace this with your actual data retrieval logic
-            return new ObservableCollection<Material>
+            return new List<Material>
             {
                 new Material { MaterialID = 0, MaterialName = "" },
                 new Material { MaterialID = 1, MaterialName = "SS-304" },
